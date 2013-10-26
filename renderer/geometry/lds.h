@@ -26,7 +26,9 @@ public:
 		
         while (Offset > 0)
 		{
-            this->Value += (float)(Offset % this->Base) * Factor;
+			float div = Offset / this->Base;
+			float num = Offset - (floor(div) * this->Base);
+            this->Value += (float)(num) * Factor;
             Offset /= this->Base;
             Factor *= this->InvBase;
 		}

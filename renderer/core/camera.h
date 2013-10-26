@@ -36,7 +36,7 @@ public:
 		FocusMode(Enums::AutoFocus),
 		FocusUV(0.5f),
 		FocalDistance(10.0f),
-		ApertureShape(Enums::Circular),
+		ApertureShape(Enums::Polygon),
 		ApertureSize(0.0f),
 		NoApertureBlades(6),
 		ApertureAngle(0.0f),
