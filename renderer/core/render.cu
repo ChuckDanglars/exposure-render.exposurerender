@@ -56,7 +56,6 @@ void Render(float Position[3], float FocalPoint[3], float ViewUp[3], const int& 
 {
 	Camera Cam;
 
-	Cam.SetFilmSize(Vec2i(1024, 768));
 	Cam.SetPos(Vec3f(Position));
 	Cam.SetTarget(Vec3f(FocalPoint));
 	Cam.SetUp(Vec3f(ViewUp));

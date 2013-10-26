@@ -22,7 +22,7 @@ namespace ExposureRender
 {
 
 /*! 3D host random seed buffer class */
-class HostRandomSeedBuffer3D : public HostRandomSeedBuffer<3>
+class EXPOSURE_RENDER_DLL HostRandomSeedBuffer3D : public HostRandomSeedBuffer<3>
 {
 public:
 	/*! Constructor */

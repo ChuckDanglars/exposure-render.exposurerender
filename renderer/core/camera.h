@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "core\film.h"
 #include "geometry\montecarlo.h"
 #include "core\rng.h"
 
@@ -28,7 +29,7 @@ class EXPOSURE_RENDER_DLL Camera
 public:
 	/*! Default constructor */
 	HOST Camera() :
-		FilmSize(1024, 768),
+		Film(Vec2i(640, 480)),
 		Pos(1.0f),
 		Target(0.0f),
 		Up(0.0f, 1.0f, 0.0f),
@@ -138,13 +139,12 @@ public:
 		
 		Offset /= ScreenSize;
 		
-		FilmUV[0] = (float)this->FilmSize[0] * Offset[0];
-		FilmUV[1] = (float)this->FilmSize[1] * Offset[1];
+		FilmUV[0] = (float)this->Film.GetResolution()[0] * Offset[0];
+		FilmUV[1] = (float)this->Film.GetResolution()[1] * Offset[1];
 
 		return true;
 	}
 
-	GET_SET_TS_MACRO(HOST_DEVICE, FilmSize, Vec2i)
 	GET_SET_TS_MACRO(HOST_DEVICE, Pos, Vec3f)
 	GET_SET_TS_MACRO(HOST_DEVICE, Target, Vec3f)
 	GET_SET_TS_MACRO(HOST_DEVICE, Up, Vec3f)
@@ -166,7 +166,6 @@ public:
 	GET_SET_TS_MACRO(HOST_DEVICE, InvExposure, float)
 	GET_SET_TS_MACRO(HOST_DEVICE, InvGamma, float)
 
-
 	/*! Updates internal members */
 	HOST void Update()
 	{
@@ -184,7 +183,7 @@ public:
 
 		Scale = tanf((0.5f * this->FOV / RAD_F));
 
-		const float AspectRatio = (float)this->FilmSize[1] / (float)this->FilmSize[0];
+		const float AspectRatio = (float)this->Film.GetResolution()[1] / (float)this->Film.GetResolution()[0];
 
 		if (AspectRatio > 1.0f)
 		{
@@ -201,12 +200,12 @@ public:
 			this->Screen[1][1] = Scale;
 		}
 
-		this->InvScreen[0] = (this->Screen[0][1] - this->Screen[0][0]) / (float)this->FilmSize[0];
-		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->FilmSize[1];
+		this->InvScreen[0] = (this->Screen[0][1] - this->Screen[0][0]) / (float)this->Film.GetResolution()[0];
+		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->Film.GetResolution()[1];
 	}
 
 protected:
-	Vec2i					FilmSize;				/*! Size of the film plane */
+	Film					Film;					/*! Film plane */
 	Vec3f					Pos;					/*! Camera position */
 	Vec3f					Target;					/*! Camera target */
 	Vec3f					Up;						/*! Camera up vector */

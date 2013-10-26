@@ -35,6 +35,28 @@ public:
 		this->Seed1 = Seed1;
 	}
 
+	/*! Copy constructor
+		@param[in] Other RNG to copy
+	*/
+	HOST_DEVICE RNG(const RNG& Other) :
+		Seed0(0),
+		Seed1(0)
+	{ 
+		*this = Other;
+	}
+	
+	/*! Assignment operator
+		@param[in] Other RNG to copy
+		@return RNG
+	*/
+	HOST_DEVICE RNG& operator = (const RNG& Other)
+	{
+		this->Seed0		= Other.Seed0;
+		this->Seed0		= Other.Seed0;
+
+		return *this;
+	}
+
 	/*! Gets a single random float
 		@return Random float
 	*/

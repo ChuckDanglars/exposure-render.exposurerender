@@ -82,7 +82,7 @@ void QRenderOutputWidget::mouseMoveEvent(QMouseEvent *event)
 
 	if (event->buttons() & Qt::MiddleButton)
 	{
-		this->Pan(-dy, -dx);
+		this->Pan(dy, -dx);
 	}
 
 	if (event->buttons() & Qt::RightButton)

@@ -27,12 +27,10 @@ class Tracer
 public:
 	/*! Default constructor */
 	HOST Tracer() :
-		FrameBuffer(),
 		NoEstimates(0)
 	{
 	}
 	
-	FrameBuffer			FrameBuffer;				/*! Frame buffer */
 	int					NoEstimates;				/*! Number of estimates rendered so far */
 };
 

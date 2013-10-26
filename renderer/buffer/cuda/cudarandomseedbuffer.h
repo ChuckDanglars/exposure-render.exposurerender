@@ -23,7 +23,7 @@ namespace ExposureRender
 
 /*! Cuda random seed buffer */
 template<int NoDimensions>
-class CudaRandomSeedBuffer : public CudaBuffer<unsigned int, NoDimensions>
+class EXPOSURE_RENDER_DLL CudaRandomSeedBuffer : public CudaBuffer<unsigned int, NoDimensions>
 {
 };
 

@@ -82,7 +82,7 @@ namespace ExposureRender
 #define BLOCK_W						16
 #define BLOCK_H						8
 #define BLOCK_SIZE					BLOCK_W * BLOCK_H
-#define MAX_CHAR_SIZE				256
+//#define MAX_CHAR_SIZE				256
 
 #ifdef _MSC_VER
 	#define DEBUG_BREAK __debugbreak();

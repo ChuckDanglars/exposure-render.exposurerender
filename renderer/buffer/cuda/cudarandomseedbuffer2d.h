@@ -22,7 +22,7 @@ namespace ExposureRender
 {
 
 /*! 2D Cuda random seed buffer class */
-class CudaRandomSeedBuffer2D : public CudaRandomSeedBuffer<2>
+class EXPOSURE_RENDER_DLL CudaRandomSeedBuffer2D : public CudaRandomSeedBuffer<2>
 {
 public:
 	/*! Constructor */

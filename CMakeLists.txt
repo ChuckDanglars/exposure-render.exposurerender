@@ -25,10 +25,6 @@ ADD_SUBDIRECTORY(utilities)
 
 ### INSTALLER ###
 MESSAGE(STATUS "Creating installer project")
-SET(CMAKE_INSTALL_PREFIX "D:/ExposureRender")
-
-### LOGO ###
-INSTALL_FILES(/bin FILES "${CMAKE_CURRENT_SOURCE_DIR}/utilities/logo.jpg")
 
 ### VTK dependencies ###
 #FILE(GLOB VtkDlls "${VTK_DIR}/bin/RelWithDebInfo/*.dll")

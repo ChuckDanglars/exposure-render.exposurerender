@@ -23,7 +23,7 @@ namespace ExposureRender
 
 /*! Host random seed buffer class */
 template<int NoDimensions>
-class HostRandomSeedBuffer : public HostBuffer<unsigned int, NoDimensions>
+class EXPOSURE_RENDER_DLL HostRandomSeedBuffer : public HostBuffer<unsigned int, NoDimensions>
 {
 public:
 	/*! Constructor */

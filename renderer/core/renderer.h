@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "core\framebuffer.h"
 #include "core\volume.h"
 #include "core\lighting.h"
 #include "core\camera.h"
@@ -30,7 +29,6 @@ class Renderer
 public:
 	/*! Default constructor */
 	HOST Renderer() :
-		FrameBuffer(),
 		Volume(),
 		Lighting(),
 		Camera(),
@@ -38,7 +36,6 @@ public:
 	{
 	}
 	
-	FrameBuffer			FrameBuffer;				/*! Frame buffer */
 	Volume				Volume;						/*! Volume parameters */
 	Lighting			Lighting;					/*! Lighting parameters */
 	Camera				Camera;						/*! Camera parameters */
