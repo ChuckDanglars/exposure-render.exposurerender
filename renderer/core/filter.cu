@@ -1,6 +1,7 @@
 
 #include "filter.cuh"
 #include "core\cudawrapper.h"
+#include "core\utilities.h"
 
 namespace ExposureRender
 {
@@ -9,28 +10,21 @@ namespace ExposureRender
 #define KRNL_ESTIMATE_BLOCK_H		8
 #define KRNL_ESTIMATE_BLOCK_SIZE	KRNL_ESTIMATE_BLOCK_W * KRNL_ESTIMATE_BLOCK_H
 
-KERNEL void KrnlFilter(Camera* Camera)
+KERNEL void KrnlGaussianFilterHorizontal(Camera* Camera)
 {
 	const int X 	= blockIdx.x * blockDim.x + threadIdx.x;
 	const int Y		= blockIdx.y * blockDim.y + threadIdx.y;
 
 	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
 		return;
+	
+	CudaBuffer2D<ColorRGBAuc>& Input	= Camera->GetFilm().GetIterationEstimateLDR();
+	CudaBuffer2D<ColorRGBAuc>& Output	= Camera->GetFilm().GetIterationEstimateTempFilterLDR();
 
-	int PID = Y * Camera->GetFilm().GetWidth() + X;
-}
-
-
-
-
-KERNEL void KrnlGaussianFilterHorizontalRGBAuc(int Radius, Buffer2D<ColorRGBAuc>* Input, Buffer2D<ColorRGBAuc>* Output)
-{
-	KERNEL_2D(Input->GetResolution()[0], Input->GetResolution()[1])
-		
 	const int Range[2] = 
 	{
-		max((int)ceilf(IDx - Radius), 0),
-		min((int)floorf(IDx + Radius), Input->GetResolution()[0] - 1)
+		Max((int)ceilf(X - 1), 0),
+		Min((int)floorf(X + 1), Input.GetResolution()[0] - 1)
 	};
 
 	ColorRGBAf Sum;
@@ -39,34 +33,41 @@ KERNEL void KrnlGaussianFilterHorizontalRGBAuc(int Radius, Buffer2D<ColorRGBAuc>
 
 	for (int x = Range[0]; x <= Range[1]; x++)
 	{
-		const float Weight = gpTracer->GaussianFilterTables.Weight(Radius, Radius + (IDx - x), Radius);
+		const float Weight = Camera->GetFilm().GetGaussianFilterWeights()[x - X];
 
-		Sum[0]		+= Weight * (*Input)(x, IDy)[0];
-		Sum[1]		+= Weight * (*Input)(x, IDy)[1];
-		Sum[2]		+= Weight * (*Input)(x, IDy)[2];
-		Sum[3]		+= Weight * (*Input)(x, IDy)[3];
+		Sum[0]		+= Weight * Input(x, Y)[0];
+		Sum[1]		+= Weight * Input(x, Y)[1];
+		Sum[2]		+= Weight * Input(x, Y)[2];
+		Sum[3]		+= Weight * Input(x, Y)[3];
 		SumWeight	+= Weight;
 	}
-	
+
 	if (SumWeight > 0.0f)
 	{
-		(*Output)(IDx, IDy)[0] = Sum[0] / SumWeight;
-		(*Output)(IDx, IDy)[1] = Sum[1] / SumWeight;
-		(*Output)(IDx, IDy)[2] = Sum[2] / SumWeight;
-		(*Output)(IDx, IDy)[3] = Sum[3] / SumWeight;
+		Output(X, Y)[0] = Sum[0] / SumWeight;
+		Output(X, Y)[1] = Sum[1] / SumWeight;
+		Output(X, Y)[2] = Sum[2] / SumWeight;
+		Output(X, Y)[3] = Sum[3] / SumWeight;
 	}
 	else
-		(*Output)(IDx, IDy) = (*Input)(IDx, IDy);
+		Output(X, Y) = Input(X, Y);
 }
 
-KERNEL void KrnlGaussianFilterVerticalRGBAuc(int Radius, Buffer2D<ColorRGBAuc>* Input, Buffer2D<ColorRGBAuc>* Output)
+KERNEL void KrnlGaussianFilterVertical(Camera* Camera)
 {
-	KERNEL_2D(Input->GetResolution()[0], Input->GetResolution()[1])
-		
+	const int X 	= blockIdx.x * blockDim.x + threadIdx.x;
+	const int Y		= blockIdx.y * blockDim.y + threadIdx.y;
+
+	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
+		return;
+	
+	CudaBuffer2D<ColorRGBAuc>& Input	= Camera->GetFilm().GetIterationEstimateTempFilterLDR();
+	CudaBuffer2D<ColorRGBAuc>& Output	= Camera->GetFilm().GetIterationEstimateLDR();
+
 	const int Range[2] =
 	{
-		max((int)ceilf(IDy - Radius), 0),
-		min((int)floorf(IDy + Radius), Input->GetResolution()[1] - 1)
+		Max((int)ceilf(Y - 1), 0),
+		Min((int)floorf(Y + 1), Input.GetResolution()[1] - 1)
 	};
 
 	ColorRGBAf Sum;
@@ -75,33 +76,25 @@ KERNEL void KrnlGaussianFilterVerticalRGBAuc(int Radius, Buffer2D<ColorRGBAuc>* 
 
 	for (int y = Range[0]; y <= Range[1]; y++)
 	{
-		const float Weight = gpTracer->GaussianFilterTables.Weight(Radius, Radius, Radius + (IDy - y));
+		const float Weight = Camera->GetFilm().GetGaussianFilterWeights()[y - Y];
 
-		Sum[0]		+= Weight * (*Input)(IDx, y)[0];
-		Sum[1]		+= Weight * (*Input)(IDx, y)[1];
-		Sum[2]		+= Weight * (*Input)(IDx, y)[2];
-		Sum[3]		+= Weight * (*Input)(IDx, y)[3];
+		Sum[0]		+= Weight * Input(X, y)[0];
+		Sum[1]		+= Weight * Input(X, y)[1];
+		Sum[2]		+= Weight * Input(X, y)[2];
+		Sum[3]		+= Weight * Input(X, y)[3];
 		SumWeight	+= Weight;
 	}
 	
 	if (SumWeight > 0.0f)
 	{
-		(*Output)(IDx, IDy)[0] = Sum[0] / SumWeight;
-		(*Output)(IDx, IDy)[1] = Sum[1] / SumWeight;
-		(*Output)(IDx, IDy)[2] = Sum[2] / SumWeight;
-		(*Output)(IDx, IDy)[3] = Sum[3] / SumWeight;
+		Output(X, Y)[0] = Sum[0] / SumWeight;
+		Output(X, Y)[1] = Sum[1] / SumWeight;
+		Output(X, Y)[2] = Sum[2] / SumWeight;
+		Output(X, Y)[3] = Sum[3] / SumWeight;
 	}
 	else
-		(*Output)(IDx, IDy) = (*Input)(IDx, IDy);
+		Output(X, Y) = Input(X, Y);
 }
-
-
-
-
-
-
-
-
 
 
 void Filter(Camera& HostCamera)
@@ -115,8 +108,11 @@ void Filter(Camera& HostCamera)
 
 	Cuda::HandleCudaError(cudaMemcpy(DevCamera, &HostCamera, sizeof(Camera), cudaMemcpyHostToDevice));
 
-	KrnlFilter<<<KernelGrid, KernelBlock>>>(DevCamera);
+	KrnlGaussianFilterHorizontal<<<KernelGrid, KernelBlock>>>(DevCamera);
+	KrnlGaussianFilterVertical<<<KernelGrid, KernelBlock>>>(DevCamera);
+
 	cudaThreadSynchronize();
+
 	Cuda::HandleCudaError(cudaGetLastError(), "Filter");
 
 	Cuda::HandleCudaError(cudaFree(DevCamera));

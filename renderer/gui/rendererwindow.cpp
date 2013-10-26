@@ -27,7 +27,7 @@ QRendererWindow::~QRendererWindow()
 
 void QRendererWindow::OnTimer()
 {
-	this->RenderOutputWidget->SetImage(this->Renderer->Estimate);
+	this->RenderOutputWidget->SetImage(this->Renderer->Camera.GetFilm().GetHostRunningEstimate());
 }
 
 void QRendererWindow::CreateStatusBar()

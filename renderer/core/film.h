@@ -34,15 +34,21 @@ public:
 		Resolution(),
 		IterationEstimateHDR(),
 		IterationEstimateLDR(),
+		IterationEstimateTempFilterLDR(),
 		AccumulatedEstimate(),
 		CudaRunningEstimate(),
 		HostRunningEstimate(),
 		RandomSeeds1(),
 		RandomSeeds2(),
 		HostRandomSeeds1(),
-		HostRandomSeeds2()
+		HostRandomSeeds2(),
+		NoEstimates(1)
 	{
 		this->Resize(Resolution);
+
+		this->GaussianFilterWeights[0]	= 0.24197072451914536f;
+		this->GaussianFilterWeights[1]	= 0.39894228040143270f;
+		this->GaussianFilterWeights[2]	= 0.24197072451914536f;
 	}
 
 	/*! Resize the film
@@ -57,6 +63,7 @@ public:
 
 		this->IterationEstimateHDR.Resize(this->Resolution);
 		this->IterationEstimateLDR.Resize(this->Resolution);
+		this->IterationEstimateTempFilterLDR.Resize(this->Resolution);
 		this->AccumulatedEstimate.Resize(this->Resolution);
 		this->CudaRunningEstimate.Resize(this->Resolution);
 		this->HostRunningEstimate.Resize(this->Resolution);
@@ -65,6 +72,15 @@ public:
 		this->HostRandomSeeds1.Resize(this->Resolution);
 		this->HostRandomSeeds2.Resize(this->Resolution);
 		
+		this->RandomSeeds1.FromHost(this->HostRandomSeeds1.GetData());
+		this->RandomSeeds2.FromHost(this->HostRandomSeeds2.GetData());
+	}
+
+	/*! Restarts the mc algorithm */
+	HOST void Restart()
+	{
+		this->NoEstimates = 1;
+
 		this->RandomSeeds1.FromHost(this->HostRandomSeeds1.GetData());
 		this->RandomSeeds2.FromHost(this->HostRandomSeeds2.GetData());
 	}
@@ -109,6 +125,14 @@ public:
 		return this->IterationEstimateLDR;
 	}
 
+	/*! Returns the filter temporary ldr iteration estimate
+		@return Temporary fitler ldr iteration estimate
+	*/
+	HOST_DEVICE CudaBuffer2D<ColorRGBAuc>& GetIterationEstimateTempFilterLDR()
+	{
+		return this->IterationEstimateTempFilterLDR;
+	}
+
 	/*! Returns the accumulated estimate
 		@return Accumulated estimate
 	*/
@@ -120,7 +144,7 @@ public:
 	/*! Returns the cuda running estimate
 		@return Cuda running estimate
 	*/
-	HOST_DEVICE CudaBuffer2D<ColorRGBAuc>& GetCudaRunningEstimate()
+	HOST_DEVICE CudaBuffer2D<ColorRGBuc>& GetCudaRunningEstimate()
 	{
 		return this->CudaRunningEstimate;
 	}
@@ -128,7 +152,7 @@ public:
 	/*! Returns the host running estimate
 		@return Host running estimate
 	*/
-	HOST_DEVICE HostBuffer2D<ColorRGBAuc>& GetHostRunningEstimate()
+	HOST_DEVICE HostBuffer2D<ColorRGBuc>& GetHostRunningEstimate()
 	{
 		return this->HostRunningEstimate;
 	}
@@ -165,6 +189,14 @@ public:
 		return this->HostRandomSeeds2;
 	}
 
+	/*! Returns the gaussian filter weights for a 3 x 3 kernel
+		@return Gaussian filter weights
+	*/
+	HOST_DEVICE float* GetGaussianFilterWeights()
+	{
+		return this->GaussianFilterWeights;
+	}
+
 	/*! Returns the random number generator for the specified pixel coordinates
 		@param[in] Pixel Pixel coordinates
 		@return Random number generator
@@ -174,17 +206,34 @@ public:
 		return RNG(&this->RandomSeeds1(Pixel[0], Pixel[1]), &this->RandomSeeds2(Pixel[0], Pixel[1]));
 	}
 
+	/*! Returns the no estimates rendered so far
+		@return Number of estimates
+	*/
+	HOST_DEVICE int GetNoEstimates() const
+	{
+		return this->NoEstimates;
+	}
+
+	/*! Incrementes the number of estimates rendered so far */
+	HOST_DEVICE void IncrementNoEstimates()
+	{
+		this->NoEstimates++;
+	}
+
 protected:
-	Vec2i							Resolution;					/*! Resolution of the frame buffer */
-	CudaBuffer2D<ColorXYZAf>		IterationEstimateHDR;		/*! High dynamic range estimate from a single iteration of the mc algorithm */
-	CudaBuffer2D<ColorRGBAuc>		IterationEstimateLDR;		/*! Low dynamic range (tone mapped) estimate from a single iteration of the mc algorithm */
-	CudaBuffer2D<ColorRGBAul>		AccumulatedEstimate;		/*! Accumulation buffer */
-	CudaBuffer2D<ColorRGBAuc>		CudaRunningEstimate;		/*! Integrated estimate in cuda memory space*/
-	HostBuffer2D<ColorRGBAuc>		HostRunningEstimate;		/*! Integrated estimate in host memory space */
-	CudaRandomSeedBuffer2D			RandomSeeds1;				/*! First random seed buffer */
-	CudaRandomSeedBuffer2D			RandomSeeds2;				/*! Second random seed buffer */
-	HostRandomSeedBuffer2D			HostRandomSeeds1;			/*! First host random seed buffer */
-	HostRandomSeedBuffer2D			HostRandomSeeds2;			/*! Second host random seed buffer */
+	Vec2i							Resolution;							/*! Resolution of the frame buffer */
+	CudaBuffer2D<ColorXYZAf>		IterationEstimateHDR;				/*! High dynamic range estimate from a single iteration of the mc algorithm */
+	CudaBuffer2D<ColorRGBAuc>		IterationEstimateLDR;				/*! Low dynamic range (tone mapped) estimate from a single iteration of the mc algorithm */
+	CudaBuffer2D<ColorRGBAuc>		IterationEstimateTempFilterLDR;		/*! Low dynamic range (tone mapped) temporary estimate from a single iteration of the mc algorithm (for filtering purposes)*/
+	CudaBuffer2D<ColorRGBAul>		AccumulatedEstimate;				/*! Accumulation buffer */
+	CudaBuffer2D<ColorRGBuc>		CudaRunningEstimate;				/*! Integrated estimate in cuda memory space*/
+	HostBuffer2D<ColorRGBuc>		HostRunningEstimate;				/*! Integrated estimate in host memory space */
+	CudaRandomSeedBuffer2D			RandomSeeds1;						/*! First random seed buffer */
+	CudaRandomSeedBuffer2D			RandomSeeds2;						/*! Second random seed buffer */
+	HostRandomSeedBuffer2D			HostRandomSeeds1;					/*! First host random seed buffer */
+	HostRandomSeedBuffer2D			HostRandomSeeds2;					/*! Second host random seed buffer */
+	float							GaussianFilterWeights[3];			/*! Gaussian filtering weights */
+	int								NoEstimates;						/*! Number of estimates rendererd so far */
 };
 
 }

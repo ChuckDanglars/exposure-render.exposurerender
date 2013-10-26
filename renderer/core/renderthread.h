@@ -25,12 +25,8 @@ public slots:
 	void OnRender();
 
 public:
-	HostBuffer2D<ColorRGBuc>	Estimate;
 	QSettings 					Settings;
 	QTimer						RenderTimer;
 	QHysteresis					AvgFps;
-	float						Position[3];
-	float						FocalPoint[3];
-	float						ViewUp[3];
-	ExposureRender::Renderer	Renderer;
+	ExposureRender::Camera		Camera;
 };

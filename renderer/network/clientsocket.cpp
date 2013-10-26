@@ -21,7 +21,6 @@ QClientSocket::QClientSocket(QRenderer* Renderer, QObject* Parent /*= 0*/) :
 
 	this->GpuJpegEncoder.Initialize(640, 480, 3);
 
-	this->Renderer->Estimate.Resize(Vec2i(640, 480));
 	this->Renderer->Start();
 
 	this->ImageTimer.start(1000.0f / this->Settings.value("network/sendimagefps ", 30).toInt());
@@ -32,17 +31,25 @@ void QClientSocket::OnData(const QString& Action, QDataStream& DataStream)
 {
 	if (Action == "CAMERA")
 	{
-		DataStream >> this->Renderer->Position[0];
-		DataStream >> this->Renderer->Position[1];
-		DataStream >> this->Renderer->Position[2];
+		float Position[3], FocalPoint[3], ViewUp[3];
 
-		DataStream >> this->Renderer->FocalPoint[0];
-		DataStream >> this->Renderer->FocalPoint[1];
-		DataStream >> this->Renderer->FocalPoint[2];
+		DataStream >> Position[0];
+		DataStream >> Position[1];
+		DataStream >> Position[2];
 
-		DataStream >> this->Renderer->ViewUp[0];
-		DataStream >> this->Renderer->ViewUp[1];
-		DataStream >> this->Renderer->ViewUp[2];
+		DataStream >> FocalPoint[0];
+		DataStream >> FocalPoint[1];
+		DataStream >> FocalPoint[2];
+
+		DataStream >> ViewUp[0];
+		DataStream >> ViewUp[1];
+		DataStream >> ViewUp[2];
+
+		this->Renderer->Camera.SetPos(Vec3f(Position));
+		this->Renderer->Camera.SetTarget(Vec3f(FocalPoint));
+		this->Renderer->Camera.SetUp(Vec3f(ViewUp));
+
+		this->Renderer->Camera.GetFilm().Restart();
 	}
 
 	if (Action == "IMAGE_SIZE")
@@ -54,7 +61,7 @@ void QClientSocket::OnData(const QString& Action, QDataStream& DataStream)
 			
 		qDebug() << "Image size:" << ImageSize[0] << "x" << ImageSize[1];
 
-		this->Renderer->Estimate.Resize(Vec2i(ImageSize[0], ImageSize[1]));
+		this->Renderer->Camera.GetFilm().Resize(Vec2i(ImageSize[0], ImageSize[1]));
 
 		this->GpuJpegEncoder.Initialize(ImageSize[0], ImageSize[1], 3);
 
@@ -70,7 +77,7 @@ void QClientSocket::OnSendImage()
 
 	QByteArray ImageBytes;
 	
-	this->GpuJpegEncoder.Encode((unsigned char*)this->Renderer->Estimate.GetData());
+	this->GpuJpegEncoder.Encode((unsigned char*)this->Renderer->Camera.GetFilm().GetHostRunningEstimate().GetData());
 
 	int CompressedImageSize = 0;
 	unsigned char* CompressedImage = this->GpuJpegEncoder.GetCompressedImage(CompressedImageSize);

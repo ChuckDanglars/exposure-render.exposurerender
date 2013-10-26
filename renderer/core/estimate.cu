@@ -19,8 +19,6 @@ KERNEL void KrnlEstimate(Camera* Camera)
 	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
 		return;
 
-	int PID = Y * Camera->GetFilm().GetWidth() + X;
-
 	/*
 	Halton1D H(2, blockIdx.x);
 

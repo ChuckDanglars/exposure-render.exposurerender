@@ -17,7 +17,13 @@ KERNEL void KrnlAccumulate(Camera* Camera)
 	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
 		return;
 
-	int PID = Y * Camera->GetFilm().GetWidth() + X;
+	CudaBuffer2D<ColorRGBAuc>& Estimate		= Camera->GetFilm().GetIterationEstimateLDR();
+	CudaBuffer2D<ColorRGBAul>& Accumulate	= Camera->GetFilm().GetAccumulatedEstimate();
+
+	Accumulate(X, Y)[0] += Estimate(X, Y)[0];
+	Accumulate(X, Y)[1] += Estimate(X, Y)[1];
+	Accumulate(X, Y)[2] += Estimate(X, Y)[2];
+	Accumulate(X, Y)[3] += Estimate(X, Y)[3];
 }
 
 void Accumulate(Camera& HostCamera)

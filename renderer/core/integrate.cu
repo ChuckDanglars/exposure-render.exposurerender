@@ -17,7 +17,11 @@ KERNEL void KrnlIntegrate(Camera* Camera)
 	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
 		return;
 
-	int PID = Y * Camera->GetFilm().GetWidth() + X;
+	CudaBuffer2D<ColorRGBAul>& AccumulatedEstimate	= Camera->GetFilm().GetAccumulatedEstimate();
+	CudaBuffer2D<ColorRGBuc>& CudaRunningEstimate	= Camera->GetFilm().GetCudaRunningEstimate();
+
+	for (int c = 0; c < 3; c++)
+		CudaRunningEstimate(X, Y)[c] = (unsigned char)((float)AccumulatedEstimate(X, Y)[c] / (float)Camera->GetFilm().GetNoEstimates());
 }
 
 void Integrate(Camera& HostCamera)
@@ -36,6 +40,8 @@ void Integrate(Camera& HostCamera)
 	Cuda::HandleCudaError(cudaGetLastError(), "Integrate");
 
 	Cuda::HandleCudaError(cudaFree(DevCamera));
+
+	Cuda::HandleCudaError(cudaMemcpy(HostCamera.GetFilm().GetHostRunningEstimate().GetData(), HostCamera.GetFilm().GetCudaRunningEstimate().GetData(), HostCamera.GetFilm().GetCudaRunningEstimate().GetNoBytes(), cudaMemcpyDeviceToHost));
 }
 
 }

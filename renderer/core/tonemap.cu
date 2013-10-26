@@ -17,14 +17,12 @@ KERNEL void KrnlToneMap(Camera* Camera)
 	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
 		return;
 
-	int PID = Y * Camera->GetFilm().GetWidth() + X;
-
 	CudaBuffer2D<ColorXYZAf>& IterationEstimateHDR 		= Camera->GetFilm().GetIterationEstimateHDR();
 	CudaBuffer2D<ColorRGBAuc>& IterationEstimateLDR		= Camera->GetFilm().GetIterationEstimateLDR();
 
 	ColorXYZAf RunningEstimateXYZ = IterationEstimateHDR(X, Y);
 
-	RunningEstimateXYZ.ToneMap(1.0f);
+	RunningEstimateXYZ.ToneMap(0.1f);
 	
 	IterationEstimateLDR.Set(X, Y, ColorRGBAuc::FromXYZAf(RunningEstimateXYZ.D));
 }

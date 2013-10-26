@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core\kernel.cuh"
 #include "core\camera.h"
 
 namespace ExposureRender

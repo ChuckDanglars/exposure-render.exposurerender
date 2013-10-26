@@ -12,13 +12,14 @@ namespace ExposureRender
 
 void Render(Camera& HostCamera)
 {
-	
+	if (HostCamera.GetFilm().GetNoEstimates() == 1)
+		HostCamera.GetFilm().GetAccumulatedEstimate().Reset();
+
 	Estimate(HostCamera);
 	ToneMap(HostCamera);
-	Filter(HostCamera);/*
+	Filter(HostCamera);
 	Accumulate(HostCamera);
 	Integrate(HostCamera);
-	*/
 }
 
 }
