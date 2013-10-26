@@ -85,7 +85,7 @@ void QServer::OnCombineEstimates()
 
 	for (int c = 0; c < this->Connections.size(); c++)
 	{
-		if (!this->Connections[c]->isInactive())
+		if (this->Connections[c]->state() == QAbstractSocket::ConnectedState)
 		{
 			Estimates[c] = (unsigned char*)this->Connections[c]->Estimate.GetData();
 			NoEstimates++;

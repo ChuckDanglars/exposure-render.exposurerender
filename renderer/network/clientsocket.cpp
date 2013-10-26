@@ -45,11 +45,11 @@ void QClientSocket::OnData(const QString& Action, QDataStream& DataStream)
 		DataStream >> ViewUp[1];
 		DataStream >> ViewUp[2];
 
-		this->Renderer->Camera.SetPos(Vec3f(Position));
-		this->Renderer->Camera.SetTarget(Vec3f(FocalPoint));
-		this->Renderer->Camera.SetUp(Vec3f(ViewUp));
-
-		this->Renderer->Camera.GetFilm().Restart();
+		this->Renderer->Renderer.Camera.SetPos(Vec3f(Position));
+		this->Renderer->Renderer.Camera.SetTarget(Vec3f(FocalPoint));
+		this->Renderer->Renderer.Camera.SetUp(Vec3f(ViewUp));
+		
+		this->Renderer->Renderer.Camera.GetFilm().Restart();
 	}
 
 	if (Action == "IMAGE_SIZE")
@@ -61,7 +61,7 @@ void QClientSocket::OnData(const QString& Action, QDataStream& DataStream)
 			
 		qDebug() << "Image size:" << ImageSize[0] << "x" << ImageSize[1];
 
-		this->Renderer->Camera.GetFilm().Resize(Vec2i(ImageSize[0], ImageSize[1]));
+		this->Renderer->Renderer.Camera.GetFilm().Resize(Vec2i(ImageSize[0], ImageSize[1]));
 
 		this->GpuJpegEncoder.Initialize(ImageSize[0], ImageSize[1], 3);
 
@@ -77,7 +77,7 @@ void QClientSocket::OnSendImage()
 
 	QByteArray ImageBytes;
 	
-	this->GpuJpegEncoder.Encode((unsigned char*)this->Renderer->Camera.GetFilm().GetHostRunningEstimate().GetData());
+	this->GpuJpegEncoder.Encode((unsigned char*)this->Renderer->Renderer.Camera.GetFilm().GetHostRunningEstimate().GetData());
 
 	int CompressedImageSize = 0;
 	unsigned char* CompressedImage = this->GpuJpegEncoder.GetCompressedImage(CompressedImageSize);

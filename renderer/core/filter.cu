@@ -97,10 +97,10 @@ KERNEL void KrnlGaussianFilterVertical(Renderer* Renderer)
 		Output(X, Y) = Input(X, Y);
 }
 
-void Filter(dim3 Grid, dim3 Block, Renderer* HostRenderer, Renderer* DevRenderer)
+void Filter(Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	KrnlGaussianFilterHorizontal<<<Grid, Block>>>(DevRenderer);
-	KrnlGaussianFilterVertical<<<Grid, Block>>>(DevRenderer);
+	KrnlGaussianFilterHorizontal<<<HostRenderer->Camera.GetFilm().Grid, HostRenderer->Camera.GetFilm().Block>>>(DevRenderer);
+	KrnlGaussianFilterVertical<<<HostRenderer->Camera.GetFilm().Grid, HostRenderer->Camera.GetFilm().Block>>>(DevRenderer);
 
 	cudaThreadSynchronize();
 

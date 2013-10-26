@@ -23,15 +23,11 @@ KERNEL void KrnlIntegrate(Renderer* Renderer)
 		CudaRunningEstimate(X, Y)[c] = (unsigned char)((float)AccumulatedEstimate(X, Y)[c] / (float)Film.GetNoEstimates());
 }
 
-void Integrate(dim3 Grid, dim3 Block, Renderer* HostRenderer, Renderer* DevRenderer)
+void Integrate(Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	KrnlIntegrate<<<Grid, Block>>>(DevRenderer);
+	KrnlIntegrate<<<HostRenderer->Camera.GetFilm().Grid, HostRenderer->Camera.GetFilm().Block>>>(DevRenderer);
 	cudaThreadSynchronize();
 	Cuda::HandleCudaError(cudaGetLastError(), "Integrate");
-
-	Cuda::HandleCudaError(cudaFree(DevRenderer));
-
-	Cuda::HandleCudaError(cudaMemcpy(HostRenderer->Camera.GetFilm().GetHostRunningEstimate().GetData(), HostRenderer->Camera.GetFilm().GetCudaRunningEstimate().GetData(), HostRenderer->Camera.GetFilm().GetCudaRunningEstimate().GetNoBytes(), cudaMemcpyDeviceToHost));
 }
 
 }

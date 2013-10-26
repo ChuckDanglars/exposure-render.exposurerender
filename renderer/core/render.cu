@@ -11,10 +11,6 @@
 namespace ExposureRender
 {
 
-#define KRNL_BLOCK_W		8
-#define KRNL_BLOCK_H		8
-#define KRNL_BLOCK_SIZE		KRNL_BLOCK_W * KRNL_BLOCK_H
-
 void Render(Renderer* HostRenderer)
 {
 	Film& Film = HostRenderer->Camera.GetFilm();
@@ -27,22 +23,22 @@ void Render(Renderer* HostRenderer)
 		Film.GetRandomSeeds2().FromHost(Film.GetHostRandomSeeds2().GetData());
 	}
 
-	const dim3 Block(KRNL_BLOCK_W, KRNL_BLOCK_H);
-	const dim3 Grid((int)ceilf((float)Film.GetWidth() / (float)Block.x), (int)ceilf((float)Film.GetHeight() / (float)Block.y));
-
 	Renderer* DevRenderer = 0;
 
 	Cuda::HandleCudaError(cudaMalloc((void**)&DevRenderer, sizeof(Renderer)));
-
 	Cuda::HandleCudaError(cudaMemcpy(DevRenderer, HostRenderer, sizeof(Renderer), cudaMemcpyHostToDevice));
 
-	Estimate(Grid, Block, HostRenderer, DevRenderer);
-	ToneMap(Grid, Block, HostRenderer, DevRenderer);
-	Filter(Grid, Block, HostRenderer, DevRenderer);
-	Accumulate(Grid, Block, HostRenderer, DevRenderer);
-	Integrate(Grid, Block, HostRenderer, DevRenderer);
+	Estimate(HostRenderer, DevRenderer);
+	ToneMap(HostRenderer, DevRenderer);
+	Filter(HostRenderer, DevRenderer);
+	Accumulate(HostRenderer, DevRenderer);
+	Integrate(HostRenderer, DevRenderer);
 
 	Cuda::HandleCudaError(cudaFree(DevRenderer));
+
+	Film.IncrementNoEstimates();
+
+	Cuda::HandleCudaError(cudaMemcpy(Film.GetHostRunningEstimate().GetData(), Film.GetCudaRunningEstimate().GetData(), Film.GetCudaRunningEstimate().GetNoBytes(), cudaMemcpyDeviceToHost));
 }
 
 }

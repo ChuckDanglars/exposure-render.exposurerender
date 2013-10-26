@@ -2,11 +2,11 @@
 
 #include "core\kernel.cuh"
 
-class Renderer;
-
 namespace ExposureRender
 {
 
-extern "C" void Accumulate(dim3 Grid, dim3 Block, Renderer* HostRenderer, Renderer* DevRenderer);
+class Renderer;
+
+extern "C" void Accumulate(Renderer* HostRenderer, Renderer* DevRenderer);
 
 }

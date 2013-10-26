@@ -51,9 +51,9 @@ KERNEL void KrnlEstimate(Renderer* Renderer)
 	*/
 }
 
-void Estimate(dim3 Grid, dim3 Block, Renderer* HostRenderer, Renderer* DevRenderer)
+void Estimate(Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	KrnlEstimate<<<Grid, Block>>>(DevRenderer);
+	KrnlEstimate<<<HostRenderer->Camera.GetFilm().Grid, HostRenderer->Camera.GetFilm().Block>>>(DevRenderer);
 	cudaThreadSynchronize();
 	Cuda::HandleCudaError(cudaGetLastError(), "Estimate");
 }

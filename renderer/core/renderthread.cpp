@@ -18,6 +18,9 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 	Renderer()
 {
 	connect(&this->RenderTimer, SIGNAL(timeout()), this, SLOT(OnRender()));
+
+	this->Renderer.Camera.GetFilm().Block.x	= Settings.value("cuda/blockwidth", 8).toInt();
+	this->Renderer.Camera.GetFilm().Block.y	= Settings.value("cuda/blockheight", 8).toInt();
 }
 
 void QRenderer::Start()
@@ -34,9 +37,7 @@ void QRenderer::OnRender()
 	
 	const clock_t Begin = clock();
 	
-	ExposureRender::Render(this->Renderer.Camera);
-
-	this->Renderer.Camera.GetFilm().IncrementNoEstimates();
+	ExposureRender::Render(&this->Renderer);
 
 	const clock_t End = clock();
 

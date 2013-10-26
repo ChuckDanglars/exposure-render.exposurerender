@@ -1,9 +1,9 @@
 #pragma once
 
-class Renderer;
-
 namespace ExposureRender
 {
+
+class Renderer;
 
 extern "C" void Render(Renderer* HostRenderer);
 

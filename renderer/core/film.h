@@ -74,6 +74,9 @@ public:
 		
 		this->RandomSeeds1.FromHost(this->HostRandomSeeds1.GetData());
 		this->RandomSeeds2.FromHost(this->HostRandomSeeds2.GetData());
+
+		this->Grid.x = (int)ceilf((float)this->Resolution[0] / (float)this->Block.x);
+		this->Grid.y = (int)ceilf((float)this->Resolution[1] / (float)this->Block.y);
 	}
 
 	/*! Restarts the mc algorithm */
@@ -216,6 +219,9 @@ public:
 	{
 		this->NoEstimates++;
 	}
+
+	dim3							Block;								/*! Cuda thread block size */
+	dim3							Grid;								/*! Cuda launch grid size */
 
 protected:
 	Vec2i							Resolution;							/*! Resolution of the frame buffer */

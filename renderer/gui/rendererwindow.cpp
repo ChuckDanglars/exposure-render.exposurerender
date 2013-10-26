@@ -1,6 +1,7 @@
 
 #include "rendererwindow.h"
 #include "core\renderthread.h"
+#include "core\renderer.h"
 
 #include <QtGui>
 
@@ -27,7 +28,7 @@ QRendererWindow::~QRendererWindow()
 
 void QRendererWindow::OnTimer()
 {
-	this->RenderOutputWidget->SetImage(this->Renderer->Camera.GetFilm().GetHostRunningEstimate());
+	this->RenderOutputWidget->SetImage(this->Renderer->Renderer.Camera.GetFilm().GetHostRunningEstimate());
 }
 
 void QRendererWindow::CreateStatusBar()
