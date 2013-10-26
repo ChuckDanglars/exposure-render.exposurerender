@@ -13,9 +13,9 @@ namespace ExposureRender
 void Render(Camera& HostCamera)
 {
 	
-	Estimate(HostCamera);/*
+	Estimate(HostCamera);
 	ToneMap(HostCamera);
-	Filter(HostCamera);
+	Filter(HostCamera);/*
 	Accumulate(HostCamera);
 	Integrate(HostCamera);
 	*/
