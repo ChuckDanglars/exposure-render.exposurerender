@@ -191,6 +191,15 @@ public:
 	}
 	
 protected:
+	/*! Set data at given location in the array
+		@param[in] ID Index
+	*/
+	HOST_DEVICE void SetAt(const int& ID, const T& Value)
+	{
+		this->Data[ID] = Value;
+	}
+
+protected:
 	Enums::FilterMode			FilterMode;						/*! Type of filtering  */
 	Enums::AddressMode			AddressMode;					/*! Type of addressing  */
 	T*							Data;							/*! Pointer to raw data on host/device */

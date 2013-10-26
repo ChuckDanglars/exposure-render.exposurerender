@@ -106,6 +106,17 @@ public:
 				return T();
 		}
 	}
+
+	/*! Set value at specified location
+		@param[in] X Position
+		@param[in] Y Position
+		@param[in] Value Value to set
+	*/
+	HOST_DEVICE void Set(const int& X, const int& Y, const T& Value)
+	{
+		const Vec2i ClampedXY(Clamp(X, 0, this->Resolution[0] - 1), Clamp(Y, 0, this->Resolution[1] - 1));
+		this->SetAt(ClampedXY[1] * this->Resolution[0] + ClampedXY[0], Value);
+	}
 };
 
 }

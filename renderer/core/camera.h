@@ -35,8 +35,8 @@ public:
 		Up(0.0f, 1.0f, 0.0f),
 		FocusMode(Enums::AutoFocus),
 		FocusUV(0.5f),
-		FocalDistance(0.0f),
-		ApertureShape(Enums::Polygon),
+		FocalDistance(10.0f),
+		ApertureShape(Enums::Circular),
 		ApertureSize(0.0f),
 		NoApertureBlades(6),
 		ApertureAngle(0.0f),
@@ -58,12 +58,12 @@ public:
 		@param[in] UV Position on the film plane
 		@param[in] RNG Random number generator 
 	*/
-	DEVICE void Sample(Ray& R, const Vec2i& UV)//, RNG& RNG)
+	DEVICE void Sample(Ray& R, const Vec2i& UV, RNG& RNG)
 	{
 		Vec2f ScreenPoint;
 
-		R.ImageUV[0] = UV[0];// + RNG.Get1();
-		R.ImageUV[1] = UV[1];// + RNG.Get1();
+		R.ImageUV[0] = UV[0] + RNG.Get1();
+		R.ImageUV[1] = UV[1] + RNG.Get1();
 
 		ScreenPoint[0] = this->Screen[0][0] + (this->InvScreen[0] * R.ImageUV[0]);
 		ScreenPoint[1] = this->Screen[1][0] + (this->InvScreen[1] * R.ImageUV[1]);
@@ -73,7 +73,6 @@ public:
 		R.MinT	= this->ClipNear;
 		R.MaxT	= this->ClipFar;
 		
-		/*
 		if (this->ApertureSize != 0.0f)
 		{
 			Vec2f LensUV;
@@ -108,7 +107,6 @@ public:
 			R.O += LI;
 			R.D = Normalize(R.D * this->FocalDistance - LI);
 		}
-		*/
 	}
 
 	/*! Projects a point \a P in world space onto the camera film plane

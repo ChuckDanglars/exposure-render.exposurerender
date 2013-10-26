@@ -40,9 +40,18 @@ void QRenderer::Start()
 
 void QRenderer::OnRender()
 {
+	Camera Cam;
+
+	Cam.SetPos(Vec3f(Position));
+	Cam.SetTarget(Vec3f(FocalPoint));
+	Cam.SetUp(Vec3f(ViewUp));
+	Cam.SetApertureSize(0.005f);
+
+	Cam.Update();
+
 	const clock_t Begin = clock();
 
-	ExposureRender::Render(this->Position, this->FocalPoint, this->ViewUp, this->Estimate.Width(), this->Estimate.Height(), (unsigned char*)this->Estimate.GetData());
+	//ExposureRender::Render(Cam);
 
 	const clock_t End = clock();
 

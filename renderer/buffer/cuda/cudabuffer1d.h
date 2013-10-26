@@ -88,6 +88,15 @@ public:
 				return T();
 		}
 	}
+
+	/*! Set value at specified location
+		@param[in] X Position
+		@param[in] Value Value to set
+	*/
+	HOST_DEVICE void Set(const int& X, const T& Value)
+	{
+		this->SetAt(X, Value);
+	}
 };
 
 }

@@ -104,6 +104,8 @@ public:
 		const int NoBytes = this->GetNoBytes();
 
 		this->Data = (T*)malloc(NoBytes);
+
+		memset(this->Data, 0, NoBytes);
 		
 		this->Reset();
 	}

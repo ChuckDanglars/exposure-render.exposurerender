@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "intersection.h"
-#include "surfacesample.h"
-#include "geometry.h"
+#include "geometry\intersection.h"
+#include "geometry\surfacesample.h"
+#include "geometry\geometry.h"
 
 namespace ExposureRender
 {

@@ -100,6 +100,16 @@ public:
 				return T();
 		}
 	}
+
+	/*! Set value at specified location
+		@param[in] XYZ Position
+		@param[in] Value Value to set
+	*/
+	HOST_DEVICE void Set(const int& X, const int& Y, const int& Z, const T& Value)
+	{
+		const Vec3i ClampedXYZ(Clamp(XYZ[0], 0, this->Resolution[0] - 1), Clamp(XYZ[1], 0, this->Resolution[1] - 1), Clamp(XYZ[2], 0, this->Resolution[2] - 1));
+		this->SetAt(ClampedXYZ[2] * this->Resolution[0] * this->Resolution[1] + ClampedXYZ[1] * this->Resolution[0] + ClampedXYZ[0], Value);
+	}
 };
 
 }

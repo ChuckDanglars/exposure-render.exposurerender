@@ -32,9 +32,11 @@ public:
 	*/
 	HOST Film(const Vec2i& Resolution) :
 		Resolution(),
-		IterationEstimate(),
+		IterationEstimateHDR(),
+		IterationEstimateLDR(),
 		AccumulatedEstimate(),
-		RunningEstimate(),
+		CudaRunningEstimate(),
+		HostRunningEstimate(),
 		RandomSeeds1(),
 		RandomSeeds2(),
 		HostRandomSeeds1(),
@@ -53,9 +55,11 @@ public:
 		
 		this->Resolution = Resolution;
 
-		this->IterationEstimate.Resize(this->Resolution);
+		this->IterationEstimateHDR.Resize(this->Resolution);
+		this->IterationEstimateLDR.Resize(this->Resolution);
 		this->AccumulatedEstimate.Resize(this->Resolution);
-		this->RunningEstimate.Resize(this->Resolution);
+		this->CudaRunningEstimate.Resize(this->Resolution);
+		this->HostRunningEstimate.Resize(this->Resolution);
 		this->RandomSeeds1.Resize(this->Resolution);
 		this->RandomSeeds2.Resize(this->Resolution);
 		this->HostRandomSeeds1.Resize(this->Resolution);
@@ -73,12 +77,36 @@ public:
 		return this->Resolution;
 	}
 
-	/*! Returns the iteration estimate
-		@return Iteration estimate
+	/*! Returns the film width
+		@return Film width
 	*/
-	HOST_DEVICE CudaBuffer2D<ColorXYZAf>& GetIterationEstimate()
+	HOST_DEVICE int GetWidth() const
 	{
-		return this->IterationEstimate;
+		return this->Resolution[0];
+	}
+
+	/*! Returns the film height
+		@return Film height
+	*/
+	HOST_DEVICE int GetHeight() const
+	{
+		return this->Resolution[1];
+	}
+
+	/*! Returns the hdr iteration estimate
+		@return HDR iteration estimate
+	*/
+	HOST_DEVICE CudaBuffer2D<ColorXYZAf>& GetIterationEstimateHDR()
+	{
+		return this->IterationEstimateHDR;
+	}
+
+	/*! Returns the ldr iteration estimate
+		@return LDR iteration estimate
+	*/
+	HOST_DEVICE CudaBuffer2D<ColorRGBAuc>& GetIterationEstimateLDR()
+	{
+		return this->IterationEstimateLDR;
 	}
 
 	/*! Returns the accumulated estimate
@@ -89,12 +117,20 @@ public:
 		return this->AccumulatedEstimate;
 	}
 
-	/*! Returns the running estimate
-		@return Running estimate
+	/*! Returns the cuda running estimate
+		@return Cuda running estimate
 	*/
-	HOST_DEVICE CudaBuffer2D<ColorRGBAuc>& GetRunningEstimate()
+	HOST_DEVICE CudaBuffer2D<ColorRGBAuc>& GetCudaRunningEstimate()
 	{
-		return this->RunningEstimate;
+		return this->CudaRunningEstimate;
+	}
+
+	/*! Returns the host running estimate
+		@return Host running estimate
+	*/
+	HOST_DEVICE HostBuffer2D<ColorRGBAuc>& GetHostRunningEstimate()
+	{
+		return this->HostRunningEstimate;
 	}
 
 	/*! Returns the first random seeds buffer
@@ -140,9 +176,11 @@ public:
 
 protected:
 	Vec2i							Resolution;					/*! Resolution of the frame buffer */
-	CudaBuffer2D<ColorXYZAf>		IterationEstimate;			/*! Estimate from a single iteration of the mc algorithm */
+	CudaBuffer2D<ColorXYZAf>		IterationEstimateHDR;		/*! High dynamic range estimate from a single iteration of the mc algorithm */
+	CudaBuffer2D<ColorRGBAuc>		IterationEstimateLDR;		/*! Low dynamic range (tone mapped) estimate from a single iteration of the mc algorithm */
 	CudaBuffer2D<ColorRGBAul>		AccumulatedEstimate;		/*! Accumulation buffer */
-	CudaBuffer2D<ColorRGBAuc>		RunningEstimate;			/*! Integrated estimate */
+	CudaBuffer2D<ColorRGBAuc>		CudaRunningEstimate;		/*! Integrated estimate in cuda memory space*/
+	HostBuffer2D<ColorRGBAuc>		HostRunningEstimate;		/*! Integrated estimate in host memory space */
 	CudaRandomSeedBuffer2D			RandomSeeds1;				/*! First random seed buffer */
 	CudaRandomSeedBuffer2D			RandomSeeds2;				/*! Second random seed buffer */
 	HostRandomSeedBuffer2D			HostRandomSeeds1;			/*! First host random seed buffer */

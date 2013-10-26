@@ -5,6 +5,6 @@
 namespace ExposureRender
 {
 
-extern "C" void Render(Camera& Camera);
+extern "C" void Accumulate(Camera& Camera);
 
 }
