@@ -27,14 +27,15 @@ int main(int argc, char **argv)
 
 	QClientSocket ClientSocket(&Renderer, &Application);
 	
-	QString HostName = Settings.value("network/host", "localhost").toString();
-	const quint16 Port = Settings.value("network/port", 6000).toInt();
+	const int Wait		= Settings.value("network/wait", "localhost").toInt();
+	QString HostName	= Settings.value("network/host", "localhost").toString();
+	const quint16 Port	= Settings.value("network/port", 6000).toInt();
 
 	qDebug() << "Connecting to" << HostName << "on port" << Port;
 
 	ClientSocket.connectToHost(HostName, Port);
 	
-	if (!ClientSocket.waitForConnected(1500))
+	if (!ClientSocket.waitForConnected(Wait))
 	{
 		qDebug() << "Unable to connect to host";
 
@@ -44,11 +45,12 @@ int main(int argc, char **argv)
 
 		ClientSocket.connectToHost(HostName, Port);
 
-		if (!ClientSocket.waitForConnected())
-			return 0;
+		if (!ClientSocket.waitForConnected(Wait))
+			qDebug() << "Not connected to host";
 	}
 
-	qDebug() << "Connected to" << HostName << "on port" << Port;
+	if (ClientSocket.isOpen())
+		qDebug() << "Connected to" << HostName << "on port" << Port;
 
 	QRendererWindow RendererWindow(&Renderer);
 	

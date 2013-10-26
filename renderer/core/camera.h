@@ -204,6 +204,14 @@ public:
 		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->Film.GetResolution()[1];
 	}
 
+	/*! Returns the film
+		@return Film
+	*/
+	HOST_DEVICE Film& GetFilm()
+	{
+		return this->Film;
+	}
+
 protected:
 	Film					Film;					/*! Film plane */
 	Vec3f					Pos;					/*! Camera position */

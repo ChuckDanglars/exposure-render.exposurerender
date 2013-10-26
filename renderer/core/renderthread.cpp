@@ -42,7 +42,7 @@ void QRenderer::OnRender()
 {
 	const clock_t Begin = clock();
 
-	ExposureRender::Render(this->Position, this->FocalPoint, this->ViewUp, this->Estimate.Width(), this->Estimate.Height(), (unsigned char*)this->Estimate.GetData());
+	// ExposureRender::Render(this->Position, this->FocalPoint, this->ViewUp, this->Estimate.Width(), this->Estimate.Height(), (unsigned char*)this->Estimate.GetData());
 
 	const clock_t End = clock();
 

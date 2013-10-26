@@ -14,8 +14,11 @@ QGpuJpegEncoder::QGpuJpegEncoder(QObject* Parent /*= 0*/) :
 
 QGpuJpegEncoder::~QGpuJpegEncoder()
 {
-	gpujpeg_image_destroy(this->CompressedImage);
-	gpujpeg_encoder_destroy(this->Encoder);
+	if (this->CompressedImage)
+		gpujpeg_image_destroy(this->CompressedImage);
+
+	if (this->Encoder)
+		gpujpeg_encoder_destroy(this->Encoder);
 }
 
 void QGpuJpegEncoder::Initialize(const unsigned int& Width, const unsigned int& Height, const unsigned int& NoComponentsPerPixel)

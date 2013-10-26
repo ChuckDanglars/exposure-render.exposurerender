@@ -47,7 +47,9 @@ KERNEL void KrnlRender(Camera* C, int Width, int Height, unsigned char* Output)
 
 	bool Intersects = B.Intersect(R, T[0], T[1]);
 
-	Output[PID * 3 + 0] = Intersects ? 255 : 0;
+	RNG& Random = C->GetFilm().GetRandomNumberGenerator(Vec2i(X, Y));
+
+	Output[PID * 3 + 0] = Random.Get1() * 255.0f;
 	Output[PID * 3 + 1] = 0;
 	Output[PID * 3 + 2] = 255;
 }
