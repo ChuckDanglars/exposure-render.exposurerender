@@ -28,5 +28,5 @@ public:
 	QSettings 					Settings;
 	QTimer						RenderTimer;
 	QHysteresis					AvgFps;
-	ExposureRender::Camera		Camera;
+	ExposureRender::Renderer	Renderer;
 };

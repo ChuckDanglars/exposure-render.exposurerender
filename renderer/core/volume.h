@@ -25,7 +25,7 @@ namespace ExposureRender
 {
 
 /*! Volume class */
-class Volume
+class EXPOSURE_RENDER_DLL Volume
 {
 public:
 	/*! Default constructor */
@@ -191,8 +191,9 @@ public:
 		return sqrtf(Sum);
 	}
 	
-	HOST_DEVICE void Create(int Size[4], unsigned short* Data)
+	HOST void Create(int Size[4], unsigned short* Data)
 	{
+		/*
 		// Allocate CUDA array in device memory
 		cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
 		
@@ -229,7 +230,7 @@ public:
 		// Create texture object
 		cudaTextureObject_t texObj = 0;
 		cudaCreateTextureObject(&texObj, &resDesc, &TextureDescription, NULL);
-		/**/
+		*/
 	}
 
 	cudaTextureObject_t				TextureObject;

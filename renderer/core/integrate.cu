@@ -1,47 +1,37 @@
 
 #include "integrate.cuh"
 #include "core\cudawrapper.h"
+#include "core\renderer.h"
 
 namespace ExposureRender
 {
 
-#define KRNL_ESTIMATE_BLOCK_W		8
-#define KRNL_ESTIMATE_BLOCK_H		8
-#define KRNL_ESTIMATE_BLOCK_SIZE	KRNL_ESTIMATE_BLOCK_W * KRNL_ESTIMATE_BLOCK_H
-
-KERNEL void KrnlIntegrate(Camera* Camera)
+KERNEL void KrnlIntegrate(Renderer* Renderer)
 {
 	const int X 	= blockIdx.x * blockDim.x + threadIdx.x;
 	const int Y		= blockIdx.y * blockDim.y + threadIdx.y;
 
-	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
+	Film& Film = Renderer->Camera.GetFilm();
+
+	if (X >= Film.GetWidth() || Y >= Film.GetHeight())
 		return;
 
-	CudaBuffer2D<ColorRGBAul>& AccumulatedEstimate	= Camera->GetFilm().GetAccumulatedEstimate();
-	CudaBuffer2D<ColorRGBuc>& CudaRunningEstimate	= Camera->GetFilm().GetCudaRunningEstimate();
+	CudaBuffer2D<ColorRGBAul>& AccumulatedEstimate	= Film.GetAccumulatedEstimate();
+	CudaBuffer2D<ColorRGBuc>& CudaRunningEstimate	= Film.GetCudaRunningEstimate();
 
 	for (int c = 0; c < 3; c++)
-		CudaRunningEstimate(X, Y)[c] = (unsigned char)((float)AccumulatedEstimate(X, Y)[c] / (float)Camera->GetFilm().GetNoEstimates());
+		CudaRunningEstimate(X, Y)[c] = (unsigned char)((float)AccumulatedEstimate(X, Y)[c] / (float)Film.GetNoEstimates());
 }
 
-void Integrate(Camera& HostCamera)
+void Integrate(dim3 Grid, dim3 Block, Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	const dim3 KernelBlock(KRNL_ESTIMATE_BLOCK_W, KRNL_ESTIMATE_BLOCK_H);
-	const dim3 KernelGrid((int)ceilf((float)HostCamera.GetFilm().GetWidth() / (float)KernelBlock.x), (int)ceilf((float)HostCamera.GetFilm().GetHeight() / (float)KernelBlock.y));
-
-	Camera* DevCamera = 0;
-
-	Cuda::HandleCudaError(cudaMalloc((void**)&DevCamera, sizeof(Camera)));
-
-	Cuda::HandleCudaError(cudaMemcpy(DevCamera, &HostCamera, sizeof(Camera), cudaMemcpyHostToDevice));
-
-	KrnlIntegrate<<<KernelGrid, KernelBlock>>>(DevCamera);
+	KrnlIntegrate<<<Grid, Block>>>(DevRenderer);
 	cudaThreadSynchronize();
 	Cuda::HandleCudaError(cudaGetLastError(), "Integrate");
 
-	Cuda::HandleCudaError(cudaFree(DevCamera));
+	Cuda::HandleCudaError(cudaFree(DevRenderer));
 
-	Cuda::HandleCudaError(cudaMemcpy(HostCamera.GetFilm().GetHostRunningEstimate().GetData(), HostCamera.GetFilm().GetCudaRunningEstimate().GetData(), HostCamera.GetFilm().GetCudaRunningEstimate().GetNoBytes(), cudaMemcpyDeviceToHost));
+	Cuda::HandleCudaError(cudaMemcpy(HostRenderer->Camera.GetFilm().GetHostRunningEstimate().GetData(), HostRenderer->Camera.GetFilm().GetCudaRunningEstimate().GetData(), HostRenderer->Camera.GetFilm().GetCudaRunningEstimate().GetNoBytes(), cudaMemcpyDeviceToHost));
 }
 
 }

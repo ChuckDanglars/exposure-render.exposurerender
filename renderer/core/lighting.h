@@ -22,7 +22,7 @@ namespace ExposureRender
 {
 
 /*! Lighting class */
-class Lighting
+class EXPOSURE_RENDER_DLL Lighting
 {
 public:
 	/*! Default constructor */

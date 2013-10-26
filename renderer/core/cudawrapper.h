@@ -17,6 +17,7 @@
 #pragma once
 
 #include "core\exception.h"
+#include "vector\vector.h"
 
 #ifdef __CUDACC__
 

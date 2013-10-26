@@ -17,6 +17,7 @@
 #pragma once
 
 #include "core\utilities.h"
+#include "core\getset.h"
 
 namespace ExposureRender
 {

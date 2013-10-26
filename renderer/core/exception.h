@@ -20,6 +20,8 @@
 #include "core\enums.h"
 #include "core\getset.h"
 
+#include <stdio.h>
+
 namespace ExposureRender
 {
 

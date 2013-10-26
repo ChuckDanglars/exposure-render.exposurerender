@@ -17,8 +17,8 @@
 #pragma once
 
 #include "core\film.h"
-#include "geometry\montecarlo.h"
 #include "core\rng.h"
+#include "geometry\montecarlo.h"
 
 namespace ExposureRender
 {

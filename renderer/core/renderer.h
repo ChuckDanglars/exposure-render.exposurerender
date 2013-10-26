@@ -24,22 +24,20 @@ namespace ExposureRender
 {
 
 /*! Renderer class */
-class Renderer
+class EXPOSURE_RENDER_DLL Renderer
 {
 public:
 	/*! Default constructor */
 	HOST Renderer() :
 		Volume(),
 		Lighting(),
-		Camera(),
-		NoEstimates(0)
+		Camera()
 	{
 	}
 	
 	Volume				Volume;						/*! Volume parameters */
 	Lighting			Lighting;					/*! Lighting parameters */
 	Camera				Camera;						/*! Camera parameters */
-	int					NoEstimates;				/*! Number of estimates rendered so far */
 };
 
 }

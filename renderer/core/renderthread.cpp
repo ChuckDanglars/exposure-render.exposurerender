@@ -15,7 +15,7 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 	Settings("renderer.ini", QSettings::IniFormat),
 	RenderTimer(),
 	AvgFps(),
-	Camera()
+	Renderer()
 {
 	connect(&this->RenderTimer, SIGNAL(timeout()), this, SLOT(OnRender()));
 }
@@ -27,16 +27,16 @@ void QRenderer::Start()
 
 void QRenderer::OnRender()
 {
-	this->Camera.SetApertureSize(0.005f);
-	this->Camera.SetFocalDistance(0.1f);
+	this->Renderer.Camera.SetApertureSize(0.005f);
+	this->Renderer.Camera.SetFocalDistance(0.1f);
 
-	this->Camera.Update();
+	this->Renderer.Camera.Update();
 	
 	const clock_t Begin = clock();
 	
-	ExposureRender::Render(this->Camera);
+	ExposureRender::Render(this->Renderer.Camera);
 
-	this->Camera.GetFilm().IncrementNoEstimates();
+	this->Renderer.Camera.GetFilm().IncrementNoEstimates();
 
 	const clock_t End = clock();
 

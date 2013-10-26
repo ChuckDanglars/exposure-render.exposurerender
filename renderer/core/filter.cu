@@ -2,24 +2,23 @@
 #include "filter.cuh"
 #include "core\cudawrapper.h"
 #include "core\utilities.h"
+#include "core\renderer.h"
 
 namespace ExposureRender
 {
 
-#define KRNL_ESTIMATE_BLOCK_W		8
-#define KRNL_ESTIMATE_BLOCK_H		8
-#define KRNL_ESTIMATE_BLOCK_SIZE	KRNL_ESTIMATE_BLOCK_W * KRNL_ESTIMATE_BLOCK_H
-
-KERNEL void KrnlGaussianFilterHorizontal(Camera* Camera)
+KERNEL void KrnlGaussianFilterHorizontal(Renderer* Renderer)
 {
 	const int X 	= blockIdx.x * blockDim.x + threadIdx.x;
 	const int Y		= blockIdx.y * blockDim.y + threadIdx.y;
 
-	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
+	Film& Film = Renderer->Camera.GetFilm();
+
+	if (X >= Film.GetWidth() || Y >= Film.GetHeight())
 		return;
 	
-	CudaBuffer2D<ColorRGBAuc>& Input	= Camera->GetFilm().GetIterationEstimateLDR();
-	CudaBuffer2D<ColorRGBAuc>& Output	= Camera->GetFilm().GetIterationEstimateTempFilterLDR();
+	CudaBuffer2D<ColorRGBAuc>& Input	= Film.GetIterationEstimateLDR();
+	CudaBuffer2D<ColorRGBAuc>& Output	= Film.GetIterationEstimateTempFilterLDR();
 
 	const int Range[2] = 
 	{
@@ -33,7 +32,7 @@ KERNEL void KrnlGaussianFilterHorizontal(Camera* Camera)
 
 	for (int x = Range[0]; x <= Range[1]; x++)
 	{
-		const float Weight = Camera->GetFilm().GetGaussianFilterWeights()[x - X];
+		const float Weight = Film.GetGaussianFilterWeights()[x - X];
 
 		Sum[0]		+= Weight * Input(x, Y)[0];
 		Sum[1]		+= Weight * Input(x, Y)[1];
@@ -53,16 +52,18 @@ KERNEL void KrnlGaussianFilterHorizontal(Camera* Camera)
 		Output(X, Y) = Input(X, Y);
 }
 
-KERNEL void KrnlGaussianFilterVertical(Camera* Camera)
+KERNEL void KrnlGaussianFilterVertical(Renderer* Renderer)
 {
 	const int X 	= blockIdx.x * blockDim.x + threadIdx.x;
 	const int Y		= blockIdx.y * blockDim.y + threadIdx.y;
 
-	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
+	Film& Film = Renderer->Camera.GetFilm();
+
+	if (X >= Film.GetWidth() || Y >= Film.GetHeight())
 		return;
 	
-	CudaBuffer2D<ColorRGBAuc>& Input	= Camera->GetFilm().GetIterationEstimateTempFilterLDR();
-	CudaBuffer2D<ColorRGBAuc>& Output	= Camera->GetFilm().GetIterationEstimateLDR();
+	CudaBuffer2D<ColorRGBAuc>& Input	= Film.GetIterationEstimateTempFilterLDR();
+	CudaBuffer2D<ColorRGBAuc>& Output	= Film.GetIterationEstimateLDR();
 
 	const int Range[2] =
 	{
@@ -76,7 +77,7 @@ KERNEL void KrnlGaussianFilterVertical(Camera* Camera)
 
 	for (int y = Range[0]; y <= Range[1]; y++)
 	{
-		const float Weight = Camera->GetFilm().GetGaussianFilterWeights()[y - Y];
+		const float Weight = Film.GetGaussianFilterWeights()[y - Y];
 
 		Sum[0]		+= Weight * Input(X, y)[0];
 		Sum[1]		+= Weight * Input(X, y)[1];
@@ -96,26 +97,14 @@ KERNEL void KrnlGaussianFilterVertical(Camera* Camera)
 		Output(X, Y) = Input(X, Y);
 }
 
-
-void Filter(Camera& HostCamera)
+void Filter(dim3 Grid, dim3 Block, Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	const dim3 KernelBlock(KRNL_ESTIMATE_BLOCK_W, KRNL_ESTIMATE_BLOCK_H);
-	const dim3 KernelGrid((int)ceilf((float)HostCamera.GetFilm().GetWidth() / (float)KernelBlock.x), (int)ceilf((float)HostCamera.GetFilm().GetHeight() / (float)KernelBlock.y));
-
-	Camera* DevCamera = 0;
-
-	Cuda::HandleCudaError(cudaMalloc((void**)&DevCamera, sizeof(Camera)));
-
-	Cuda::HandleCudaError(cudaMemcpy(DevCamera, &HostCamera, sizeof(Camera), cudaMemcpyHostToDevice));
-
-	KrnlGaussianFilterHorizontal<<<KernelGrid, KernelBlock>>>(DevCamera);
-	KrnlGaussianFilterVertical<<<KernelGrid, KernelBlock>>>(DevCamera);
+	KrnlGaussianFilterHorizontal<<<Grid, Block>>>(DevRenderer);
+	KrnlGaussianFilterVertical<<<Grid, Block>>>(DevRenderer);
 
 	cudaThreadSynchronize();
 
 	Cuda::HandleCudaError(cudaGetLastError(), "Filter");
-
-	Cuda::HandleCudaError(cudaFree(DevCamera));
 }
 
 }

@@ -2,21 +2,18 @@
 #include "estimate.cuh"
 #include "core\camera.h"
 #include "core\cudawrapper.h"
+#include "core\renderer.h"
 #include "shapes\box.h"
 
 namespace ExposureRender
 {
 
-#define KRNL_ESTIMATE_BLOCK_W		8
-#define KRNL_ESTIMATE_BLOCK_H		8
-#define KRNL_ESTIMATE_BLOCK_SIZE	KRNL_ESTIMATE_BLOCK_W * KRNL_ESTIMATE_BLOCK_H
-
-KERNEL void KrnlEstimate(Camera* Camera)
+KERNEL void KrnlEstimate(Renderer* Renderer)
 {
 	const int X 	= blockIdx.x * blockDim.x + threadIdx.x;
 	const int Y		= blockIdx.y * blockDim.y + threadIdx.y;
 
-	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
+	if (X >= Renderer->Camera.GetFilm().GetWidth() || Y >= Renderer->Camera.GetFilm().GetHeight())
 		return;
 
 	/*
@@ -33,19 +30,19 @@ KERNEL void KrnlEstimate(Camera* Camera)
 	Output[PID * 3 + 2] = Value[2] * 255.0f;
 	*/
 	
-	RNG& Random = Camera->GetFilm().GetRandomNumberGenerator(Vec2i(X, Y));
+	RNG& Random = Renderer->Camera.GetFilm().GetRandomNumberGenerator(Vec2i(X, Y));
 
 	Box B(Vec3f(0.1f));
 
 	Ray R;
 	
-	Camera->Sample(R, Vec2i(X, Y), Random);
+	Renderer->Camera.Sample(R, Vec2i(X, Y), Random);
 
 	float T[2] = { 0.0f };
 
 	bool Intersects = B.Intersect(R, T[0], T[1]);
 
-	Camera->GetFilm().GetIterationEstimateHDR().Set(X, Y, ColorXYZAf(Intersects ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f));
+	Renderer->Camera.GetFilm().GetIterationEstimateHDR().Set(X, Y, ColorXYZAf(Intersects ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f));
 
 	/*
 	Output[PID * 3 + 0] = Intersects ? 255 : 0;
@@ -54,22 +51,11 @@ KERNEL void KrnlEstimate(Camera* Camera)
 	*/
 }
 
-void Estimate(Camera& HostCamera)
+void Estimate(dim3 Grid, dim3 Block, Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	const dim3 KernelBlock(KRNL_ESTIMATE_BLOCK_W, KRNL_ESTIMATE_BLOCK_H);
-	const dim3 KernelGrid((int)ceilf((float)HostCamera.GetFilm().GetWidth() / (float)KernelBlock.x), (int)ceilf((float)HostCamera.GetFilm().GetHeight() / (float)KernelBlock.y));
-
-	Camera* DevCamera = 0;
-
-	Cuda::HandleCudaError(cudaMalloc((void**)&DevCamera, sizeof(Camera)));
-
-	Cuda::HandleCudaError(cudaMemcpy(DevCamera, &HostCamera, sizeof(Camera), cudaMemcpyHostToDevice));
-
-	KrnlEstimate<<<KernelGrid, KernelBlock>>>(DevCamera);
+	KrnlEstimate<<<Grid, Block>>>(DevRenderer);
 	cudaThreadSynchronize();
 	Cuda::HandleCudaError(cudaGetLastError(), "Estimate");
-
-	Cuda::HandleCudaError(cudaFree(DevCamera));
 }
 
 }

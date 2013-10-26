@@ -46,7 +46,7 @@ public:
 		if (!RequiresUpdate)
 			return;
 		
-		srand(time(0));
+		srand((unsigned int)time(0));
 
 		const int NoSeeds = Resolution.CumulativeProduct();
 

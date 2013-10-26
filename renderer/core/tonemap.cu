@@ -1,24 +1,23 @@
 
 #include "tonemap.cuh"
 #include "core\cudawrapper.h"
+#include "core\renderer.h"
 
 namespace ExposureRender
 {
 
-#define KRNL_ESTIMATE_BLOCK_W		8
-#define KRNL_ESTIMATE_BLOCK_H		8
-#define KRNL_ESTIMATE_BLOCK_SIZE	KRNL_ESTIMATE_BLOCK_W * KRNL_ESTIMATE_BLOCK_H
-
-KERNEL void KrnlToneMap(Camera* Camera)
+KERNEL void KrnlToneMap(Renderer* Renderer)
 {
 	const int X 	= blockIdx.x * blockDim.x + threadIdx.x;
 	const int Y		= blockIdx.y * blockDim.y + threadIdx.y;
 
-	if (X >= Camera->GetFilm().GetWidth() || Y >= Camera->GetFilm().GetHeight())
+	Film& Film = Renderer->Camera.GetFilm();
+
+	if (X >= Film.GetWidth() || Y >= Film.GetHeight())
 		return;
 
-	CudaBuffer2D<ColorXYZAf>& IterationEstimateHDR 		= Camera->GetFilm().GetIterationEstimateHDR();
-	CudaBuffer2D<ColorRGBAuc>& IterationEstimateLDR		= Camera->GetFilm().GetIterationEstimateLDR();
+	CudaBuffer2D<ColorXYZAf>& IterationEstimateHDR 		= Film.GetIterationEstimateHDR();
+	CudaBuffer2D<ColorRGBAuc>& IterationEstimateLDR		= Film.GetIterationEstimateLDR();
 
 	ColorXYZAf RunningEstimateXYZ = IterationEstimateHDR(X, Y);
 
@@ -27,22 +26,11 @@ KERNEL void KrnlToneMap(Camera* Camera)
 	IterationEstimateLDR.Set(X, Y, ColorRGBAuc::FromXYZAf(RunningEstimateXYZ.D));
 }
 
-void ToneMap(Camera& HostCamera)
+void ToneMap(dim3 Grid, dim3 Block, Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	const dim3 KernelBlock(KRNL_ESTIMATE_BLOCK_W, KRNL_ESTIMATE_BLOCK_H);
-	const dim3 KernelGrid((int)ceilf((float)HostCamera.GetFilm().GetWidth() / (float)KernelBlock.x), (int)ceilf((float)HostCamera.GetFilm().GetHeight() / (float)KernelBlock.y));
-
-	Camera* DevCamera = 0;
-
-	Cuda::HandleCudaError(cudaMalloc((void**)&DevCamera, sizeof(Camera)));
-
-	Cuda::HandleCudaError(cudaMemcpy(DevCamera, &HostCamera, sizeof(Camera), cudaMemcpyHostToDevice));
-
-	KrnlToneMap<<<KernelGrid, KernelBlock>>>(DevCamera);
+	KrnlToneMap<<<Grid, Block>>>(DevRenderer);
 	cudaThreadSynchronize();
 	Cuda::HandleCudaError(cudaGetLastError(), "Tone map");
-
-	Cuda::HandleCudaError(cudaFree(DevCamera));
 }
 
 }

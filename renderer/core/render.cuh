@@ -1,10 +1,10 @@
 #pragma once
 
-#include "core\camera.h"
+class Renderer;
 
 namespace ExposureRender
 {
 
-extern "C" void Render(Camera& Camera);
+extern "C" void Render(Renderer* HostRenderer);
 
 }
