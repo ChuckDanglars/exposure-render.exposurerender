@@ -12,8 +12,15 @@ namespace ExposureRender
 
 void Render(Camera& HostCamera)
 {
-	if (HostCamera.GetFilm().GetNoEstimates() == 1)
-		HostCamera.GetFilm().GetAccumulatedEstimate().Reset();
+	Film& Film = HostCamera.GetFilm();
+
+	if (Film.GetNoEstimates() == 1)
+	{
+		Film.GetAccumulatedEstimate().Reset();
+
+		Film.GetRandomSeeds1().FromHost(Film.GetHostRandomSeeds1().GetData());
+		Film.GetRandomSeeds2().FromHost(Film.GetHostRandomSeeds2().GetData());
+	}
 
 	Estimate(HostCamera);
 	ToneMap(HostCamera);

@@ -159,7 +159,7 @@ void QRenderOutputWidget::Pan(float DownDegrees, float RightDegrees)
 
 	const float Length = (FocalPoint - Position).Length();
 
-	const unsigned int WindowWidth	= this->width();
+	const unsigned int WindowWidth	= this->Image.Width();
 
 	const float U = Length * (RightDegrees / WindowWidth);
 	const float V = Length * (DownDegrees / WindowWidth);

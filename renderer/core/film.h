@@ -80,9 +80,6 @@ public:
 	HOST void Restart()
 	{
 		this->NoEstimates = 1;
-
-		this->RandomSeeds1.FromHost(this->HostRandomSeeds1.GetData());
-		this->RandomSeeds2.FromHost(this->HostRandomSeeds2.GetData());
 	}
 
 	/*! Returns the film resolution

@@ -81,11 +81,18 @@ void QServer::OnCombineEstimates()
 		return;
 
 	unsigned char* Estimates[20];
+	int NoEstimates = 0;
 
 	for (int c = 0; c < this->Connections.size(); c++)
-		Estimates[c] = (unsigned char*)this->Connections[c]->Estimate.GetData();
+	{
+		if (!this->Connections[c]->isInactive())
+		{
+			Estimates[c] = (unsigned char*)this->Connections[c]->Estimate.GetData();
+			NoEstimates++;
+		}
+	}
 
-	this->AvgCombineTime.PushValue(ExposureRender::Combine(this->Estimate.Width(), this->Estimate.Height(), Estimates, this->Connections.size(), (unsigned char*)this->Estimate.GetData()));
+	this->AvgCombineTime.PushValue(ExposureRender::Combine(this->Estimate.Width(), this->Estimate.Height(), Estimates, NoEstimates, (unsigned char*)this->Estimate.GetData()));
 
 	// qDebug() << this->AvgCombineTime.GetAverageValue();
 }

@@ -18,6 +18,8 @@
 
 #include "buffer\host\hostbuffer.h"
 
+#include <time.h>
+
 namespace ExposureRender
 {
 
@@ -44,6 +46,8 @@ public:
 		if (!RequiresUpdate)
 			return;
 		
+		srand(time(0));
+
 		const int NoSeeds = Resolution.CumulativeProduct();
 
 		if (NoSeeds < 0)
