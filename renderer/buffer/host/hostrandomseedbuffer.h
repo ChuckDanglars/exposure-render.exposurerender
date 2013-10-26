@@ -37,9 +37,11 @@ public:
 	*/
 	HOST void Resize(const Vec<int, NoDimensions>& Resolution)
 	{
+		const bool RequiresUpdate = !(this->Resolution == Resolution);
+
 		HostBuffer::Resize(Resolution);
 
-		if (this->Resolution == Resolution)
+		if (!RequiresUpdate)
 			return;
 		
 		const int NoSeeds = Resolution.CumulativeProduct();

@@ -21,6 +21,9 @@ QClientSocket::QClientSocket(QRenderer* Renderer, QObject* Parent /*= 0*/) :
 
 	// this->GpuJpegEncoder.Initialize(640, 480, 3);
 
+	this->Renderer->Estimate.Resize(Vec2i(640, 480));
+	this->Renderer->Start();
+
 	// this->ImageTimer.start(1000.0f / this->Settings.value("network/sendimagefps ", 30).toInt());
 	// this->RenderStatsTimer.start(1000.0f / this->Settings.value("network/sendrenderstatsfps ", 20).toInt());
 };

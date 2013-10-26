@@ -31,7 +31,7 @@ public:
 		@param[in] Resolution Resolution of the film plane
 	*/
 	HOST Film(const Vec2i& Resolution) :
-		Resolution(Resolution),
+		Resolution(),
 		IterationEstimate(),
 		AccumulatedEstimate(),
 		RunningEstimate(),
@@ -40,7 +40,7 @@ public:
 		HostRandomSeeds1(),
 		HostRandomSeeds2()
 	{
-		this->Resize(this->Resolution);
+		this->Resize(Resolution);
 	}
 
 	/*! Resize the film

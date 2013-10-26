@@ -35,7 +35,7 @@ KERNEL void KrnlRender(Camera* C, int Width, int Height, unsigned char* Output)
 	Output[PID * 3 + 0] = Value[0] * 255.0f;
 	Output[PID * 3 + 1] = Value[1] * 255.0f;
 	Output[PID * 3 + 2] = Value[2] * 255.0f;
-	*/
+	
 	
 	Box B(Vec3f(0.1f));
 
@@ -46,12 +46,12 @@ KERNEL void KrnlRender(Camera* C, int Width, int Height, unsigned char* Output)
 	float T[2] = { 0.0f };
 
 	bool Intersects = B.Intersect(R, T[0], T[1]);
-
+*/
 	RNG& Random = C->GetFilm().GetRandomNumberGenerator(Vec2i(X, Y));
 
-	Output[PID * 3 + 0] = Random.Get1() * 255.0f;
+	Output[PID * 3 + 0] = (unsigned char)(Random.Get1() * 255.0f);
 	Output[PID * 3 + 1] = 0;
-	Output[PID * 3 + 2] = 255;
+	Output[PID * 3 + 2] = 0;
 }
 
 void Render(float Position[3], float FocalPoint[3], float ViewUp[3], const int& Width, const int& Height, unsigned char* Output)
