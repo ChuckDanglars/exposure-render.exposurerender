@@ -19,7 +19,6 @@ INCLUDE_DIRECTORIES(
 	renderer)
 
 ADD_SUBDIRECTORY(compositor)
-ADD_SUBDIRECTORY(exposurerender)
 ADD_SUBDIRECTORY(gpujpeg)
 ADD_SUBDIRECTORY(renderer)
 ADD_SUBDIRECTORY(utilities)
