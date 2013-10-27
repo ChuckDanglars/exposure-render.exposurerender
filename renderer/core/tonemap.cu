@@ -28,7 +28,9 @@ KERNEL void KrnlToneMap(Renderer* Renderer)
 
 void ToneMap(Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	KrnlToneMap<<<HostRenderer->Camera.GetFilm().Grid, HostRenderer->Camera.GetFilm().Block>>>(DevRenderer);
+	LAUNCH_DIMENSIONS
+
+	KrnlToneMap<<<Grid, Block>>>(DevRenderer);
 	cudaThreadSynchronize();
 	Cuda::HandleCudaError(cudaGetLastError(), "Tone map");
 }

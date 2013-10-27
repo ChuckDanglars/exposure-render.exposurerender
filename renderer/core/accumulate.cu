@@ -25,7 +25,9 @@ KERNEL void KrnlAccumulate(Renderer* Renderer)
 
 void Accumulate(Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	KrnlAccumulate<<<HostRenderer->Camera.GetFilm().Grid, HostRenderer->Camera.GetFilm().Block>>>(DevRenderer);
+	LAUNCH_DIMENSIONS
+
+	KrnlAccumulate<<<Grid, Block>>>(DevRenderer);
 	cudaThreadSynchronize();
 	Cuda::HandleCudaError(cudaGetLastError(), "Accumulate");
 }

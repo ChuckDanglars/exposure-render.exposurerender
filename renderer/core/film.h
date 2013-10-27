@@ -75,8 +75,8 @@ public:
 		this->RandomSeeds1.FromHost(this->HostRandomSeeds1.GetData());
 		this->RandomSeeds2.FromHost(this->HostRandomSeeds2.GetData());
 
-		this->Grid.x = (int)ceilf((float)this->Resolution[0] / (float)this->Block.x);
-		this->Grid.y = (int)ceilf((float)this->Resolution[1] / (float)this->Block.y);
+		this->Grid[0] = (int)ceilf((float)this->Resolution[0] / (float)this->Block[0]);
+		this->Grid[1] = (int)ceilf((float)this->Resolution[1] / (float)this->Block[1]);
 	}
 
 	/*! Restarts the mc algorithm */
@@ -220,10 +220,12 @@ public:
 		this->NoEstimates++;
 	}
 
-	dim3							Block;								/*! Cuda thread block size */
-	dim3							Grid;								/*! Cuda launch grid size */
+	GET_SET_MACRO(HOST_DEVICE, Block, Vec3i)
+	GET_SET_MACRO(HOST_DEVICE, Grid, Vec3i)
 
 protected:
+	Vec3i							Block;								/*! Cuda thread block size */
+	Vec3i							Grid;								/*! Cuda launch grid size */
 	Vec2i							Resolution;							/*! Resolution of the frame buffer */
 	CudaBuffer2D<ColorXYZAf>		IterationEstimateHDR;				/*! High dynamic range estimate from a single iteration of the mc algorithm */
 	CudaBuffer2D<ColorRGBAuc>		IterationEstimateLDR;				/*! Low dynamic range (tone mapped) estimate from a single iteration of the mc algorithm */

@@ -27,8 +27,9 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 
 	QByteArray Voxels = File.readAll();
 
-	this->Renderer.Volume.Voxels.Resize(Vec3i(256, 230, 256));
-	this->Renderer.Volume.Voxels.FromHost((short*)Voxels.data());
+	Matrix44 M;
+
+	this->Renderer.Volume.Set(M, Vec3i(256, 230, 256), Vec3f(1.0f), (short*)Voxels.data());
 }
 
 void QRenderer::Start()

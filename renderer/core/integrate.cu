@@ -25,7 +25,9 @@ KERNEL void KrnlIntegrate(Renderer* Renderer)
 
 void Integrate(Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	KrnlIntegrate<<<HostRenderer->Camera.GetFilm().Grid, HostRenderer->Camera.GetFilm().Block>>>(DevRenderer);
+	LAUNCH_DIMENSIONS
+
+	KrnlIntegrate<<<Grid, Block>>>(DevRenderer);
 	cudaThreadSynchronize();
 	Cuda::HandleCudaError(cudaGetLastError(), "Integrate");
 }

@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "matrix.h"
+#include "geometry\matrix.h"
 
 namespace ExposureRender
 {

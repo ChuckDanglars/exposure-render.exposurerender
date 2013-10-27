@@ -37,7 +37,7 @@ public:
 		Emission1D(),
 		Shadows(true),
 		ShadingType(Enums::BrdfOnly),
-		DensityScale(100),
+		DensityScale(1000.0f),
 		OpacityModulated(true),
 		GradientFactor(0.5f),
 		GradientMode(Enums::CentralDifferences),

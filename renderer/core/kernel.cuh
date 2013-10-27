@@ -22,19 +22,19 @@ namespace ExposureRender
 namespace Cuda
 {
 
-#define LAUNCH_DIMENSIONS(width, height, depth, block_width, block_height, block_depth)						\
+#define LAUNCH_DIMENSIONS																					\
 																											\
-	dim3 BlockDim;																							\
+	dim3 Block;																								\
 																											\
-	BlockDim.x = block_width;																				\
-	BlockDim.y = block_height;																				\
-	BlockDim.z = block_depth;																				\
+	Block.x = HostRenderer->Camera.GetFilm().GetBlock()[0];													\
+	Block.y = HostRenderer->Camera.GetFilm().GetBlock()[1];													\
+	Block.z = HostRenderer->Camera.GetFilm().GetBlock()[2];													\
 																											\
-	dim3 GridDim;																							\
+	dim3 Grid;																								\
 																											\
-	GridDim.x = (int)ceilf((float)width / (float)BlockDim.x);												\
-	GridDim.y = (int)ceilf((float)height / (float)BlockDim.y);												\
-	GridDim.z = (int)ceilf((float)depth / (float)BlockDim.z);
+	Grid.x = HostRenderer->Camera.GetFilm().GetGrid()[0];													\
+	Grid.y = HostRenderer->Camera.GetFilm().GetGrid()[1];													\
+	Grid.z = HostRenderer->Camera.GetFilm().GetGrid()[2];
 
 #define LAUNCH_CUDA_KERNEL_TIMED(cudakernelcall, title)														\
 {																											\

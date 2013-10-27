@@ -17,6 +17,7 @@
 #pragma once
 
 #include "vector\vector.h"
+#include "core\enums.h"
 
 using namespace std;
 
@@ -29,7 +30,6 @@ class ScatterEvent
 public:
 	/*! Default constructor */
 	HOST_DEVICE ScatterEvent() :
-		Valid(false),
 		Front(true),
 		Wo(),
 		T(FLT_MAX),
@@ -46,7 +46,6 @@ public:
 		@param[in] Other Intersection to copy
 	*/
 	HOST_DEVICE ScatterEvent(const ScatterEvent& Other) :
-		Valid(false),
 		Front(true),
 		Wo(),
 		T(FLT_MAX),
@@ -66,7 +65,6 @@ public:
 	*/
 	HOST_DEVICE ScatterEvent& ScatterEvent::operator = (const ScatterEvent& Other)
 	{
-		this->Valid			= Other.Valid;
 		this->Front			= Other.Front;
 		this->Wo			= Other.Wo;
 		this->T				= Other.T;
@@ -80,7 +78,6 @@ public:
 		return *this;
 	}
 
-	GET_REF_SET_MACRO(HOST_DEVICE, Valid, bool)
 	GET_REF_SET_MACRO(HOST_DEVICE, Front, bool)
 	GET_REF_SET_MACRO(HOST_DEVICE, Wo, Vec3f)
 	GET_REF_SET_MACRO(HOST_DEVICE, T, float)
@@ -92,7 +89,6 @@ public:
 	GET_REF_SET_MACRO(HOST_DEVICE, ID, int)
 
 protected:
-	bool					Valid;			/*! If there is a valid intersection */
 	bool					Front;			/*! Front (true) or back (false) */
 	Vec3f					Wo;				/*! Outgoing direction */
 	float					T;				/*! Distance along ray */

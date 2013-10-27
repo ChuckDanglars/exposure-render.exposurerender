@@ -46,47 +46,23 @@ public:
 		Tracer()
 	{
 	}
-	
-	/*! Gets voxel data at \a XYZ
-		@param[in] XYZ Position
-		@param[in] TextureID CUDA texture ID
-		@return Data at \a XYZ volume
-	*/
-	DEVICE unsigned short operator()(const Vec3f& XYZ, const int& TextureID = 0)
-	{
-		/*
-		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.GetMinP()) * this->InvSize;
-		
-		switch (TextureID)
-		{
-			case 0: return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
-			case 1: return (float)USHRT_MAX * tex3D(TexVolume1, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
-		}
-		*/
 
-		return 0;
-	}
-	
-	/*! Gets voxel data at (\a X,\a Y,\a Z)
-		@param[in] X Position
-		@param[in] Y Position
-		@param[in] Z Position
-		@return Data at \a X,\a Y,\a Z
+	/*! Computes the gradient at \a P using central differences
+		@param[in] P Position at which to compute the gradient
+		@return Gradient at \a P
 	*/
-	DEVICE unsigned short operator()(const int& X, const int& Y, const int& Z)
+	HOST void Set(const Vec3i& Resolution, const Vec3f& Spacing, short* Data, const Matrix44& Matrix = Matrix44())
 	{
-		const Vec3f NormalizedXYZ((float)X / (float)Voxels.GetResolution()[0], (float)X / (float)Voxels.GetResolution()[1], (float)X / (float)Voxels.GetResolution()[2]);
-		
-		return 0;//(float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
-	}
-	
-	/*! Gets the voxel data at \a P
-		@param[in] P Position
-		@return Data at \a XYZ volume
-	*/
-	DEVICE unsigned short GetIntensity(const Vec3f& P)
-	{
-		return (*this)(P);
+		this->Transform.Set(Matrix);
+
+		this->Voxels.Resize(Resolution);
+		this->Voxels.FromHost(Data);
+
+		this->Spacing		= Spacing;
+		this->InvSpacing	= 1.0f / this->Spacing;
+		this->Size			= Vec3f(Resolution[0] * this->Spacing[0], Resolution[1] * this->Spacing[1], Resolution[2] * this->Spacing[2]);
+		this->InvSize		= 1.0f / this->Size;
+
 	}
 	
 	/*! Computes the gradient at \a P using central differences
@@ -97,9 +73,9 @@ public:
 	{
 		const float Intensity[3][2] = 
 		{
-			{ GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)), GetIntensity(P - Vec3f(this->Spacing[0], 0.0f, 0.0f)) },
-			{ GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)), GetIntensity(P - Vec3f(0.0f, this->Spacing[1], 0.0f)) },
-			{ GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2])), GetIntensity(P - Vec3f(0.0f, 0.0f, this->Spacing[2])) }
+			{ this->Voxels(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)), this->Voxels(P - Vec3f(this->Spacing[0], 0.0f, 0.0f)) },
+			{ this->Voxels(P + Vec3f(0.0f, this->Spacing[1], 0.0f)), this->Voxels(P - Vec3f(0.0f, this->Spacing[1], 0.0f)) },
+			{ this->Voxels(P + Vec3f(0.0f, 0.0f, this->Spacing[2])), this->Voxels(P - Vec3f(0.0f, 0.0f, this->Spacing[2])) }
 		};
 
 		return Vec3f(Intensity[0][1] - Intensity[0][0], Intensity[1][1] - Intensity[1][0], Intensity[2][1] - Intensity[2][0]);
@@ -113,10 +89,10 @@ public:
 	{
 		const float Intensity[4] = 
 		{
-			GetIntensity(P),
-			GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)),
-			GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)),
-			GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2]))
+			this->Voxels(P),
+			this->Voxels(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)),
+			this->Voxels(P + Vec3f(0.0f, this->Spacing[1], 0.0f)),
+			this->Voxels(P + Vec3f(0.0f, 0.0f, this->Spacing[2]))
 		};
 
 		return Vec3f(Intensity[0] - Intensity[1], Intensity[0] - Intensity[2], Intensity[0] - Intensity[3]);
@@ -183,22 +159,30 @@ public:
 
 		float D = 0.0f, Sum = 0.0f;
 
-		D = (GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)) - GetIntensity(P - Vec3f(this->Spacing[0], 0.0f, 0.0f))) * 0.5f;
+		D = (this->Voxels(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)) - this->Voxels(P - Vec3f(this->Spacing[0], 0.0f, 0.0f))) * 0.5f;
 		Sum += D * D;
 
-		D = (GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)) - GetIntensity(P - Vec3f(0.0f, this->Spacing[1], 0.0f))) * 0.5f;
+		D = (this->Voxels(P + Vec3f(0.0f, this->Spacing[1], 0.0f)) - this->Voxels(P - Vec3f(0.0f, this->Spacing[1], 0.0f))) * 0.5f;
 		Sum += D * D;
 
-		D = (GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2])) - GetIntensity(P - Vec3f(0.0f, 0.0f, this->Spacing[2]))) * 0.5f;
+		D = (this->Voxels(P + Vec3f(0.0f, 0.0f, this->Spacing[2])) - this->Voxels(P - Vec3f(0.0f, 0.0f, this->Spacing[2]))) * 0.5f;
 		Sum += D * D;
 
 		return sqrtf(Sum);
 	}
 	
-	DEVICE void Scatter(Ray R, RNG& RNG, ScatterEvent& SE)
+	/*! Intersects the volume with ray \a R and determine if a scattering event \a SE occurs within the volume
+		@param[in] R Ray to intersect the volume with
+		@param[in] RNG Random number generator
+		@param[in] SE Scattering event, filled if a scattering event occurs
+		@return Whether a scattering event has occured or not
+	*/
+	DEVICE bool Intersect(Ray R, RNG& RNG, ScatterEvent& SE)
 	{
 		if (!this->BoundingBox.Intersect(R, R.MinT, R.MaxT))
-			return;
+			return false;
+		else
+			return true;
 
 		const float S	= -log(RNG.Get1()) / this->Tracer.GetDensityScale();
 		float Sum		= 0.0f;
@@ -208,22 +192,28 @@ public:
 		while (Sum < S)
 		{
 			if (R.MinT + this->Tracer.GetStepFactorPrimary() >= R.MaxT)
-				return;
+				return false;
 		
 			SE.SetP(R(R.MinT));
-			SE.SetIntensity((*this)(SE.GetP()));
+			SE.SetIntensity(this->Voxels(SE.GetP()));
 
 			Sum				+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(SE.GetIntensity()) * this->Tracer.GetStepFactorPrimary();
 			R.MinT			+= this->Tracer.GetStepFactorPrimary();
 		}
 
-		SE.SetValid(true);
 		SE.SetWo(-R.D);
 		SE.SetN(this->NormalizedGradient(SE.GetP(), Enums::CentralDifferences));
 		SE.SetT(R.MinT);
 		SE.SetScatterType(Enums::Volume);
+
+		return true;
 	}
 
+	/*! Determine if a scattering event occurs within the parametric range of the ray \a R
+		@param[in] R Ray to intersect the volume with
+		@param[in] RNG Random number generator
+		@return Whether a scattering event has occured or not
+	*/
 	DEVICE bool Occlusion(Ray R, RNG& RNG)
 	{
 		if (!this->Tracer.GetShadows())
@@ -246,7 +236,7 @@ public:
 			if (R.MinT > R.MaxT)
 				return false;
 
-			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity((*this)(R(R.MinT))) * this->Tracer.GetStepFactorOcclusion();
+			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(this->Voxels(R(R.MinT))) * this->Tracer.GetStepFactorOcclusion();
 			R.MinT	+= this->Tracer.GetStepFactorOcclusion();
 		}
 

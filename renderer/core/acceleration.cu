@@ -17,7 +17,9 @@ KERNEL void KrnlAcceleration(Renderer* Renderer)
 
 void Acceleration(Renderer* HostRenderer, Renderer* DevRenderer)
 {
-	KrnlAcceleration<<<HostRenderer->Camera.GetFilm().Grid, HostRenderer->Camera.GetFilm().Block>>>(DevRenderer);
+	LAUNCH_DIMENSIONS
+
+	KrnlAcceleration<<<Grid, Block>>>(DevRenderer);
 	cudaThreadSynchronize();
 	Cuda::HandleCudaError(cudaGetLastError(), "Acceleration");
 }
