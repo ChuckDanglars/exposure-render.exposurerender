@@ -17,18 +17,26 @@
 #pragma once
 
 #include "core\define.h"
+#include "light\light.h"
 
 namespace ExposureRender
 {
+
+#define MAX_NO_LIGHTS 10
 
 /*! Lighting class */
 class EXPOSURE_RENDER_DLL Lighting
 {
 public:
 	/*! Default constructor */
-	HOST Lighting()
+	HOST Lighting() :
+		NoLights(0)
 	{
 	}
+
+protected:
+	Light		Lights[MAX_NO_LIGHTS];
+	int			NoLights;
 };
 
 }

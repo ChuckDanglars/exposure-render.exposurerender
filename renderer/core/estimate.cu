@@ -17,7 +17,7 @@ KERNEL void KrnlEstimate(Renderer* Renderer)
 	
 	CudaBuffer2D<ColorXYZAf>& IterationEstimateHDR = Renderer->Camera.GetFilm().GetIterationEstimateHDR();
 
-	RNG& Random = Renderer->Camera.GetFilm().GetRandomNumberGenerator(Vec2i(X, Y));
+	RNG Random = Renderer->Camera.GetFilm().GetRandomNumberGenerator(Vec2i(X, Y));
 
 	Ray R;
 
@@ -29,8 +29,8 @@ KERNEL void KrnlEstimate(Renderer* Renderer)
 		IterationEstimateHDR.Set(X, Y, ColorXYZAf(1.0f, 1.0f, 1.0f, 0.0f));
 	else
 		IterationEstimateHDR.Set(X, Y, ColorXYZAf(0.0f, 0.0f, 0.0f, 0.0f));
-	
-/*
+	/*
+
 	
 
 	float T[2] = { 0.0f };

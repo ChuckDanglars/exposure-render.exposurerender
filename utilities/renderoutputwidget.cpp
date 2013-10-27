@@ -14,8 +14,8 @@ QRenderOutputWidget::QRenderOutputWidget(QWidget* Parent) :
 	AspectRatio(1.0f),
 	LastPos(),
 	TextureID(0),
-	Position(1.0f),
-	FocalPoint(0.0f),
+	Position(100.0f, 100.0f, 300.0f),
+	FocalPoint(100.0f, 100.0f, 100.0f),
 	ViewUp(0.0f, 1.0f, 0.0f),
 	Margin(10.0f)
 {
@@ -48,10 +48,10 @@ void QRenderOutputWidget::paintGL()
 	this->ComputeQuad();
 
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(this->Quad[0][0], this->Quad[1][0], 0.0);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(this->Quad[0][1], this->Quad[1][0], 0.0);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(this->Quad[0][1], this->Quad[1][1], 0.0);
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(this->Quad[0][0], this->Quad[1][1], 0.0);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(this->Quad[0][0], this->Quad[1][0], 0.0);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(this->Quad[0][1], this->Quad[1][0], 0.0);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(this->Quad[0][1], this->Quad[1][1], 0.0);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(this->Quad[0][0], this->Quad[1][1], 0.0);
 	glEnd();
 }
 
@@ -82,7 +82,7 @@ void QRenderOutputWidget::mouseMoveEvent(QMouseEvent *event)
 
 	if (event->buttons() & Qt::MiddleButton)
 	{
-		this->Pan(dy, -dx);
+		this->Pan(-dy, -dx);
 	}
 
 	if (event->buttons() & Qt::RightButton)

@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include "timestamp.h"
-
 namespace ExposureRender
 {
 
@@ -25,9 +23,7 @@ namespace ExposureRender
 class EXPOSURE_RENDER_DLL TransferFunction
 {
 public:
-	/*! Constructor
-		@param[in] Name Name
-	*/
+	/*! Constructor */
 	HOST_DEVICE TransferFunction()
 	{
 	}
@@ -36,11 +32,6 @@ public:
 	HOST_DEVICE TransferFunction(const TransferFunction& Other)
 	{
 		*this = Other;
-	}
-
-	/*! Destructor */
-	HOST_DEVICE virtual ~TransferFunction(void)
-	{
 	}
 	
 	/*! Assignment operator

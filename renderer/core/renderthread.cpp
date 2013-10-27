@@ -20,16 +20,30 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 {
 	connect(&this->RenderTimer, SIGNAL(timeout()), this, SLOT(OnRender()));
 
-	this->Renderer.Camera.GetFilm().Block.x	= Settings.value("cuda/blockwidth", 8).toInt();
-	this->Renderer.Camera.GetFilm().Block.y	= Settings.value("cuda/blockheight", 8).toInt();
+	Vec3i Block = Vec3i(Settings.value("cuda/blockwidth", 8).toInt(), Settings.value("cuda/blockheight", 8).toInt(), 1);
 
-	QFile File("C:\\workspaces\\manix.raw");
+	this->Renderer.Camera.GetFilm().SetBlock(Block);
+	this->Renderer.Camera.GetFilm().SetGrid(Vec3i((int)ceilf(this->Renderer.Camera.GetFilm().GetWidth() / Block[0]), (int)ceilf(this->Renderer.Camera.GetFilm().GetHeight() / Block[1]), 1));
+
+	QFile File("C://workspaces//manix.raw");
+	File.open(QIODevice::ReadOnly);
 
 	QByteArray Voxels = File.readAll();
 
+	qDebug() << Voxels.count() << "bytes";
+
 	Matrix44 M;
 
-	this->Renderer.Volume.Set(M, Vec3i(256, 230, 256), Vec3f(1.0f), (short*)Voxels.data());
+	this->Renderer.Volume.Set(Vec3i(256, 230, 256), Vec3f(1.0f), (short*)Voxels.data(), M);
+	
+	this->Renderer.Volume.Tracer.SetStepFactorPrimary(Settings.value("traversal/stepfactorprimary", 3.0).toFloat());
+	this->Renderer.Volume.Tracer.SetStepFactorOcclusion(Settings.value("traversal/stepfactorocclusion", 6.0).toFloat());
+	
+	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(0.0f, 0.0f);
+	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(500.0f, 0.0f);
+	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(505.0f, 1.0f);
+
+	// this->Renderer.Camera.SetPos(Vec3f(0, -100, 0));
 }
 
 void QRenderer::Start()
@@ -39,8 +53,8 @@ void QRenderer::Start()
 
 void QRenderer::OnRender()
 {
-	this->Renderer.Camera.SetApertureSize(0.005f);
-	this->Renderer.Camera.SetFocalDistance(0.1f);
+	this->Renderer.Camera.SetApertureSize(0.05f);
+	this->Renderer.Camera.SetFocalDistance(10.0f);
 
 	this->Renderer.Camera.Update();
 	

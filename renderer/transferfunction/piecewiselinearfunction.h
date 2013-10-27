@@ -21,6 +21,8 @@
 namespace ExposureRender
 {
 
+#define MAX_NO_TF_NODES 100
+
 /*! Piecewise linear function base template class */
 template<class T, int Size = 64>
 class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<T, Size>
@@ -31,11 +33,6 @@ public:
 	*/
 	HOST_DEVICE PiecewiseLinearFunction() :
 		PiecewiseFunction<T, Size>()
-	{
-	}
-	
-	/*! Destructor */
-	HOST_DEVICE virtual ~PiecewiseLinearFunction()
 	{
 	}
 	

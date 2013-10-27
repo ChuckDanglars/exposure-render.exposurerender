@@ -43,11 +43,6 @@ public:
 	{
 	}
 	
-	/*! Destructor */
-	HOST_DEVICE ~PiecewiseFunctionNode()
-	{
-	}
-	
 	/*! Copy constructor
 		@param[in] Other Piecewise function node to copy
 	*/

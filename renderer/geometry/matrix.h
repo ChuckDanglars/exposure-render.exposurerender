@@ -138,10 +138,7 @@ public:
 			}
 
 			if (tmp.NN[i][i] == 0)
-			{
-				printf("Singular matrix!\n");
 				return false;
-			}
 
 			t = tmp.NN[i][i];
 

@@ -36,11 +36,6 @@ public:
 	{
 	}
 	
-	/*! Destructor */
-	HOST_DEVICE ~PiecewiseFunction()
-	{
-	}
-	
 	/*! Copy constructor
 		@param[in] Other Piecewise function to copy
 	*/

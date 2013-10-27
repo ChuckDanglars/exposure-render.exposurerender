@@ -30,7 +30,7 @@ public:
 	/*! Default constructor */
 	HOST Camera() :
 		Film(Vec2i(640, 480)),
-		Pos(1.0f),
+		Pos(100.0f),
 		Target(0.0f),
 		Up(0.0f, 1.0f, 0.0f),
 		FocusMode(Enums::AutoFocus),

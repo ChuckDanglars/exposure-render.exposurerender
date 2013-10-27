@@ -46,11 +46,6 @@ public:
 	{
 		*this = Other;
 	}
-
-	/*! Destructor */
-	HOST_DEVICE virtual ~TransferFunction1D(void)
-	{
-	}
 	
 	/*! Assignment operator
 		@param[in] Other Transfer function to copy

@@ -63,8 +63,19 @@ public:
 		this->Size			= Vec3f(Resolution[0] * this->Spacing[0], Resolution[1] * this->Spacing[1], Resolution[2] * this->Spacing[2]);
 		this->InvSize		= 1.0f / this->Size;
 
+		this->BoundingBox.SetMinP(Vec3f(0.0f));
+		this->BoundingBox.SetMaxP(this->Size);
 	}
 	
+	/*! Gets the voxel data at \a P
+		@param[in] P Position
+		@return Data at \a XYZ volume
+	*/
+	DEVICE unsigned short GetIntensity(const Vec3f& P)
+	{
+		return this->Voxels(Vec3i(P[0] * this->Spacing[0], P[1] * this->Spacing[1], P[2] * this->Spacing[2]));
+	}
+
 	/*! Computes the gradient at \a P using central differences
 		@param[in] P Position at which to compute the gradient
 		@return Gradient at \a P
@@ -73,9 +84,9 @@ public:
 	{
 		const float Intensity[3][2] = 
 		{
-			{ this->Voxels(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)), this->Voxels(P - Vec3f(this->Spacing[0], 0.0f, 0.0f)) },
-			{ this->Voxels(P + Vec3f(0.0f, this->Spacing[1], 0.0f)), this->Voxels(P - Vec3f(0.0f, this->Spacing[1], 0.0f)) },
-			{ this->Voxels(P + Vec3f(0.0f, 0.0f, this->Spacing[2])), this->Voxels(P - Vec3f(0.0f, 0.0f, this->Spacing[2])) }
+			{ this->GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)), this->GetIntensity(P - Vec3f(this->Spacing[0], 0.0f, 0.0f)) },
+			{ this->GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)), this->GetIntensity(P - Vec3f(0.0f, this->Spacing[1], 0.0f)) },
+			{ this->GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2])), this->GetIntensity(P - Vec3f(0.0f, 0.0f, this->Spacing[2])) }
 		};
 
 		return Vec3f(Intensity[0][1] - Intensity[0][0], Intensity[1][1] - Intensity[1][0], Intensity[2][1] - Intensity[2][0]);
@@ -89,10 +100,10 @@ public:
 	{
 		const float Intensity[4] = 
 		{
-			this->Voxels(P),
-			this->Voxels(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)),
-			this->Voxels(P + Vec3f(0.0f, this->Spacing[1], 0.0f)),
-			this->Voxels(P + Vec3f(0.0f, 0.0f, this->Spacing[2]))
+			this->GetIntensity(P),
+			this->GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)),
+			this->GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)),
+			this->GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2]))
 		};
 
 		return Vec3f(Intensity[0] - Intensity[1], Intensity[0] - Intensity[2], Intensity[0] - Intensity[3]);
@@ -159,13 +170,13 @@ public:
 
 		float D = 0.0f, Sum = 0.0f;
 
-		D = (this->Voxels(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)) - this->Voxels(P - Vec3f(this->Spacing[0], 0.0f, 0.0f))) * 0.5f;
+		D = (this->GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)) - this->GetIntensity(P - Vec3f(this->Spacing[0], 0.0f, 0.0f))) * 0.5f;
 		Sum += D * D;
 
-		D = (this->Voxels(P + Vec3f(0.0f, this->Spacing[1], 0.0f)) - this->Voxels(P - Vec3f(0.0f, this->Spacing[1], 0.0f))) * 0.5f;
+		D = (this->GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)) - this->GetIntensity(P - Vec3f(0.0f, this->Spacing[1], 0.0f))) * 0.5f;
 		Sum += D * D;
 
-		D = (this->Voxels(P + Vec3f(0.0f, 0.0f, this->Spacing[2])) - this->Voxels(P - Vec3f(0.0f, 0.0f, this->Spacing[2]))) * 0.5f;
+		D = (this->GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2])) - this->GetIntensity(P - Vec3f(0.0f, 0.0f, this->Spacing[2]))) * 0.5f;
 		Sum += D * D;
 
 		return sqrtf(Sum);
@@ -181,8 +192,6 @@ public:
 	{
 		if (!this->BoundingBox.Intersect(R, R.MinT, R.MaxT))
 			return false;
-		else
-			return true;
 
 		const float S	= -log(RNG.Get1()) / this->Tracer.GetDensityScale();
 		float Sum		= 0.0f;
@@ -197,8 +206,8 @@ public:
 			SE.SetP(R(R.MinT));
 			SE.SetIntensity(this->Voxels(SE.GetP()));
 
-			Sum				+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(SE.GetIntensity()) * this->Tracer.GetStepFactorPrimary();
-			R.MinT			+= this->Tracer.GetStepFactorPrimary();
+			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(SE.GetIntensity()) * this->Tracer.GetStepFactorPrimary();
+			R.MinT	+= this->Tracer.GetStepFactorPrimary();
 		}
 
 		SE.SetWo(-R.D);

@@ -16,34 +16,78 @@
 
 #pragma once
 
-#include "core\volume.h"
-#include "core\light.h"
-#include "core\camera.h"
-#include "core\texture.h"
-
 namespace ExposureRender
 {
 
-#define MAX_NO_TEXTURES	50
-
-/*! Renderer class */
-class EXPOSURE_RENDER_DLL Renderer
+/*! Texture class */
+class Texture
 {
 public:
 	/*! Default constructor */
-	HOST Renderer() :
-		Volume(),
-		Lighting(),
-		Camera()
+	HOST Texture() :
+		Type(Enums::Procedural),
+		OutputLevel(1.0f),
+		BitmapID(-1),
+		Procedural(),
+		Offset(0.0f),
+		Repeat(0.0f),
+		Flip(0)
 	{
 	}
 	
-	Volume				Volume;							/*! Volume parameters */
-	Camera				Camera;							/*! Camera parameters */
-	Light				Lights[MAX_NO_LIGHTS];
-	int					NoLights;
-	Texture				Textures[MAX_NO_TEXTURES];		/*! Textures */
-	int					NoTextures;						/*! Number of active textures */
+	/*! Copy constructor
+		@param[in] Other Texture to copy
+	*/
+	HOST Texture(const HostTexture& Other) :
+		Type(Enums::Procedural),
+		OutputLevel(1.0f),
+		BitmapID(-1),
+		Procedural(),
+		Offset(0.0f),
+		Repeat(0.0f),
+		Flip(0)
+	{
+		*this = Other;
+	}
+	
+	/*! Assignment operator
+		@param[in] Other Texture to copy
+		@return Copied texture
+	*/
+	HOST Texture& operator = (const HostTexture& Other)
+	{
+		TimeStamp::operator = (Other);
+
+		this->Type			= Other.GetType();
+		this->OutputLevel	= Other.GetOutputLevel();
+
+		if (Other.GetBitmapID() >= 0)
+		{
+			if (gBitmapsHashMap.find(Other.GetBitmapID()) != gBitmapsHashMap.end())
+				this->BitmapID = gBitmapsHashMap[Other.GetBitmapID()];
+			else
+				throw(Exception(Enums::Fatal, "Bitmap not found!"));
+		}
+		else
+		{
+			this->BitmapID = -1;
+		}
+
+		this->Procedural	= Other.GetProcedural();
+		this->Offset		= Other.GetOffset();
+		this->Repeat		= Other.GetRepeat();
+		this->Flip			= Other.GetFlip();
+		
+		return *this;
+	}
+
+	Enums::TextureType		Type;				/*! Texture type */
+	float					OutputLevel;		/*! Output level */
+	int						BitmapID;			/*! Bitmap ID */
+	Procedural				Procedural;			/*! Procedural */
+	Vec2f					Offset;				/*! Offset */
+	Vec2f					Repeat;				/*! Repeat */
+	Vec2i					Flip;				/*! Flip */
 };
 
 }
