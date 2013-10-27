@@ -2,7 +2,6 @@
 #include "estimate.cuh"
 #include "core\cudawrapper.h"
 #include "core\renderer.h"
-#include "shapes\box.h"
 
 namespace ExposureRender
 {

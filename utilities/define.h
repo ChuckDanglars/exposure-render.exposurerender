@@ -70,14 +70,8 @@ namespace ExposureRender
 #define RAY_EPS_2					2.0f * RAY_EPS
 #define ONE_OVER_6					1.0f / 2.0f
 #define ONE_OVER_255				1.0f / 255.0f
-#define MAX_NO_TF_NODES				128
 #define NO_COLOR_COMPONENTS			4
-#define MAX_NO_VOLUMES				8
 #define MAX_NO_INT					4
-#define MAX_NO_CLIPPING_SEGMENTS	8
-#define MAX_NO_TIMINGS				64
-#define MAX_NO_TIMING_SAMPLES		128
-#define UAH							1
 #define TF_TEXTURE_RESOLUTION		1024
 #define BLOCK_W						16
 #define BLOCK_H						8

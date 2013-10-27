@@ -22,7 +22,7 @@ namespace ExposureRender
 {
 
 /*! Texture class */
-class Texture
+class EXPOSURE_RENDER_DLL Texture
 {
 public:
 	/*! Default constructor */

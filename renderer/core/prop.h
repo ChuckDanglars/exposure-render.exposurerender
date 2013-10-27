@@ -22,7 +22,7 @@ namespace ExposureRender
 {
 
 /*! Object class */
-class Prop
+class EXPOSURE_RENDER_DLL Prop
 {
 public:
 	/*! Default constructor */

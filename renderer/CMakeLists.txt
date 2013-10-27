@@ -16,7 +16,6 @@ INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_GUI_LIBS -DQT_CORE_LIB -DQT_XML_LIB -DQT3_SUPPORT)
 
-FILE(GLOB_RECURSE RendererHeaders "*.h")
 FILE(GLOB BufferSources "buffer/*.h" "buffer/*.cpp")
 FILE(GLOB CudaBufferSources "buffer/cuda/*.h" "buffer/cuda/*.cpp")
 FILE(GLOB HostBufferSources "buffer/host/*.h" "buffer/host/*.cpp")
@@ -54,7 +53,9 @@ SOURCE_GROUP("cuda" FILES ${CudaSources})
 
 SET(RendererSources main.cpp ${BufferSources} ${CudaBufferSources} ${HostBufferSources} ${ColorSources} ${GuiSources} ${CoreSources} ${FilteringSources} ${GeometrySources} ${LightSources} ${NetworkSources} ${ShadingSources} ${ShapesSources} ${TextureSources} ${TransferFunctionSources} ${TransportSources} ${CudaSources})
 
-QT4_WRAP_CPP(RendererHeadersMoc ${RendererHeaders})
+SET(MocHeaders core/renderthread.h gui/rendererwindow.h network/clientsocket.h)
+
+QT4_WRAP_CPP(RendererHeadersMoc ${MocHeaders})
 CUDA_ADD_EXECUTABLE(Renderer ${RendererSources} ${RendererHeadersMoc})
 TARGET_LINK_LIBRARIES(Renderer Utilities Opengl32)
 

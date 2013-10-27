@@ -16,12 +16,11 @@
 
 #pragma once
 
-#include "plane.h"
-#include "disk.h"
-#include "ring.h"
-#include "box.h"
-#include "sphere.h"
-#include "cylinder.h"
+#include "shape\plane.h"
+#include "shape\disk.h"
+#include "shape\ring.h"
+#include "shape\box.h"
+#include "shape\sphere.h"
 
 namespace ExposureRender
 {
