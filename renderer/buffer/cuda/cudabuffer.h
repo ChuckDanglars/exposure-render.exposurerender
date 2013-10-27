@@ -108,9 +108,7 @@ public:
 		if (this->Resolution.CumulativeProduct() <= 0)
 			return;
 
-#ifdef __CUDACC__
 		Cuda::Allocate(this->Data, this->Resolution.CumulativeProduct());
-#endif
 
 		this->Reset();
 	}

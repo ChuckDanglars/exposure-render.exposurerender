@@ -32,26 +32,17 @@ class EXPOSURE_RENDER_DLL TransferFunction1D : public TransferFunction
 public:
 	/*! Default constructor */
 	HOST_DEVICE TransferFunction1D() :
-		TransferFunction("Untitled"),
-		PLF("Untitled")
+		TransferFunction(),
+		PLF()
 	{
 	}
 
-	/*! Constructor
-		@param[in] Name Name
-	*/
-	HOST_DEVICE TransferFunction1D(const char* Name) :
-		TransferFunction(Name),
-		PLF(Name)
-	{
-	}
-	
 	/*! Copy constructor
 		@param[in] Other Transfer function to copy
 	*/
 	HOST_DEVICE TransferFunction1D(const TransferFunction1D& Other) :
-		TransferFunction("Untitled"),
-		PLF("Untitled")
+		TransferFunction(),
+		PLF()
 	{
 		*this = Other;
 	}

@@ -29,12 +29,11 @@ public:
 	/*! Constructor
 		@param[in] Name Name
 	*/
-	HOST_DEVICE PiecewiseFunction(const char* Name = "Untitled") :
+	HOST_DEVICE PiecewiseFunction() :
 		NodeRange(FLT_MAX, FLT_MIN),
 		Nodes(),
 		Count(0)
 	{
-		this->SetName(Name);
 	}
 	
 	/*! Destructor */

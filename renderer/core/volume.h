@@ -18,8 +18,11 @@
 
 #include "geometry\boundingbox.h"
 #include "geometry\transform.h"
+#include "geometry\scatterpoint.h"
 #include "texture\cudatexture3d.h"
 #include "core\utilities.h"
+#include "core\rng.h"
+#include "core\tracer.h"
 
 namespace ExposureRender
 {
@@ -39,7 +42,8 @@ public:
 		MinStep(1.0f),
 		Voxels(),
 		AcceleratorType(Enums::Octree),
-		MaxGradientMagnitude(0.0f)
+		MaxGradientMagnitude(0.0f),
+		Tracer()
 	{
 	}
 	
@@ -191,6 +195,64 @@ public:
 		return sqrtf(Sum);
 	}
 	
+	DEVICE void Scatter(Ray R, RNG& RNG, ScatterPoint& SP)
+	{
+		if (!this->BoundingBox.Intersect(R, R.MinT, R.MaxT))
+			return;
+
+		const float S	= -log(RNG.Get1()) / this->Tracer.GetDensityScale();
+		float Sum		= 0.0f;
+
+		R.MinT += RNG.Get1() * this->Tracer.GetStepFactorPrimary();
+
+		while (Sum < S)
+		{
+			if (R.MinT + this->Tracer.GetStepFactorPrimary() >= R.MaxT)
+				return;
+		
+			SP.SetP(R(R.MinT));
+			SP.SetIntensity((*this)(SP.GetP()));
+
+			Sum				+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(SP.GetIntensity()) * this->Tracer.GetStepFactorPrimary();
+			R.MinT			+= this->Tracer.GetStepFactorPrimary();
+		}
+
+		SP.SetValid(true);
+		SP.SetWo(-R.D);
+		SP.SetN(this->NormalizedGradient(SP.GetP(), Enums::CentralDifferences));
+		SP.SetT(R.MinT);
+		SP.SetScatterType(Enums::Volume);
+	}
+
+	DEVICE bool Occlusion(Ray R, RNG& RNG)
+	{
+		if (!this->Tracer.GetShadows())
+			return false;
+
+		float MaxT = 0.0f;
+
+		if (!this->BoundingBox.Intersect(R, R.MinT, MaxT))
+			return false;
+
+		R.MaxT = min(R.MaxT, MaxT);
+
+		const float S	= -log(RNG.Get1()) / this->Tracer.GetDensityScale();
+		float Sum		= 0.0f;
+	
+		R.MinT += RNG.Get1() * this->Tracer.GetStepFactorOcclusion();
+
+		while (Sum < S)
+		{
+			if (R.MinT > R.MaxT)
+				return false;
+
+			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity((*this)(R(R.MinT))) * this->Tracer.GetStepFactorOcclusion();
+			R.MinT	+= this->Tracer.GetStepFactorOcclusion();
+		}
+
+		return true;
+	}
+
 	Transform						Transform;					/*! Transform of the volume */
 	BoundingBox						BoundingBox;				/*! Encompassing bounding box */
 	Vec3f							Spacing;					/*! Voxel spacing */
@@ -198,9 +260,10 @@ public:
 	Vec3f							Size;						/*! Volume size */
 	Vec3f							InvSize;					/*! Inverse volume size */
 	float							MinStep;					/*! Minimum step size */
-	CudaTexture3D<short>			Voxels;						/*! Voxel 3D buffer */
+	CudaBuffer3D<short>				Voxels;						/*! Voxel 3D buffer */
 	Enums::AcceleratorType			AcceleratorType;			/*! Type of ray traversal accelerator */
 	float							MaxGradientMagnitude;		/*! Maximum gradient magnitude */
+	Tracer							Tracer;						/*! Tracer */
 };
 
 }

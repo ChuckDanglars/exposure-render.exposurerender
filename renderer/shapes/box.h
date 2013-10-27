@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "geometry\intersection.h"
+#include "geometry\scatterevent.h"
 #include "geometry\surfacesample.h"
 #include "geometry\geometry.h"
 

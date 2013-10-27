@@ -29,8 +29,8 @@ public:
 	/*! Constructor
 		@param[in] Name Name
 	*/
-	HOST_DEVICE PiecewiseLinearFunction(const char* Name = "Untitled") :
-		PiecewiseFunction<T, Size>(Name)
+	HOST_DEVICE PiecewiseLinearFunction() :
+		PiecewiseFunction<T, Size>()
 	{
 	}
 	
@@ -53,8 +53,6 @@ public:
 	*/
 	HOST_DEVICE PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
 	{
-		TimeStamp::operator = (Other);
-
 		PiecewiseFunction<T, Size>::operator = (Other);
 
 		return *this;
@@ -77,8 +75,6 @@ public:
 			this->NodeRange[1] = Node.GetPosition();
 
 		this->Count++;
-
-		TimeStamp::Modified();
 	}
 
 	/*! Adds a node with \a Position and \a Value
@@ -94,8 +90,6 @@ public:
 	HOST_DEVICE void Reset()
 	{
 		PiecewiseFunction<T, Size>::Reset();
-
-		TimeStamp::Modified();
 	}
 	
 	/*! Evaluate the piecewise linear function at \a Position

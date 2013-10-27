@@ -22,16 +22,14 @@ namespace ExposureRender
 {
 
 /*! Transfer function class */
-class EXPOSURE_RENDER_DLL TransferFunction : public TimeStamp
+class EXPOSURE_RENDER_DLL TransferFunction
 {
 public:
 	/*! Constructor
 		@param[in] Name Name
 	*/
-	HOST_DEVICE TransferFunction(const char* Name) :
-		TimeStamp()
+	HOST_DEVICE TransferFunction()
 	{
-		this->SetName(Name);
 	}
 	
 	/*! Copy constructor */
@@ -51,33 +49,8 @@ public:
 	*/
 	HOST_DEVICE TransferFunction& operator = (const TransferFunction& Other)
 	{
-		TimeStamp::operator = (Other);
-
-		this->SetName(Other.GetName());
-		
 		return *this;
 	}
-	
-	/*! Gets the name of the transfer function
-		@return Name of the transfer function
-	*/
-	HOST_DEVICE const char* GetName() const
-	{
-		return this->Name;
-	}
-
-	/*! Sets the transfer function name
-		@param[in] Name Name of the transfer function
-	*/
-	HOST_DEVICE void SetName(const char* Name)
-	{
-#ifndef __CUDACC__
-		sprintf_s(this->Name, MAX_CHAR_SIZE, "%s", Name);
-#endif
-	}
-	
-protected:
-	char	Name[MAX_CHAR_SIZE];	/*! Name */
 };
 
 }

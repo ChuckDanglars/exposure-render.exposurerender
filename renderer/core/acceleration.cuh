@@ -7,6 +7,6 @@ namespace ExposureRender
 
 class Renderer;
 
-extern "C" void Estimate(Renderer* HostRenderer, Renderer* DevRenderer);
+extern "C" void Acceleration(Renderer* HostRenderer, Renderer* DevRenderer);
 
 }

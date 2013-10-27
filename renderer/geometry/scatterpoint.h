@@ -24,11 +24,11 @@ namespace ExposureRender
 {
 
 /*! Intersection class */
-class Intersection
+class ScatterPoint
 {
 public:
 	/*! Default constructor */
-	HOST_DEVICE Intersection() :
+	HOST_DEVICE ScatterPoint() :
 		Valid(false),
 		Front(true),
 		Wo(),
@@ -45,7 +45,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Intersection to copy
 	*/
-	HOST_DEVICE Intersection(const Intersection& Other) :
+	HOST_DEVICE ScatterPoint(const ScatterPoint& Other) :
 		Valid(false),
 		Front(true),
 		Wo(),
@@ -64,7 +64,7 @@ public:
 		@param[in] Other Intersection to copy
 		@return Intersection
 	*/
-	HOST_DEVICE Intersection& Intersection::operator = (const Intersection& Other)
+	HOST_DEVICE ScatterPoint& ScatterPoint::operator = (const ScatterPoint& Other)
 	{
 		this->Valid			= Other.Valid;
 		this->Front			= Other.Front;

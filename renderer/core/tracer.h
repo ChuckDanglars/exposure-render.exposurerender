@@ -24,48 +24,48 @@ namespace ExposureRender
 /*! \class VolumeProperty
  * \brief Volume property class which determines the appearance of the volume
  */
-class EXPOSURE_RENDER_DLL VolumeProperty : public TimeStamp
+class EXPOSURE_RENDER_DLL Tracer
 {
 public:
 	/*! Default constructor */
-	HOST VolumeProperty() :
-		TimeStamp(),
-		Opacity1D("Opacity"),
-		Diffuse1D("Diffuse"),
-		Specular1D("Specular"),
-		Glossiness1D("Glossiness"),
-		IndexOfReflection1D("IOR"),
-		Emission1D("Emission"),
-		StepFactorPrimary(2),
-		StepFactorShadow(2),
+	HOST Tracer() :
+		Opacity1D(),
+		Diffuse1D(),
+		Specular1D(),
+		Glossiness1D(),
+		IndexOfReflection1D(),
+		Emission1D(),
 		Shadows(true),
 		ShadingType(Enums::BrdfOnly),
 		DensityScale(100),
 		OpacityModulated(true),
 		GradientFactor(0.5f),
-		GradientMode(Enums::CentralDifferences)
+		GradientMode(Enums::CentralDifferences),
+		AcceleratorType(Enums::Octree),
+		StepFactorPrimary(1.0f),
+		StepFactorOcclusion(1.0f)
 	{
 	}
 	
 	/*! Copy constructor
 		@param[in] Other Volume property to copy
 	*/
-	HOST VolumeProperty(const VolumeProperty& Other) :
-		TimeStamp(),
-		Opacity1D("Opacity"),
-		Diffuse1D("Diffuse"),
-		Specular1D("Specular"),
-		Glossiness1D("Glossiness"),
-		IndexOfReflection1D("IOR"),
-		Emission1D("Emission"),
-		StepFactorPrimary(2),
-		StepFactorShadow(2),
+	HOST Tracer(const Tracer& Other) :
+		Opacity1D(),
+		Diffuse1D(),
+		Specular1D(),
+		Glossiness1D(),
+		IndexOfReflection1D(),
+		Emission1D(),
 		Shadows(true),
 		ShadingType(Enums::BrdfOnly),
 		DensityScale(100),
 		OpacityModulated(true),
 		GradientFactor(0.5f),
-		GradientMode(Enums::CentralDifferences)
+		GradientMode(Enums::CentralDifferences),
+		AcceleratorType(Enums::Octree),
+		StepFactorPrimary(1.0f),
+		StepFactorOcclusion(1.0f)
 	{
 		*this = Other;
 	}
@@ -74,24 +74,23 @@ public:
 		@param[in] Other Volume property to copy
 		@return Volume property
 	*/
-	HOST VolumeProperty& operator = (const VolumeProperty& Other)
+	HOST Tracer& operator = (const Tracer& Other)
 	{
-		TimeStamp::operator = (Other);
-
 		this->Opacity1D				= Other.Opacity1D;
 		this->Diffuse1D				= Other.Diffuse1D;
 		this->Specular1D			= Other.Specular1D;
 		this->Glossiness1D			= Other.Glossiness1D;
 		this->IndexOfReflection1D	= Other.IndexOfReflection1D;
 		this->Emission1D			= Other.Emission1D;
-		this->StepFactorPrimary		= Other.StepFactorPrimary;
-		this->StepFactorShadow		= Other.StepFactorShadow;
 		this->Shadows				= Other.Shadows;
 		this->ShadingType			= Other.ShadingType;
 		this->DensityScale			= Other.DensityScale;
 		this->OpacityModulated		= Other.OpacityModulated;
 		this->GradientFactor		= Other.GradientFactor;
 		this->GradientMode			= Other.GradientMode;
+		this->AcceleratorType		= Other.AcceleratorType;
+		this->StepFactorPrimary		= Other.StepFactorPrimary;
+		this->StepFactorOcclusion	= Other.StepFactorOcclusion;
 		
 		return *this;
 	}
@@ -156,14 +155,15 @@ public:
 	GET_REF_SET_MACRO(HOST_DEVICE, Glossiness1D, ScalarTransferFunction1D)
 	GET_REF_SET_MACRO(HOST_DEVICE, IndexOfReflection1D, ScalarTransferFunction1D)
 	GET_REF_SET_MACRO(HOST_DEVICE, Emission1D, ColorTransferFunction1D)
-	GET_SET_MACRO(HOST_DEVICE, StepFactorPrimary, float)
-	GET_SET_MACRO(HOST_DEVICE, StepFactorShadow, float)
 	GET_SET_MACRO(HOST_DEVICE, Shadows, bool)
 	GET_SET_MACRO(HOST_DEVICE, ShadingType, Enums::ShadingMode)
 	GET_SET_MACRO(HOST_DEVICE, DensityScale, float)
 	GET_SET_MACRO(HOST_DEVICE, OpacityModulated, bool)
 	GET_SET_MACRO(HOST_DEVICE, GradientFactor, float)
 	GET_SET_MACRO(HOST_DEVICE, GradientMode, Enums::GradientMode)
+	GET_SET_MACRO(HOST_DEVICE, AcceleratorType, Enums::AcceleratorType)
+	GET_SET_MACRO(HOST_DEVICE, StepFactorPrimary, float)
+	GET_SET_MACRO(HOST_DEVICE, StepFactorOcclusion, float)
 
 protected:
 	ScalarTransferFunction1D	Opacity1D;					/*! Opacity transfer function */
@@ -172,16 +172,15 @@ protected:
 	ScalarTransferFunction1D	Glossiness1D;				/*! Glossiness transfer function */
 	ScalarTransferFunction1D	IndexOfReflection1D;		/*! Index of reflection transfer function */
 	ColorTransferFunction1D		Emission1D;					/*! Emission color transfer function */
-	float						StepFactorPrimary;			/*! Primary step factor for camera rays */
-	float						StepFactorShadow;			/*! Step factor for shadow rays */
 	bool						Shadows;					/*! Whether to render shadows */
 	Enums::ShadingMode			ShadingType;				/*! Type of shading */
 	float						DensityScale;				/*! Overall density scale of the volume */
 	bool						OpacityModulated;			/*! Whether hybrid scattering is opacity modulated or not */
 	float						GradientFactor;				/*! Parameter which controls the amount of BRDF vs. Phase function scattering */
 	Enums::GradientMode			GradientMode;				/*! Determines how gradients are computed */
-
-	friend class Tracer;
+	Enums::AcceleratorType		AcceleratorType;			/*! Type of ray traversal accelerator */
+	float						StepFactorPrimary;			/*! Step factor for primary rays */
+	float						StepFactorOcclusion;		/*! Step factor for shadow rays */
 };
 
 }

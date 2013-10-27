@@ -19,7 +19,7 @@
 #include "core\exception.h"
 #include "vector\vector.h"
 
-#ifdef __CUDACC__
+
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
@@ -204,5 +204,5 @@ static inline void GetTextureReference(const struct textureReference** TextureRe
 }
 
 }
-
+#ifdef __CUDACC__
 #endif
