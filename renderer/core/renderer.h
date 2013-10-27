@@ -17,14 +17,15 @@
 #pragma once
 
 #include "core\volume.h"
-#include "core\light.h"
 #include "core\camera.h"
+#include "core\prop.h"
 #include "core\texture.h"
 
 namespace ExposureRender
 {
 
-#define MAX_NO_TEXTURES	50
+#define MAX_NO_PROPS	100
+#define MAX_NO_TEXTURES	100
 
 /*! Renderer class */
 class EXPOSURE_RENDER_DLL Renderer
@@ -33,15 +34,16 @@ public:
 	/*! Default constructor */
 	HOST Renderer() :
 		Volume(),
-		Lighting(),
 		Camera()
+		NoLights(0),
+
 	{
 	}
 	
 	Volume				Volume;							/*! Volume parameters */
 	Camera				Camera;							/*! Camera parameters */
-	Light				Lights[MAX_NO_LIGHTS];
-	int					NoLights;
+	Prop				Props[MAX_NO_PROPS];			/*! List of scene props */
+	int					NoProps;						/*! Number of props in the scene */
 	Texture				Textures[MAX_NO_TEXTURES];		/*! Textures */
 	int					NoTextures;						/*! Number of active textures */
 };
