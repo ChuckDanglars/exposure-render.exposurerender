@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "shapes.h"
-#include "alignment.h"
+#include "shape\shapes.h"
+#include "shape\alignment.h"
 
 namespace ExposureRender
 {
@@ -111,7 +111,7 @@ public:
 		@param[out] Int Resulting intersection
 		@return If \a R intersects the shape
 	*/
-	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, ScatterEvent& SE) const
 	{
 		const Ray LocalShapeR = TransformRay(this->Transform.InvTM, R);
 
@@ -119,20 +119,19 @@ public:
 
 		switch (this->Type)
 		{
-			case Enums::Plane:		Intersects = Plane.Intersect(LocalShapeR, Int);		break;
-			case Enums::Disk:		Intersects = Disk.Intersect(LocalShapeR, Int);		break;
-			case Enums::Ring:		Intersects = Ring.Intersect(LocalShapeR, Int);		break;
-			case Enums::Box:		Intersects = Box.Intersect(LocalShapeR, Int);		break;
-			case Enums::Sphere:		Intersects = Sphere.Intersect(LocalShapeR, Int);		break;
+			case Enums::Plane:		Intersects = Plane.Intersect(LocalShapeR, SE);		break;
+			case Enums::Disk:		Intersects = Disk.Intersect(LocalShapeR, SE);		break;
+			case Enums::Ring:		Intersects = Ring.Intersect(LocalShapeR, SE);		break;
+			case Enums::Box:		Intersects = Box.Intersect(LocalShapeR, SE);		break;
+			case Enums::Sphere:		Intersects = Sphere.Intersect(LocalShapeR, SE);		break;
 //			case Enums::Cylinder:	Intersects = Plane.Intersect(LocalShapeR, Int);		break;
 		}
 
 		if (Intersects)
 		{
-			Int.SetValid(true);
-			Int.SetP(TransformPoint(this->Transform.TM, Int.GetP()));
-			Int.SetN(TransformVector(this->Transform.TM, Int.GetN()));
-			Int.SetT(Length(Int.GetP(), R.O));
+			SE.SetP(TransformPoint(this->Transform.TM, SE.GetP()));
+			SE.SetN(TransformVector(this->Transform.TM, SE.GetN()));
+			SE.SetT(Length(SE.GetP(), R.O));
 		}
 		
 		return Intersects;

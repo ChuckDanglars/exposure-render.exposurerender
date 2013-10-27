@@ -65,19 +65,19 @@ public:
 	*/
 	HOST_DEVICE bool Intersects(const Ray& R) const
 	{
-		Intersection Int;
+		ScatterEvent SE;
 
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return false;
 
-		Int.SetT((0.0f - R.O[2]) / R.D[2]);
+		SE.SetT((0.0f - R.O[2]) / R.D[2]);
 		
-		if (Int.GetT() < R.MinT || Int.GetT() > R.MaxT)
+		if (SE.GetT() < R.MinT || SE.GetT() > R.MaxT)
 			return false;
 
-		Int.SetUV(Vec2f(Int.GetP()[0], Int.GetP()[1]));
+		SE.SetUV(Vec2f(SE.GetP()[0], SE.GetP()[1]));
 
-		if (Int.GetUV().Length() < InnerRadius || Int.GetUV().Length() >= 1.0f)
+		if (SE.GetUV().Length() < InnerRadius || SE.GetUV().Length() >= 1.0f)
 			return false;
 		
 		return true;
@@ -88,34 +88,34 @@ public:
 		@param[out] Int Resulting intersection
 		@return If \a R intersects the ring
 	*/
-	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, ScatterEvent& SE) const
 	{
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return false;
 
-		Int.SetT((0.0f - R.O[2]) / R.D[2]);
+		SE.SetT((0.0f - R.O[2]) / R.D[2]);
 		
-		if (Int.GetT() < R.MinT || Int.GetT() > R.MaxT)
+		if (SE.GetT() < R.MinT || SE.GetT() > R.MaxT)
 			return false;
 
-		Int.SetP(R(Int.GetT()));
-		Int.SetUV(Vec2f(Int.GetP()[0], Int.GetP()[1]));
-		Int.SetN(Vec3f(0.0f, 0.0f, 1.0f));
+		SE.SetP(R(SE.GetT()));
+		SE.SetUV(Vec2f(SE.GetP()[0], SE.GetP()[1]));
+		SE.SetN(Vec3f(0.0f, 0.0f, 1.0f));
 
 		if (this->OneSided && R.D[2] >= 0.0f)
 		{
-			Int.SetFront(false);
-			Int.SetN(Vec3f(0.0f, 0.0f, -1.0f));
+			SE.SetFront(false);
+			SE.SetN(Vec3f(0.0f, 0.0f, -1.0f));
 		}
 
-		if (Int.GetUV().Length() < this->InnerRadius || Int.GetUV().Length() > this->OuterRadius)
+		if (SE.GetUV().Length() < this->InnerRadius || SE.GetUV().Length() > this->OuterRadius)
 			return false;
 
 		const float Diameter = 2.0f * this->OuterRadius;
 
-		Int.GetUV() /= Diameter;
-		Int.GetUV() += Vec2f(0.5f);
-		Int.GetUV()[0] = 1.0f - Int.GetUV()[0];
+		SE.GetUV() /= Diameter;
+		SE.GetUV() += Vec2f(0.5f);
+		SE.GetUV()[0] = 1.0f - SE.GetUV()[0];
 
 		return true;
 	}

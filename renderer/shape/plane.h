@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "intersection.h"
-#include "surfacesample.h"
+#include "geometry\scatterevent.h"
+#include "geometry\surfacesample.h"
 
 namespace ExposureRender
 {
@@ -61,19 +61,19 @@ public:
 	*/
 	HOST_DEVICE bool Intersects(const Ray& R) const
 	{	
-		Intersection Int;
+		ScatterEvent SE;
 
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return false;
 
-		Int.SetT((0.0f - R.O[2]) / R.D[2]);
+		SE.SetT((0.0f - R.O[2]) / R.D[2]);
 
-		if (Int.GetT() < R.MinT || Int.GetT() > R.MaxT)
+		if (SE.GetT() < R.MinT || SE.GetT() > R.MaxT)
 			return false;
 
-		Int.SetUV(Vec2f(Int.GetP()[0], Int.GetP()[1]));
+		SE.SetUV(Vec2f(SE.GetP()[0], SE.GetP()[1]));
 
-		if (Int.GetUV()[0] < -0.5f * this->Size[0] || Int.GetUV()[0] > 0.5f * this->Size[0] || Int.GetUV()[1] < -0.5f * this->Size[1] || Int.GetUV()[1] > 0.5f * this->Size[1])
+		if (SE.GetUV()[0] < -0.5f * this->Size[0] || SE.GetUV()[0] > 0.5f * this->Size[0] || SE.GetUV()[1] < -0.5f * this->Size[1] || SE.GetUV()[1] > 0.5f * this->Size[1])
 			return false;
 		
 		return true;
@@ -84,29 +84,29 @@ public:
 		@param[out] Int Resulting intersection
 		@return If \a R intersects the plane
 	*/
-	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, ScatterEvent& SE) const
 	{
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return false;
 
-		Int.SetT((0.0f - R.O[2]) / R.D[2]);
+		SE.SetT((0.0f - R.O[2]) / R.D[2]);
 		
-		if (Int.GetT() < R.MinT || Int.GetT() > R.MaxT)
+		if (SE.GetT() < R.MinT || SE.GetT() > R.MaxT)
 			return false;
 
-		Int.SetP(R(Int.GetT()));
-		Int.SetUV(Vec2f(Int.GetP()[0], Int.GetP()[1]));
-		Int.SetN(this->OneSided && R.D[2] >= 0.0f ? Vec3f(0.0f, 0.0f, -1.0f) : Vec3f(0.0f, 0.0f, 1.0f));
-		Int.SetFront(this->OneSided && R.D[2] >= 0.0f ? false : true);
+		SE.SetP(R(SE.GetT()));
+		SE.SetUV(Vec2f(SE.GetP()[0], SE.GetP()[1]));
+		SE.SetN(this->OneSided && R.D[2] >= 0.0f ? Vec3f(0.0f, 0.0f, -1.0f) : Vec3f(0.0f, 0.0f, 1.0f));
+		SE.SetFront(this->OneSided && R.D[2] >= 0.0f ? false : true);
 
-		if (Int.GetUV()[0] < -0.5f * this->Size[0] || Int.GetUV()[0] > 0.5f * this->Size[0] || Int.GetUV()[1] < -0.5f * this->Size[1] || Int.GetUV()[1] > 0.5f * this->Size[1])
+		if (SE.GetUV()[0] < -0.5f * this->Size[0] || SE.GetUV()[0] > 0.5f * this->Size[0] || SE.GetUV()[1] < -0.5f * this->Size[1] || SE.GetUV()[1] > 0.5f * this->Size[1])
 			return false;
 
-		Int.GetUV()[0] /= this->Size[0];
-		Int.GetUV()[1] /= this->Size[1];
+		SE.GetUV()[0] /= this->Size[0];
+		SE.GetUV()[1] /= this->Size[1];
 
-		Int.GetUV() += Vec2f(0.5f);
-		Int.GetUV()[0] = 1.0f - Int.GetUV()[0];
+		SE.GetUV() += Vec2f(0.5f);
+		SE.GetUV()[0] = 1.0f - SE.GetUV()[0];
 
 		return true;
 	}

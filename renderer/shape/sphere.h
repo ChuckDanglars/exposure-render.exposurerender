@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "intersection.h"
-#include "surfacesample.h"
+#include "geometry\scatterevent.h"
+#include "geometry\surfacesample.h"
 
 namespace ExposureRender
 {
@@ -110,7 +110,7 @@ public:
 		@param[out] Int Resulting intersection
 		@return If \a R intersects the sphere
 	*/
-	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, ScatterEvent& SE) const
 	{
 		const float A = Dot(R.D, R.D);
 		const float B = 2 * Dot(R.D, R.O);
@@ -142,22 +142,22 @@ public:
 
 		if (Hit0 >= R.MinT && Hit0 < R.MaxT)
 		{
-			Int.SetT(Hit0);
+			SE.SetT(Hit0);
 
 			if (Hit1 >= R.MinT && Hit1 < R.MaxT)
-				Int.SetT(Hit1);
+				SE.SetT(Hit1);
 		}
 		else
 		{
 			if (Hit1 >= R.MinT && Hit1 < R.MaxT)
-				Int.SetT(Hit1);
+				SE.SetT(Hit1);
 			else
 				return false;
 		}
 
-		Int.SetP(R(Int.GetT()));
-		Int.SetN(Normalize(Int.GetP()));
-		Int.SetUV(SphericalToUV(Int.GetP()));
+		SE.SetP(R(SE.GetT()));
+		SE.SetN(Normalize(SE.GetP()));
+		SE.SetUV(SphericalToUV(SE.GetP()));
 
 		return true;
 	}

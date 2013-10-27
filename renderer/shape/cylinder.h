@@ -16,9 +16,6 @@
 
 #pragma once
 
-#include "geometry.h"
-#include "disk.h"
-
 namespace ExposureRender
 {
 

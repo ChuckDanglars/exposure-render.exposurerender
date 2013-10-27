@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "core\procedural.h"
+
 namespace ExposureRender
 {
 
@@ -35,52 +37,6 @@ public:
 	{
 	}
 	
-	/*! Copy constructor
-		@param[in] Other Texture to copy
-	*/
-	HOST Texture(const HostTexture& Other) :
-		Type(Enums::Procedural),
-		OutputLevel(1.0f),
-		BitmapID(-1),
-		Procedural(),
-		Offset(0.0f),
-		Repeat(0.0f),
-		Flip(0)
-	{
-		*this = Other;
-	}
-	
-	/*! Assignment operator
-		@param[in] Other Texture to copy
-		@return Copied texture
-	*/
-	HOST Texture& operator = (const HostTexture& Other)
-	{
-		TimeStamp::operator = (Other);
-
-		this->Type			= Other.GetType();
-		this->OutputLevel	= Other.GetOutputLevel();
-
-		if (Other.GetBitmapID() >= 0)
-		{
-			if (gBitmapsHashMap.find(Other.GetBitmapID()) != gBitmapsHashMap.end())
-				this->BitmapID = gBitmapsHashMap[Other.GetBitmapID()];
-			else
-				throw(Exception(Enums::Fatal, "Bitmap not found!"));
-		}
-		else
-		{
-			this->BitmapID = -1;
-		}
-
-		this->Procedural	= Other.GetProcedural();
-		this->Offset		= Other.GetOffset();
-		this->Repeat		= Other.GetRepeat();
-		this->Flip			= Other.GetFlip();
-		
-		return *this;
-	}
-
 	Enums::TextureType		Type;				/*! Texture type */
 	float					OutputLevel;		/*! Output level */
 	int						BitmapID;			/*! Bitmap ID */

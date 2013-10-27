@@ -34,9 +34,9 @@ public:
 	/*! Default constructor */
 	HOST Renderer() :
 		Volume(),
-		Camera()
-		NoLights(0),
-
+		Camera(),
+		NoProps(0),
+		NoTextures(0)
 	{
 	}
 	
@@ -49,3 +49,4 @@ public:
 };
 
 }
+

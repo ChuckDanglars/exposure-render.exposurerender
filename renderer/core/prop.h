@@ -16,15 +16,17 @@
 
 #pragma once
 
+#include "shape\shape.h"
+
 namespace ExposureRender
 {
 
 /*! Object class */
-class Light
+class Prop
 {
 public:
 	/*! Default constructor */
-	HOST Light() :
+	HOST Prop() :
 		Visible(true),
 		Shape(),
 		DiffuseTextureID(-1),
@@ -41,7 +43,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Object to copy
 	*/
-	HOST Light(const Light& Other) :
+	HOST Prop(const Prop& Other) :
 		Visible(true),
 		Shape(),
 		DiffuseTextureID(-1),
@@ -60,7 +62,7 @@ public:
 		@param[in] Other Object to copy
 		@return Object
 	*/
-	HOST Light& operator = (const Light& Other)
+	HOST Prop& operator = (const Prop& Other)
 	{
 		this->Visible	= Other.GetVisible();
 		this->Shape		= Other.GetShape();
