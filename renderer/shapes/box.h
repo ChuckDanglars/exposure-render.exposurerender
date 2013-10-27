@@ -95,7 +95,7 @@ public:
 		@param[out] Int Resulting intersection
 		@return If \a R intersects the box
 	*/
-	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, ScatterEvent& SE) const
 	{
 		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
 		const Vec3f BottomT		= InvR * (this->MinP - R.O);
@@ -108,22 +108,22 @@ public:
 		if (LargestMaxT < LargestMinT)
 			return false;
 
-		Int.SetT(LargestMinT > 0.0f ? LargestMinT : 0.0f);
+		SE.SetT(LargestMinT > 0.0f ? LargestMinT : 0.0f);
 
-		if (Int.GetT() < R.MinT || Int.GetT() > R.MaxT)
+		if (SE.GetT() < R.MinT || SE.GetT() > R.MaxT)
 			return false;
 
-		Int.SetP(R(Int.GetT()));
-		Int.SetN(Vec3f(0.0f));
-		Int.SetUV(Vec2f(0.0f, 0.0f));
+		SE.SetP(R(SE.GetT()));
+		SE.SetN(Vec3f(0.0f));
+		SE.SetUV(Vec2f(0.0f, 0.0f));
 
 		for (int i = 0; i < 3; i++)
 		{
-			if (Int.GetP()[i] <= MinP[i] + 0.0001f)
-				Int.GetN()[i] = -1.0f;
+			if (SE.GetP()[i] <= MinP[i] + 0.0001f)
+				SE.GetN()[i] = -1.0f;
 
-			if (Int.GetP()[i] >= MaxP[i] - 0.0001f)
-				Int.GetN()[i] = 1.0f;
+			if (SE.GetP()[i] >= MaxP[i] - 0.0001f)
+				SE.GetN()[i] = 1.0f;
 		}
 
 		return true;

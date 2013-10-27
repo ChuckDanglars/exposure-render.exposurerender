@@ -18,7 +18,7 @@
 
 #include "geometry\boundingbox.h"
 #include "geometry\transform.h"
-#include "geometry\scatterpoint.h"
+#include "geometry\scatterevent.h"
 #include "texture\cudatexture3d.h"
 #include "core\utilities.h"
 #include "core\rng.h"
@@ -195,7 +195,7 @@ public:
 		return sqrtf(Sum);
 	}
 	
-	DEVICE void Scatter(Ray R, RNG& RNG, ScatterPoint& SP)
+	DEVICE void Scatter(Ray R, RNG& RNG, ScatterEvent& SE)
 	{
 		if (!this->BoundingBox.Intersect(R, R.MinT, R.MaxT))
 			return;
@@ -210,18 +210,18 @@ public:
 			if (R.MinT + this->Tracer.GetStepFactorPrimary() >= R.MaxT)
 				return;
 		
-			SP.SetP(R(R.MinT));
-			SP.SetIntensity((*this)(SP.GetP()));
+			SE.SetP(R(R.MinT));
+			SE.SetIntensity((*this)(SE.GetP()));
 
-			Sum				+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(SP.GetIntensity()) * this->Tracer.GetStepFactorPrimary();
+			Sum				+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(SE.GetIntensity()) * this->Tracer.GetStepFactorPrimary();
 			R.MinT			+= this->Tracer.GetStepFactorPrimary();
 		}
 
-		SP.SetValid(true);
-		SP.SetWo(-R.D);
-		SP.SetN(this->NormalizedGradient(SP.GetP(), Enums::CentralDifferences));
-		SP.SetT(R.MinT);
-		SP.SetScatterType(Enums::Volume);
+		SE.SetValid(true);
+		SE.SetWo(-R.D);
+		SE.SetN(this->NormalizedGradient(SE.GetP(), Enums::CentralDifferences));
+		SE.SetT(R.MinT);
+		SE.SetScatterType(Enums::Volume);
 	}
 
 	DEVICE bool Occlusion(Ray R, RNG& RNG)
