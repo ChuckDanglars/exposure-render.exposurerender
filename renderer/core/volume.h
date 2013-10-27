@@ -191,49 +191,6 @@ public:
 		return sqrtf(Sum);
 	}
 	
-	HOST void Create(int Size[4], unsigned short* Data)
-	{
-		/*
-		// Allocate CUDA array in device memory
-		cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
-		
-		cudaArray* Array;
-		
-		cudaExtent Extent;
-
-		Extent.width	= Size[0];
-		Extent.height	= Size[1];
-		Extent.depth	= Size[2];
-
-		cudaMalloc3DArray(&Array, &ChannelFormatDescription, Extent);
-
-		// Copy to device memory some data located at address h_data
-		// in host memory 
-		cudaMemcpyToArray(Array, 0, 0, Data, Size[3] * sizeof(unsigned short), cudaMemcpyHostToDevice);
-
-		// Specify texture
-		struct cudaResourceDesc resDesc;
-		memset(&resDesc, 0, sizeof(resDesc));
-		resDesc.resType = cudaResourceTypeArray;
-		resDesc.res.array.array = Array;
-
-		// Specify texture object parameters
-		struct cudaTextureDesc TextureDescription;
-		memset(&TextureDescription, 0, sizeof(TextureDescription));
-
-		TextureDescription.addressMode[0]		= cudaAddressModeWrap;
-		TextureDescription.addressMode[1]		= cudaAddressModeWrap;
-		TextureDescription.filterMode			= cudaFilterModeLinear;
-		TextureDescription.readMode				= cudaReadModeElementType;
-		TextureDescription.normalizedCoords		= 1;
-
-		// Create texture object
-		cudaTextureObject_t texObj = 0;
-		cudaCreateTextureObject(&texObj, &resDesc, &TextureDescription, NULL);
-		*/
-	}
-
-	cudaTextureObject_t				TextureObject;
 	Transform						Transform;					/*! Transform of the volume */
 	BoundingBox						BoundingBox;				/*! Encompassing bounding box */
 	Vec3f							Spacing;					/*! Voxel spacing */
@@ -241,7 +198,7 @@ public:
 	Vec3f							Size;						/*! Volume size */
 	Vec3f							InvSize;					/*! Inverse volume size */
 	float							MinStep;					/*! Minimum step size */
-	CudaTexture3D<unsigned short>	Voxels;						/*! Voxel 3D buffer */
+	CudaTexture3D<short>			Voxels;						/*! Voxel 3D buffer */
 	Enums::AcceleratorType			AcceleratorType;			/*! Type of ray traversal accelerator */
 	float							MaxGradientMagnitude;		/*! Maximum gradient magnitude */
 };

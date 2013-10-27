@@ -36,21 +36,18 @@ public:
 	{
 	}
 
-	/*! Assignment operator
+	/*! Set data from host
 		@param[in] Other Buffer to copy from
 		@return Copied cuda texture by reference
 	*/
-	HOST CudaTexture3D& operator = (const CudaBuffer3D<T>& Other)
+	HOST void FromHost(const Vec<int, 3>& Resolution, const T* Data)
 	{
-		this->Resize(Other.GetResolution());
+		this->Resize(Resolution);
 		
-		this->FilterMode	= Other.GetFilterMode();
-		this->AddressMode	= Other.GetAddressMode();
-
 		const int NoElements = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
 
 		if (NoElements <= 0)
-			return *this;
+			return;
 
 		cudaExtent CudaExtent;
 		
@@ -60,7 +57,7 @@ public:
 
 		cudaMemcpy3DParms CopyParams = {0};
 		
-		CopyParams.srcPtr		= make_cudaPitchedPtr((void*)Other.GetData(), CudaExtent.width * sizeof(T), CudaExtent.width, CudaExtent.height);
+		CopyParams.srcPtr		= make_cudaPitchedPtr((void*)Data, CudaExtent.width * sizeof(T), CudaExtent.width, CudaExtent.height);
 		CopyParams.dstArray		= this->Array;
 		CopyParams.extent		= CudaExtent;
 		CopyParams.kind			= cudaMemcpyHostToDevice;
@@ -68,8 +65,6 @@ public:
 #ifdef __CUDACC__
 		Cuda::Memcpy3D(&CopyParams);
 #endif
-
-		return *this;
 	}
 
 	/*! Resize the buffer

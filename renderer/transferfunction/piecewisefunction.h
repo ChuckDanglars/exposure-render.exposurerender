@@ -16,10 +16,65 @@
 
 #pragma once
 
-#include "transferfunction\transferfunction1d.h"
-#include "transferfunction\transferfunction2d.h"
+#include "transferfunction\piecewisefunctionnode.h"
 
 namespace ExposureRender
 {
+
+/*! Piecewise function class */
+template<class T, int Size>
+class EXPOSURE_RENDER_DLL PiecewiseFunction
+{
+public:
+	/*! Constructor
+		@param[in] Name Name
+	*/
+	HOST_DEVICE PiecewiseFunction(const char* Name = "Untitled") :
+		NodeRange(FLT_MAX, FLT_MIN),
+		Nodes(),
+		Count(0)
+	{
+		this->SetName(Name);
+	}
+	
+	/*! Destructor */
+	HOST_DEVICE ~PiecewiseFunction()
+	{
+	}
+	
+	/*! Copy constructor
+		@param[in] Other Piecewise function to copy
+	*/
+	HOST_DEVICE PiecewiseFunction(const PiecewiseFunction& Other)
+	{
+		*this = Other;
+	}
+	
+	/*! Assignment operator
+		@param[in] Other Piecewise function to copy
+		@return Reference to copied piecewise function
+	*/
+	HOST_DEVICE PiecewiseFunction& operator = (const PiecewiseFunction& Other)
+	{
+		this->NodeRange		= Other.NodeRange;
+		this->Nodes			= Other.Nodes;
+		this->Count			= Other.Count;
+
+		return *this;
+	}
+	
+	/*! Resets the content of the piecewise function */
+	HOST_DEVICE void Reset()
+	{
+		this->NodeRange	= Vec2f(FLT_MAX, FLT_MIN);
+		this->Nodes		= Vec<PiecewiseFunctionNode<T>, 256>();
+		this->Count		= 0;
+	}
+
+protected:
+	Vec2f									NodeRange;				/*! Range of the nodes */
+	Vec<PiecewiseFunctionNode<T>, 256>		Nodes;					/*! Nodes vector */
+	int										Count;					/*! Number of active nodes */
+};
 
 }

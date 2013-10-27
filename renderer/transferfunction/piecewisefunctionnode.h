@@ -16,93 +16,100 @@
 
 #pragma once
 
-#include "transferfunction\transferfunction.h"
-#include "transferfunction\piecewiselinearfunction.h"
-#include "color\color.h"
+#include "vector\vector.h"
 
 namespace ExposureRender
 {
 
-/*! \class TransferFunction1D
- * \brief One-dimensional transfer function base template class
- */
+/*! Piecewise function node class */
 template<class T>
-class EXPOSURE_RENDER_DLL TransferFunction1D : public TransferFunction
+class EXPOSURE_RENDER_DLL PiecewiseFunctionNode
 {
 public:
 	/*! Default constructor */
-	HOST_DEVICE TransferFunction1D() :
-		TransferFunction("Untitled"),
-		PLF("Untitled")
+	HOST_DEVICE PiecewiseFunctionNode() :
+		Position(),
+		Value()
 	{
 	}
 
-	/*! Constructor
-		@param[in] Name Name
+	/*! Constructor with \a Position and \a Value
+		@param[in] Position Node position
+		@param[in] Value Node value
 	*/
-	HOST_DEVICE TransferFunction1D(const char* Name) :
-		TransferFunction(Name),
-		PLF(Name)
+	HOST_DEVICE PiecewiseFunctionNode(const float& Position, const T& Value) :
+		Position(Position),
+		Value(Value)
+	{
+	}
+	
+	/*! Destructor */
+	HOST_DEVICE ~PiecewiseFunctionNode()
 	{
 	}
 	
 	/*! Copy constructor
-		@param[in] Other Transfer function to copy
+		@param[in] Other Piecewise function node to copy
 	*/
-	HOST_DEVICE TransferFunction1D(const TransferFunction1D& Other) :
-		TransferFunction("Untitled"),
-		PLF("Untitled")
+	HOST_DEVICE PiecewiseFunctionNode(const PiecewiseFunctionNode& Other)
 	{
 		*this = Other;
 	}
-
-	/*! Destructor */
-	HOST_DEVICE virtual ~TransferFunction1D(void)
-	{
-	}
 	
 	/*! Assignment operator
-		@param[in] Other Transfer function to copy
-		@return Reference to the copied transfer function
+		@param[in] Other Piecewise function node to copy
+		@return Reference to piecewise function node
 	*/
-	HOST_DEVICE TransferFunction1D& operator = (const TransferFunction1D& Other)
+	HOST_DEVICE PiecewiseFunctionNode& operator = (const PiecewiseFunctionNode& Other)
 	{
-		TransferFunction::operator = (Other);
-		
-		this->PLF = Other.PLF;
-		
+		this->Position	= Other.Position;
+		this->Value		= Other.Value;
+
 		return *this;
 	}
-
-	/*! Adds a node with \a Position and \a Value
-		@param[in] Position Position of the node
-		@param[in] Value Value of the node
-	*/
-	HOST_DEVICE void AddNode(const float& Position, const T& Value)
-	{
-		this->PLF.AddNode(Position, Value);
-	}
-
-	/*! Resets the content of the piecewise linear function */
+	
+	/*! Resets the content of the piecewise function node */
 	HOST_DEVICE void Reset()
 	{
-		this->PLF.Reset();
+		this->Position	= 0.0f;
+		this->Value		= T();
 	}
-	
-	/*! Evaluates the transfer function at \a Position
-		@param[in] Position Position to evaluate
-		@return Value at \a Position
+
+	/*! Gets the node position
+		@return Node position
 	*/
-	HOST_DEVICE T Evaluate(const float& Position) const
+	HOST_DEVICE float GetPosition() const
 	{
-		return this->PLF.Evaluate(Position);
+		return this->Position;
+	}
+
+	/*! Sets the node position
+		@param[in] Position Node position
+	*/
+	HOST_DEVICE void SetPosition(const float& Position)
+	{
+		this->Position = Position;
+	}
+
+	/*! Gets the node value
+		@return Node value
+	*/
+	HOST_DEVICE T GetValue() const
+	{
+		return this->Value;
+	}
+
+	/*! Sets the node value
+		@param[in] Value Node value
+	*/
+	HOST_DEVICE void SetValue(const T& Value)
+	{
+		this->Value = Value;
 	}
 
 protected:
-	PiecewiseLinearFunction<T>		PLF;			/*! Piecewise linear function */
+	float	Position;	/*! Node position */
+	T		Value;		/*! Node value */
 };
-
-typedef TransferFunction1D<float>		ScalarTransferFunction1D;
-typedef TransferFunction1D<ColorXYZf>	ColorTransferFunction1D;
 
 }

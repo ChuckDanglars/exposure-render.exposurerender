@@ -7,6 +7,7 @@
 #include <QByteArray>
 #include <QTimer>
 #include <QDebug>
+#include <QFile>
 
 #include <time.h>
 
@@ -21,6 +22,14 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 
 	this->Renderer.Camera.GetFilm().Block.x	= Settings.value("cuda/blockwidth", 8).toInt();
 	this->Renderer.Camera.GetFilm().Block.y	= Settings.value("cuda/blockheight", 8).toInt();
+
+	QFile File("C:\\workspaces\\manix.raw");
+
+	QByteArray Voxels = File.readAll();
+
+	int Size[3] = {  };
+
+	this->Renderer.Volume.Voxels.FromHost(Vec3i(256, 230, 256), (short*)Voxels.data());
 }
 
 void QRenderer::Start()

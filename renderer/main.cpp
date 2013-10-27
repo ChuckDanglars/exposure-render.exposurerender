@@ -15,15 +15,6 @@
 
 int main(int argc, char **argv)
 {
-	Halton1D H1(2);
-	Halton1D H2(2, 100);
-
-	for (int i = 0; i < 100; i++)
-	{
-		qDebug() << "H1 Sample" << i << ":" << H1.GetNext();
-		qDebug() << "H2 Sample" << i << ":" << H2.GetNext();
-	}
-
 	qDebug() << "Starting up renderer";
 	
 	QApplication Application(argc, argv);
