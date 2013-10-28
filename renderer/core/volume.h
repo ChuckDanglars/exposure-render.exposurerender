@@ -40,7 +40,6 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels(),
 		AcceleratorType(Enums::Octree),
 		MaxGradientMagnitude(0.0f),
 		Tracer()
@@ -51,12 +50,9 @@ public:
 		@param[in] P Position at which to compute the gradient
 		@return Gradient at \a P
 	*/
-	HOST void Set(const Vec3i& Resolution, const Vec3f& Spacing, short* Data, const Matrix44& Matrix = Matrix44())
+	HOST void Set(const Vec3i& Resolution, const Vec3f& Spacing, short* Voxels, const Matrix44& Matrix = Matrix44())
 	{
 		this->Transform.Set(Matrix);
-
-		this->Voxels.Resize(Resolution);
-		this->Voxels.FromHost(Data);
 
 		this->Spacing		= Spacing;
 		this->InvSpacing	= 1.0f / this->Spacing;
@@ -65,15 +61,17 @@ public:
 
 		this->BoundingBox.SetMinP(Vec3f(0.0f));
 		this->BoundingBox.SetMaxP(this->Size);
+
+		this->Texture.Create(Resolution, (short*)Voxels);
 	}
 	
 	/*! Gets the voxel data at \a P
 		@param[in] P Position
 		@return Data at \a XYZ volume
 	*/
-	DEVICE unsigned short GetIntensity(const Vec3f& P)
+	DEVICE short GetIntensity(const Vec3f& P)
 	{
-		return this->Voxels(Vec3i(P[0] * this->Spacing[0], P[1] * this->Spacing[1], P[2] * this->Spacing[2]));
+		return this->Texture(Vec3f(P[0] * this->Spacing[0], P[1] * this->Spacing[1], P[2] * this->Spacing[2]));
 	}
 
 	/*! Computes the gradient at \a P using central differences
@@ -204,7 +202,7 @@ public:
 				return false;
 		
 			SE.SetP(R(R.MinT));
-			SE.SetIntensity(this->Voxels(SE.GetP()));
+			SE.SetIntensity(this->Texture(SE.GetP()));
 
 			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(SE.GetIntensity()) * this->Tracer.GetStepFactorPrimary();
 			R.MinT	+= this->Tracer.GetStepFactorPrimary();
@@ -245,7 +243,7 @@ public:
 			if (R.MinT > R.MaxT)
 				return false;
 
-			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(this->Voxels(R(R.MinT))) * this->Tracer.GetStepFactorOcclusion();
+			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(this->Texture(R(R.MinT))) * this->Tracer.GetStepFactorOcclusion();
 			R.MinT	+= this->Tracer.GetStepFactorOcclusion();
 		}
 
@@ -259,7 +257,7 @@ public:
 	Vec3f							Size;						/*! Volume size */
 	Vec3f							InvSize;					/*! Inverse volume size */
 	float							MinStep;					/*! Minimum step size */
-	CudaBuffer3D<short>				Voxels;						/*! Voxel 3D buffer */
+	CudaTexture3D					Texture;					/*! 3D voxels texture */
 	Enums::AcceleratorType			AcceleratorType;			/*! Type of ray traversal accelerator */
 	float							MaxGradientMagnitude;		/*! Maximum gradient magnitude */
 	Tracer							Tracer;						/*! Tracer */

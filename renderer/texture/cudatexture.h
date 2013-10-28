@@ -33,11 +33,10 @@ public:
 	*/
 	HOST CudaTexture(const bool& Normalized = true, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Clamp) :
 		Resolution(),
-		Array(NULL),
-		Data(NULL),
 		Normalized(Normalized),
 		FilterMode(FilterMode),
-		AddressMode(AddressMode)
+		AddressMode(AddressMode),
+		TextureObject()
 	{
 	}
 	
@@ -45,6 +44,7 @@ public:
 	HOST virtual ~CudaTexture(void)
 	{
 		this->Free();
+		cudaDestroyTextureObject(this->TextureObject);
 	}
 	
 	/*! Assignment operator
@@ -59,33 +59,6 @@ public:
 	/*! Free dynamic data owned by the texture */
 	HOST void Free(void)
 	{
-#ifdef __CUDACC__
-		Cuda::FreeArray(this->Array);
-#endif
-	}
-	
-	/*! Binds the texture to the data
-		@param[in] TextureReference Texture reference to bind to
-	*/
-	HOST void Bind(textureReference& TextureReference)
-	{
-		if (this->Resolution.CumulativeProduct() <= 0)
-			return;
-
-		if (this->Array == NULL)
-			return;
-
-		TextureReference.normalized		= this->Normalized;
-		TextureReference.filterMode		= (cudaTextureFilterMode)this->FilterMode;
-		TextureReference.addressMode[0]	= (cudaTextureAddressMode)this->AddressMode;
-		TextureReference.addressMode[1]	= (cudaTextureAddressMode)this->AddressMode;
-		TextureReference.addressMode[2]	= (cudaTextureAddressMode)this->AddressMode;
-
-		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
-
-#ifdef __CUDACC__
-		Cuda::BindTextureToArray(&TextureReference, this->Array, &ChannelFormatDescription);
-#endif
 	}
 	
 	/*! Gets the resolution
@@ -98,11 +71,10 @@ public:
 
 protected:
 	Vec<int, NoDimensions>	Resolution;			/*! Texture resolution */
-	cudaArray*				Array;				/*! Cuda array, in case of pitched texture memory */
-	T*						Data;				/*! Data array, in case of linear memory */
 	bool					Normalized;			/*! Whether texture access is in normalized texture coordinates */
 	Enums::FilterMode		FilterMode;			/*! Type of filtering  */
 	Enums::AddressMode		AddressMode;		/*! Type of addressing  */
+	cudaTextureObject_t		TextureObject;		/*! Cuda texture object */
 };
 
 }

@@ -39,9 +39,11 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 	this->Renderer.Volume.Tracer.SetStepFactorPrimary(Settings.value("traversal/stepfactorprimary", 3.0).toFloat());
 	this->Renderer.Volume.Tracer.SetStepFactorOcclusion(Settings.value("traversal/stepfactorocclusion", 6.0).toFloat());
 	
-	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(0.0f, 0.0f);
-	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(200.0f, 0.0f);
+	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(-100.0f, 0.0f);
+	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(-50.0f, 0.0f);
 	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(205.0f, 1.0f);
+
+	
 
 	// this->Renderer.Camera.SetPos(Vec3f(0, -100, 0));
 }

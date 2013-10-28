@@ -16,14 +16,14 @@
 
 #pragma once
 
-#include "cudatexture.h"
+#include "texture\cudatexture.h"
+#include "core\cudawrapper.h"
 
 namespace ExposureRender
 {
 
 /*! 3D Cuda texture class */
-template<class T>
-class EXPOSURE_RENDER_DLL CudaTexture3D : public CudaTexture<T, 3>
+class EXPOSURE_RENDER_DLL CudaTexture3D
 {
 public:
 	/*! Constructor
@@ -31,63 +31,97 @@ public:
 		@param[in] FilterMode Type of filtering
 		@param[in] AddressMode Type of addressing near edges
 	*/
-	HOST CudaTexture3D(const bool& Normalized = true, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Clamp) :
-		CudaTexture<T, 3>(Normalized, FilterMode, AddressMode)
+	HOST CudaTexture3D() :
+		Resolution(),
+		Array(0),
+		TextureObject()
 	{
 	}
 
-	/*! Set data from host
-		@param[in] Other Buffer to copy from
-		@return Copied cuda texture by reference
-	*/
-	HOST void FromHost(const Vec<int, 3>& Resolution, const T* Data)
+	/*! Destructor */
+	HOST virtual ~CudaTexture3D(void)
 	{
-		this->Resize(Resolution);
-		
-		const int NoElements = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
+		this->Free();
 
-		if (NoElements <= 0)
-			return;
+		cudaDestroyTextureObject(this->TextureObject);
+	}
 
-		cudaExtent CudaExtent;
-		
-		CudaExtent.width	= this->Resolution[0];
-		CudaExtent.height	= this->Resolution[1];
-		CudaExtent.depth	= this->Resolution[2];
+	/*! Free dynamic data owned by the texture */
+	HOST void Free(void)
+	{
+		Cuda::FreeArray(this->Array);
+	}
 
-		cudaMemcpy3DParms CopyParams = {0};
-		
-		CopyParams.srcPtr		= make_cudaPitchedPtr((void*)Data, CudaExtent.width * sizeof(T), CudaExtent.width, CudaExtent.height);
-		CopyParams.dstArray		= this->Array;
-		CopyParams.extent		= CudaExtent;
-		CopyParams.kind			= cudaMemcpyHostToDevice;
-		
+	/*! Get buffer element at position \a XY
+		@param[in] XY XY position in buffer
+		@return Interpolated value at \a XY
+	*/
+	DEVICE short operator()(const Vec3f& NormalizedUVW)
+	{
 #ifdef __CUDACC__
-		Cuda::Memcpy3D(&CopyParams);
+		return tex3D<float>(this->TextureObject, NormalizedUVW[0], NormalizedUVW[1], NormalizedUVW[2]) * (float)SHRT_MAX;
+#else
+		return 1000;
 #endif
 	}
 
-	/*! Resize the buffer
-		@param[in] Resolution Resolution of the buffer
-	*/
-	HOST void Resize(const Vec<int, 3>& Resolution)
+	HOST void Create(const Vec<int, 3>& Resolution, short* HostData)
 	{
 		if (this->Resolution == Resolution)
 			return;
 		else
 			this->Free();
-		
+
 		this->Resolution = Resolution;
+
+		cudaExtent CudaExtent;
+
+		CudaExtent.width	= Resolution[0];
+		CudaExtent.height	= Resolution[1];
+		CudaExtent.depth	= Resolution[2];
+	
+		cudaChannelFormatDesc CudaChannelFormat = cudaCreateChannelDesc<short>();
+
+		Cuda::HandleCudaError(cudaMalloc3DArray(&this->Array, &CudaChannelFormat, CudaExtent));
+
+		if (this->Resolution.CumulativeProduct() == 0)
+			return;
+
+		cudaMemcpy3DParms CopyParams = { 0 };
+
+		CopyParams.srcPtr	= make_cudaPitchedPtr(HostData, CudaExtent.width * sizeof(short), CudaExtent.width, CudaExtent.height);
+		CopyParams.dstArray	= this->Array;
+		CopyParams.extent	= CudaExtent;
+		CopyParams.kind		= cudaMemcpyHostToDevice;
+	
+		Cuda::HandleCudaError(cudaMemcpy3D(&CopyParams));
+
+		//Cuda::HandleCudaError(cudaMemcpyToArray(this->Array, 0, 0, HostData, this->Resolution.CumulativeProduct() * sizeof(short), cudaMemcpyHostToDevice));
+
+		cudaResourceDesc CudaResource;
 		
-		const int NoElementes = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
+		memset(&CudaResource, 0, sizeof(CudaResource));
 
-		if (NoElementes <= 0)
-			throw (Exception(Enums::Error, "No. elements is zero!"));
+		CudaResource.resType			= cudaResourceTypeArray;
+		CudaResource.res.array.array	= this->Array;
 
-#ifdef __CUDACC__
-		Cuda::Malloc3DArray(&this->Array, cudaCreateChannelDesc<T>(), this->Resolution);
-#endif
+		cudaTextureDesc CudaTexture;
+		memset(&CudaTexture, 0, sizeof(CudaTexture));
+
+		CudaTexture.addressMode[0]		= cudaAddressModeWrap;
+		CudaTexture.addressMode[1]		= cudaAddressModeWrap;
+		CudaTexture.addressMode[2]		= cudaAddressModeWrap;
+		CudaTexture.filterMode			= cudaFilterModeLinear;
+		CudaTexture.readMode			= cudaReadModeNormalizedFloat;
+		CudaTexture.normalizedCoords	= 1;
+
+		Cuda::HandleCudaError(cudaCreateTextureObject(&this->TextureObject, &CudaResource, &CudaTexture, 0));
 	}
+
+private:
+	Vec<int, 3>				Resolution;			/*! Texture resolution */
+	cudaArray*				Array;				/*! Cuda array, in case of pitched texture memory */
+	cudaTextureObject_t		TextureObject;		/*! Cuda texture object */
 };
 
 }
