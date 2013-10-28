@@ -59,7 +59,7 @@ public:
 	DEVICE short operator()(const Vec3f& NormalizedUVW)
 	{
 #ifdef __CUDACC__
-		return tex3D<float>(this->TextureObject, NormalizedUVW[0], NormalizedUVW[1], NormalizedUVW[2]) * (float)SHRT_MAX;
+		return tex3D<short>(this->TextureObject, NormalizedUVW[0], NormalizedUVW[1], NormalizedUVW[2]) * (float)SHRT_MAX;
 #else
 		return 1000;
 #endif
