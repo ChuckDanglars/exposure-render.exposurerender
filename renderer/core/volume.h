@@ -248,6 +248,8 @@ public:
 	{
 		if (!this->BoundingBox.Intersect(R, R.MinT, R.MaxT))
 			return false;
+		else
+			return true;
 
 		const float S	= -log(RNG.Get1()) / this->Tracer.GetDensityScale();
 		float Sum		= 0.0f;

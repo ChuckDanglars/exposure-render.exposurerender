@@ -16,41 +16,30 @@
 
 #pragma once
 
-#include "core\volume.h"
-#include "core\camera.h"
-#include "core\prop.h"
-#include "core\texture.h"
-#include "core\bitmap.h"
+#include "vector\vector.h"
 
 namespace ExposureRender
 {
 
-#define MAX_NO_PROPS		100
-#define MAX_NO_TEXTURES		100
-#define MAX_NO_BITMAPS		100
-
-/*! Renderer class */
-class EXPOSURE_RENDER_DLL Renderer
+/*! Bitmap class */
+class EXPOSURE_RENDER_DLL Bitmap
 {
 public:
 	/*! Default constructor */
-	HOST Renderer() :
-		Volume(),
-		Camera(),
-		NoProps(0),
-		NoTextures(0)
+	HOST Bitmap()
 	{
 	}
 	
-	Volume				Volume;							/*! Volume parameters */
-	Camera				Camera;							/*! Camera parameters */
-	Prop				Props[MAX_NO_PROPS];			/*! List of scene props */
-	int					NoProps;						/*! Number of props in the scene */
-	Texture				Textures[MAX_NO_TEXTURES];		/*! Textures */
-	int					NoTextures;						/*! Number of active textures */
-	Bitmap				Bitmaps[MAX_NO_BITMAPS];		/*! Array of bitmaps */
-	int					NoBitmaps;						/*! Number of active textures */
+	/*! Assignment operator
+		@param[in] Other Bitmap to copy
+		@return Copied bitmap
+	*/
+	HOST Bitmap& operator = (const Bitmap& Other)
+	{
+		return *this;
+	}
+
+protected:
 };
 
 }
-
