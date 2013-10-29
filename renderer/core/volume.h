@@ -26,7 +26,7 @@
 
 namespace ExposureRender
 {
-
+			
 /*! Volume class */
 class EXPOSURE_RENDER_DLL Volume
 {
@@ -35,23 +35,33 @@ public:
 	HOST Volume() :
 		Transform(),
 		BoundingBox(),
+		Resolution(0),
 		Spacing(1.0f),
 		InvSpacing(1.0f),
 		Size(1.0f),
 		InvSize(1.0f),
-		MinStep(1.0f),
+		Array(0),
+		TextureObject(),
 		AcceleratorType(Enums::Octree),
-		MaxGradientMagnitude(0.0f),
 		Tracer()
 	{
+	}
+
+	/*! Destructor */
+	HOST virtual ~Volume(void)
+	{
+		Cuda::HandleCudaError(cudaFree(this->Array));
+		Cuda::HandleCudaError(cudaDestroyTextureObject(this->TextureObject));
 	}
 
 	/*! Computes the gradient at \a P using central differences
 		@param[in] P Position at which to compute the gradient
 		@return Gradient at \a P
 	*/
-	HOST void Set(const Vec3i& Resolution, const Vec3f& Spacing, short* Voxels, const Matrix44& Matrix = Matrix44())
+	HOST void Create(const Vec3i& Resolution, const Vec3f& Spacing, short* Voxels, const Matrix44& Matrix = Matrix44())
 	{
+		this->Resolution = Resolution;
+
 		this->Transform.Set(Matrix);
 
 		this->Spacing		= Spacing;
@@ -62,20 +72,67 @@ public:
 		this->BoundingBox.SetMinP(Vec3f(0.0f));
 		this->BoundingBox.SetMaxP(this->Size);
 
-		this->Texture.Create(Resolution, (short*)Voxels);
+		Cuda::HandleCudaError(cudaFree(this->Array));
+
+		this->Array = 0;
+
+		cudaExtent CudaExtent;
+
+		CudaExtent.width	= this->Resolution[0];
+		CudaExtent.height	= this->Resolution[1];
+		CudaExtent.depth	= this->Resolution[2];
+	
+		cudaChannelFormatDesc CudaChannelFormat = cudaCreateChannelDesc<short>();
+
+		Cuda::HandleCudaError(cudaMalloc3DArray(&this->Array, &CudaChannelFormat, CudaExtent));
+
+		if (this->Resolution.CumulativeProduct() == 0)
+			return;
+
+		cudaMemcpy3DParms CopyParams = { 0 };
+
+		CopyParams.srcPtr	= make_cudaPitchedPtr(Voxels, CudaExtent.width * sizeof(short), CudaExtent.width, CudaExtent.height);
+		CopyParams.dstArray	= this->Array;
+		CopyParams.extent	= CudaExtent;
+		CopyParams.kind		= cudaMemcpyHostToDevice;
+	
+		Cuda::HandleCudaError(cudaMemcpy3D(&CopyParams));
+
+		cudaResourceDesc CudaResource;
+		
+		memset(&CudaResource, 0, sizeof(CudaResource));
+
+		CudaResource.resType			= cudaResourceTypeArray;
+		CudaResource.res.array.array	= this->Array;
+
+		cudaTextureDesc CudaTexture;
+		memset(&CudaTexture, 0, sizeof(CudaTexture));
+
+		CudaTexture.addressMode[0]		= cudaAddressModeClamp;
+		CudaTexture.addressMode[1]		= cudaAddressModeClamp;
+		CudaTexture.addressMode[2]		= cudaAddressModeClamp;
+		CudaTexture.filterMode			= cudaFilterModeLinear;
+		CudaTexture.readMode			= cudaReadModeNormalizedFloat;
+		CudaTexture.normalizedCoords	= 1;
+
+		Cuda::HandleCudaError(cudaCreateTextureObject(&this->TextureObject, &CudaResource, &CudaTexture, 0));
 	}
 	
-	/*! Gets the voxel data at \a P
-		@param[in] P Position
-		@return Data at \a XYZ volume
+	/*! Gets the (interpolated) voxel value at \a P
+		@param[in] P Position in volume coordinate space
+		@return Voxel value at \a P
 	*/
 	DEVICE short GetIntensity(const Vec3f& P)
 	{
-		return this->Texture(Vec3f(P[0] * this->Spacing[0], P[1] * this->Spacing[1], P[2] * this->Spacing[2]));
+#ifdef __CUDACC__
+		return tex3D<float>(this->TextureObject, P[0] * this->InvSize[0], P[1]* this->InvSize[1], P[2]* this->InvSize[2]) * (float)SHRT_MAX;
+#else
+		return 0;
+#endif
 	}
 
 	/*! Computes the gradient at \a P using central differences
-		@param[in] P Position at which to compute the gradient
+		@param[in] P Position in volume space at which to compute the gradient
 		@return Gradient at \a P
 	*/
 	DEVICE Vec3f GradientCD(const Vec3f& P)
@@ -91,7 +148,7 @@ public:
 	}
 	
 	/*! Computes the gradient at \a P using forward differences
-		@param[in] P Position at which to compute the gradient
+		@param[in] P Position in volume space at which to compute the gradient
 		@return Gradient at \a P
 	*/
 	DEVICE Vec3f GradientFD(const Vec3f& P)
@@ -108,7 +165,7 @@ public:
 	}
 	
 	/*! Computes the filtered gradient at \a P using central differences
-		@param[in] P Position at which to compute the gradient
+		@param[in] P Position in volume space at which to compute the gradient
 		@return Gradient at \a P
 	*/
 	DEVICE Vec3f GradientFiltered(const Vec3f& P)
@@ -132,7 +189,7 @@ public:
 	}
 	
 	/*! Computes the gradient at \a P using \a GradientMode
-		@param[in] P Position at which to compute the gradient
+		@param[in] P Position in volume space at which to compute the gradient
 		@param[in] GradientMode Type of gradient computation
 		@return Gradient at \a P
 	*/
@@ -149,7 +206,7 @@ public:
 	}
 	
 	/*! Computes the normalized gradient at \a P using \a GradientMode
-		@param[in] P Position at which to compute the gradient
+		@param[in] P Position in volume space at which to compute the gradient
 		@param[in] GradientMode Type of gradient computation
 		@return Gradient at \a P
 	*/
@@ -181,7 +238,7 @@ public:
 	}
 	
 	/*! Intersects the volume with ray \a R and determine if a scattering event \a SE occurs within the volume
-		@param[in] R Ray to intersect the volume with
+		@param[in] R Ray in world space to intersect the volume with
 		@param[in] RNG Random number generator
 		@param[in] SE Scattering event, filled if a scattering event occurs
 		@return Whether a scattering event has occured or not
@@ -196,18 +253,23 @@ public:
 
 		R.MinT += RNG.Get1() * this->Tracer.GetStepFactorPrimary();
 
+		Vec3f P;
+		short Intensity = 0;
+
 		while (Sum < S)
 		{
 			if (R.MinT + this->Tracer.GetStepFactorPrimary() >= R.MaxT)
 				return false;
 		
-			SE.SetP(R(R.MinT));
-			SE.SetIntensity(this->Texture(SE.GetP()));
+			P = R(R.MinT);
+			Intensity = this->GetIntensity(P);
 
-			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(SE.GetIntensity()) * this->Tracer.GetStepFactorPrimary();
+			Sum		+= this->Tracer.GetDensityScale() * Intensity * this->Tracer.GetStepFactorPrimary();
 			R.MinT	+= this->Tracer.GetStepFactorPrimary();
 		}
 
+		SE.SetP(P);
+		SE.SetIntensity(Intensity);
 		SE.SetWo(-R.D);
 		SE.SetN(this->NormalizedGradient(SE.GetP(), Enums::CentralDifferences));
 		SE.SetT(R.MinT);
@@ -217,7 +279,7 @@ public:
 	}
 
 	/*! Determine if a scattering event occurs within the parametric range of the ray \a R
-		@param[in] R Ray to intersect the volume with
+		@param[in] R Ray in world space to intersect the volume with
 		@param[in] RNG Random number generator
 		@return Whether a scattering event has occured or not
 	*/
@@ -243,24 +305,35 @@ public:
 			if (R.MinT > R.MaxT)
 				return false;
 
-			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(this->Texture(R(R.MinT))) * this->Tracer.GetStepFactorOcclusion();
+			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(this->GetIntensity(R(R.MinT))) * this->Tracer.GetStepFactorOcclusion();
 			R.MinT	+= this->Tracer.GetStepFactorOcclusion();
 		}
 
 		return true;
 	}
 
-	Transform						Transform;					/*! Transform of the volume */
-	BoundingBox						BoundingBox;				/*! Encompassing bounding box */
-	Vec3f							Spacing;					/*! Voxel spacing */
-	Vec3f							InvSpacing;					/*! Inverse voxel spacing */
-	Vec3f							Size;						/*! Volume size */
-	Vec3f							InvSize;					/*! Inverse volume size */
-	float							MinStep;					/*! Minimum step size */
-	CudaTexture3D					Texture;					/*! 3D voxels texture */
-	Enums::AcceleratorType			AcceleratorType;			/*! Type of ray traversal accelerator */
-	float							MaxGradientMagnitude;		/*! Maximum gradient magnitude */
-	Tracer							Tracer;						/*! Tracer */
+	GET_SET_MACRO(HOST_DEVICE, Transform, Transform)
+	GET_MACRO(HOST_DEVICE, BoundingBox, BoundingBox)
+	GET_MACRO(HOST_DEVICE, Resolution, Vec3i)
+	GET_MACRO(HOST_DEVICE, Spacing, Vec3f)
+	GET_MACRO(HOST_DEVICE, InvSpacing, Vec3f)
+	GET_MACRO(HOST_DEVICE, Size, Vec3f)
+	GET_MACRO(HOST_DEVICE, InvSize, Vec3f)
+	GET_SET_MACRO(HOST_DEVICE, AcceleratorType, Enums::AcceleratorType)
+	GET_REF_MACRO(HOST_DEVICE, Tracer, Tracer)
+
+private:
+	Transform				Transform;			/*! Transform of the volume */
+	BoundingBox				BoundingBox;		/*! Encompassing bounding box */
+	Vec3i					Resolution;			/*! Texture resolution */
+	Vec3f					Spacing;			/*! Voxel spacing */
+	Vec3f					InvSpacing;			/*! Inverse voxel spacing */
+	Vec3f					Size;				/*! Volume size */
+	Vec3f					InvSize;			/*! Inverse volume size */
+	cudaArray*				Array;				/*! Cuda array, used by the texture object */
+	cudaTextureObject_t		TextureObject;		/*! Cuda texture object */
+	Enums::AcceleratorType	AcceleratorType;	/*! Type of ray traversal accelerator */
+	Tracer					Tracer;				/*! Tracer */
 };
 
 }

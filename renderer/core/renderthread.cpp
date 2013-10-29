@@ -34,14 +34,14 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 
 	Matrix44 M;
 
-	this->Renderer.Volume.Set(Vec3i(256, 230, 256), Vec3f(1.0f), (short*)Voxels.data(), M);
+	this->Renderer.Volume.Create(Vec3i(256, 230, 256), Vec3f(1.0f), (short*)Voxels.data(), M);
 	
-	this->Renderer.Volume.Tracer.SetStepFactorPrimary(Settings.value("traversal/stepfactorprimary", 3.0).toFloat());
-	this->Renderer.Volume.Tracer.SetStepFactorOcclusion(Settings.value("traversal/stepfactorocclusion", 6.0).toFloat());
+	this->Renderer.Volume.GetTracer().SetStepFactorPrimary(Settings.value("traversal/stepfactorprimary", 3.0).toFloat());
+	this->Renderer.Volume.GetTracer().SetStepFactorOcclusion(Settings.value("traversal/stepfactorocclusion", 6.0).toFloat());
 	
-	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(0.0f, 0.0f);
-	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(50.0f, 0.0f);
-	this->Renderer.Volume.Tracer.GetOpacity1D().AddNode(205.0f, 1.0f);
+	this->Renderer.Volume.GetTracer().GetOpacity1D().AddNode(0.0f, 0.0f);
+	this->Renderer.Volume.GetTracer().GetOpacity1D().AddNode(0.0f, 0.0f);
+	this->Renderer.Volume.GetTracer().GetOpacity1D().AddNode(205.0f, 1.0f);
 
 	
 
