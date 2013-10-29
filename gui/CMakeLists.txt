@@ -1,6 +1,4 @@
-MESSAGE(STATUS "Creating compositor project")
-
-#INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+MESSAGE(STATUS "Creating gui project")
 
 MESSAGE(STATUS "Finding qt package")
 FIND_PACKAGE(QT4 REQUIRED)
@@ -18,12 +16,12 @@ SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=sm_30)
 SET(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE ON)
 SET(CUDA_VERBOSE_BUILD ON)
 
-FILE(GLOB CompositorSources "*.h" "*.cpp")
-FILE(GLOB CompositorHeaders "*.h")
-FILE(GLOB CompositorCudaSources "*.cuh" "*.cu")
+FILE(GLOB GuiSources "*.h" "*.cpp")
+FILE(GLOB GuiHeaders "*.h")
+FILE(GLOB GuiCudaSources "*.cuh" "*.cu")
 
-QT4_WRAP_CPP(CompositorHeadersMoc ${CompositorHeaders})
-CUDA_ADD_EXECUTABLE(Compositor ${CompositorSources} ${CompositorCudaSources} ${CompositorHeadersMoc})
-TARGET_LINK_LIBRARIES(Compositor Utilities Opengl32)
+QT4_WRAP_CPP(GuiHeadersMoc ${GuiHeaders})
+CUDA_ADD_EXECUTABLE(Gui ${GuiSources} ${GuiCudaSources} ${GuiHeadersMoc})
+TARGET_LINK_LIBRARIES(Gui Utilities Opengl32)
 
-INSTALL_TARGETS(/bin Compositor)
+INSTALL_TARGETS(/bin Gui)

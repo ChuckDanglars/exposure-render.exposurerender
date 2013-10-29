@@ -11,27 +11,20 @@
 
 using namespace ExposureRender;
 
-class QClientSocket : public QBaseSocket
+class QGuiSocket : public QBaseSocket
 {
     Q_OBJECT
 
 public:
-    QClientSocket(int SocketDescriptor, QObject* Parent = 0);
-	virtual ~QClientSocket();
+    QGuiSocket(int SocketDescriptor, QObject* Parent = 0);
+	virtual ~QGuiSocket();
 
 	void OnData(const QString& Action, QDataStream& DataStream);
 
-public:
-	void SendCamera(float* Position, float* FocalPoint, float* ViewUp);
+signals:
 
 private:
 	QSettings						Settings;
-	QHysteresis						AvgDecodeSpeed;
-	QGpuJpegDecoder					GpuJpegDecoder;
-	HostBuffer2D<ColorRGBuc>		Estimate;
-	int								ImageSize[2];
 
 friend class QServer;
-friend class QConnectionItem;
-friend class QMainDialog;
 };

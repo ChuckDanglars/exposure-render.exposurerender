@@ -1,6 +1,5 @@
 
 #include "clientsocket.h"
-#include "server.h"
 
 #include <time.h>
 
@@ -8,7 +7,7 @@
 
 QClientSocket::QClientSocket(int SocketDescriptor, QObject* Parent /*= 0*/) :
 	QBaseSocket(Parent),
-	Settings("compositor.ini", QSettings::IniFormat),
+	Settings("gui.ini", QSettings::IniFormat),
 	AvgDecodeSpeed(),
 	GpuJpegDecoder(),
 	Estimate()
@@ -47,18 +46,6 @@ void QClientSocket::OnData(const QString& Action, QDataStream& DataStream)
 
 		this->Estimate.Resize(Vec2i(Width, Height));
 		memcpy(this->Estimate.GetData(), ImageData, NoBytes);
-
-		emit UpdateJpgEncodeTime(JpgEncodeTime);
-		emit UpdateJpgNoBytes(ImageBytes.count());
-	}
-
-	if (Action == "RENDER_STATS")
-	{
-		float Fps = 0.0f;
-			
-		DataStream >> Fps;
-
-		emit UpdateFps(Fps);
 	}
 }
 

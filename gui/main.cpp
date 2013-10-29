@@ -1,6 +1,5 @@
 
-#include "server.h"
-#include "compositorwindow.h"
+#include "guiwindow.h"
 #include "utilities\renderoutputwidget.h"
 
 #include <windows.h>
@@ -11,21 +10,18 @@
 
 #include <QtGui>
 
-#include "renderer\vector\vector.h"
-#include "renderer\color\color.h"
-
 int main(int argc, char **argv)
 {
-	qDebug() << "Starting up compositor";
+	qDebug() << "Starting up Exposure Render Graphical User Interface";
 
 	QApplication Application(argc, argv);
 	
 	Application.setApplicationName("Exposure Render Compositor");
 	Application.setOrganizationName("Delft University of Technology, department of Computer Graphics and Visualization");
 
-	QServer Server;
-
-	QCompositorWindow CompositorWindow(&Server);
+	
+	
+	QGuiWindow CompositorWindow(&Server);
 	
     CompositorWindow.show();
 	CompositorWindow.resize(640, 480);
