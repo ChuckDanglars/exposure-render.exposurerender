@@ -41,7 +41,7 @@ public:
 		NoApertureBlades(6),
 		ApertureAngle(0.0f),
 		ClipNear(0.0f),
-		ClipFar(10000.0f),
+		ClipFar(FLT_MAX),
 		Exposure(1.0f),
 		Gamma(2.2f),
 		FOV(35.0f),

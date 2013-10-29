@@ -29,7 +29,12 @@ KERNEL void KrnlEstimate(Renderer* Renderer)
 	else
 		IterationEstimateHDR.Set(X, Y, ColorXYZAf(0.0f, 0.0f, 0.0f, 0.0f));
 	/*
+	if (BB.Intersect(R, R.MinT, R.MaxT))
+		IterationEstimateHDR.Set(X, Y, ColorXYZAf(1.0f, 1.0f, 1.0f, 0.0f));
+	else
+		IterationEstimateHDR.Set(X, Y, ColorXYZAf(0.0f, 0.0f, 0.0f, 0.0f));
 
+	return;
 	
 
 	float T[2] = { 0.0f };

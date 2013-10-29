@@ -115,6 +115,8 @@ public:
 		CudaTexture.normalizedCoords	= 1;
 
 		Cuda::HandleCudaError(cudaCreateTextureObject(&this->TextureObject, &CudaResource, &CudaTexture, 0));
+
+		
 	}
 	
 	/*! Gets the (interpolated) voxel value at \a P
@@ -246,8 +248,6 @@ public:
 	{
 		if (!this->BoundingBox.Intersect(R, R.MinT, R.MaxT))
 			return false;
-		else
-			return true;
 
 		const float S	= -log(RNG.Get1()) / this->Tracer.GetDensityScale();
 		float Sum		= 0.0f;
@@ -265,7 +265,7 @@ public:
 			P			= R(R.MinT);
 			Intensity	= this->GetIntensity(P);
 
-			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(Intensity) * this->Tracer.GetStepFactorPrimary();
+			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetStepFactorPrimary();
 			R.MinT	+= this->Tracer.GetStepFactorPrimary();
 		}
 
@@ -324,17 +324,17 @@ public:
 	GET_REF_MACRO(HOST_DEVICE, Tracer, Tracer)
 
 private:
-	Transform					Transform;			/*! Transform of the volume */
-	BoundingBox					BoundingBox;		/*! Encompassing bounding box */
 	Vec3i						Resolution;			/*! Texture resolution */
+	Transform					Transform;			/*! Transform of the volume */
+	Vec3f						InvSize;			/*! Inverse volume size */
 	Vec3f						Spacing;			/*! Voxel spacing */
 	Vec3f						InvSpacing;			/*! Inverse voxel spacing */
 	Vec3f						Size;				/*! Volume size */
-	Vec3f						InvSize;			/*! Inverse volume size */
-	cudaArray*					Array;				/*! Cuda array, used by the texture object */
-	cudaTextureObject_t			TextureObject;		/*! Cuda texture object */
 	Enums::AcceleratorType		AcceleratorType;	/*! Type of ray traversal accelerator */
 	Tracer						Tracer;				/*! Tracer */
+	cudaArray*					Array;				/*! Cuda array, used by the texture object */
+	cudaTextureObject_t			TextureObject;		/*! Cuda texture object */
+	BoundingBox					BoundingBox;		/*! Encompassing bounding box */
 };
 
 }
