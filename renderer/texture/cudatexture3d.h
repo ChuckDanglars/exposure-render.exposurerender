@@ -59,7 +59,7 @@ public:
 	DEVICE short operator()(const Vec3f& NormalizedUVW)
 	{
 #ifdef __CUDACC__
-		return tex3D<short>(this->TextureObject, NormalizedUVW[0], NormalizedUVW[1], NormalizedUVW[2]) * (float)SHRT_MAX;
+		return tex3D<float>(this->TextureObject, NormalizedUVW[0], NormalizedUVW[1], NormalizedUVW[2]);
 #else
 		return 1000;
 #endif
@@ -72,15 +72,22 @@ public:
 		else
 			this->Free();
 
-		this->Resolution = Resolution;
+		this->Resolution = Vec3i(10, 10, 10);
 
 		cudaExtent CudaExtent;
 
-		CudaExtent.width	= Resolution[0];
-		CudaExtent.height	= Resolution[1];
-		CudaExtent.depth	= Resolution[2];
+		CudaExtent.width	= this->Resolution[0];
+		CudaExtent.height	= this->Resolution[1];
+		CudaExtent.depth	= this->Resolution[2];
 	
-		cudaChannelFormatDesc CudaChannelFormat = cudaCreateChannelDesc<short>();
+		float* Voxels = (float*)malloc(this->Resolution.CumulativeProduct());
+
+		memset(Voxels, 200, 1000);
+
+		//for (int v = 0; v < 1000; v++)
+		//	Voxels[v] = (float)rand() / (float)RAND_MAX;
+
+		cudaChannelFormatDesc CudaChannelFormat = cudaCreateChannelDesc<float>();
 
 		Cuda::HandleCudaError(cudaMalloc3DArray(&this->Array, &CudaChannelFormat, CudaExtent));
 
@@ -89,7 +96,7 @@ public:
 
 		cudaMemcpy3DParms CopyParams = { 0 };
 
-		CopyParams.srcPtr	= make_cudaPitchedPtr(HostData, CudaExtent.width * sizeof(short), CudaExtent.width, CudaExtent.height);
+		CopyParams.srcPtr	= make_cudaPitchedPtr(Voxels, CudaExtent.width * sizeof(float), CudaExtent.width, CudaExtent.height);
 		CopyParams.dstArray	= this->Array;
 		CopyParams.extent	= CudaExtent;
 		CopyParams.kind		= cudaMemcpyHostToDevice;
@@ -112,7 +119,7 @@ public:
 		CudaTexture.addressMode[1]		= cudaAddressModeWrap;
 		CudaTexture.addressMode[2]		= cudaAddressModeWrap;
 		CudaTexture.filterMode			= cudaFilterModeLinear;
-		CudaTexture.readMode			= cudaReadModeNormalizedFloat;
+		CudaTexture.readMode			= cudaReadModeElementType;
 		CudaTexture.normalizedCoords	= 1;
 
 		Cuda::HandleCudaError(cudaCreateTextureObject(&this->TextureObject, &CudaResource, &CudaTexture, 0));
