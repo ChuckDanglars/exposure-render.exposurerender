@@ -19,7 +19,6 @@
 #include "geometry\boundingbox.h"
 #include "geometry\transform.h"
 #include "geometry\scatterevent.h"
-#include "texture\cudatexture3d.h"
 #include "core\utilities.h"
 #include "core\rng.h"
 #include "core\tracer.h"
@@ -69,7 +68,7 @@ public:
 		this->Size			= Vec3f(Resolution[0] * this->Spacing[0], Resolution[1] * this->Spacing[1], Resolution[2] * this->Spacing[2]);
 		this->InvSize		= 1.0f / this->Size;
 
-		this->BoundingBox.SetMinP(Vec3f(0.0f));
+		this->BoundingBox.SetMinP(Vec3f(0.0f, 0.0f, 0.0f));
 		this->BoundingBox.SetMaxP(this->Size);
 
 		Cuda::HandleCudaError(cudaFree(this->Array));
@@ -82,7 +81,7 @@ public:
 		CudaExtent.height	= this->Resolution[1];
 		CudaExtent.depth	= this->Resolution[2];
 	
-		cudaChannelFormatDesc CudaChannelFormat = cudaCreateChannelDesc<short>();
+		cudaChannelFormatDesc CudaChannelFormat = cudaCreateChannelDesc(16, 0, 0, 0, cudaChannelFormatKindSigned);
 
 		Cuda::HandleCudaError(cudaMalloc3DArray(&this->Array, &CudaChannelFormat, CudaExtent));
 
@@ -108,11 +107,11 @@ public:
 		cudaTextureDesc CudaTexture;
 		memset(&CudaTexture, 0, sizeof(CudaTexture));
 
-		CudaTexture.addressMode[0]		= cudaAddressModeClamp;
-		CudaTexture.addressMode[1]		= cudaAddressModeClamp;
-		CudaTexture.addressMode[2]		= cudaAddressModeClamp;
-		CudaTexture.filterMode			= cudaFilterModeLinear;
-		CudaTexture.readMode			= cudaReadModeNormalizedFloat;
+		CudaTexture.addressMode[0]		= cudaAddressModeWrap;
+		CudaTexture.addressMode[1]		= cudaAddressModeWrap;
+		CudaTexture.addressMode[2]		= cudaAddressModeWrap;
+		CudaTexture.filterMode			= cudaFilterModePoint;
+		CudaTexture.readMode			= cudaReadModeElementType;
 		CudaTexture.normalizedCoords	= 1;
 
 		Cuda::HandleCudaError(cudaCreateTextureObject(&this->TextureObject, &CudaResource, &CudaTexture, 0));
@@ -125,7 +124,7 @@ public:
 	DEVICE short GetIntensity(const Vec3f& P)
 	{
 #ifdef __CUDACC__
-		return tex3D<float>(this->TextureObject, P[0] * this->InvSize[0], P[1]* this->InvSize[1], P[2]* this->InvSize[2]) * (float)SHRT_MAX;
+		return tex3D<short>(this->TextureObject, P[0] * this->InvSize[0], P[1]* this->InvSize[1], P[2]* this->InvSize[2]);// * (float)SHRT_MAX;
 #else
 		return 0;
 #endif
@@ -247,10 +246,12 @@ public:
 	{
 		if (!this->BoundingBox.Intersect(R, R.MinT, R.MaxT))
 			return false;
+		else
+			return true;
 
 		const float S	= -log(RNG.Get1()) / this->Tracer.GetDensityScale();
 		float Sum		= 0.0f;
-
+		
 		R.MinT += RNG.Get1() * this->Tracer.GetStepFactorPrimary();
 
 		Vec3f P;
@@ -261,10 +262,10 @@ public:
 			if (R.MinT + this->Tracer.GetStepFactorPrimary() >= R.MaxT)
 				return false;
 		
-			P = R(R.MinT);
-			Intensity = this->GetIntensity(P);
+			P			= R(R.MinT);
+			Intensity	= this->GetIntensity(P);
 
-			Sum		+= this->Tracer.GetDensityScale() * Intensity * this->Tracer.GetStepFactorPrimary();
+			Sum		+= this->Tracer.GetDensityScale() * this->Tracer.GetOpacity(Intensity) * this->Tracer.GetStepFactorPrimary();
 			R.MinT	+= this->Tracer.GetStepFactorPrimary();
 		}
 
@@ -323,17 +324,17 @@ public:
 	GET_REF_MACRO(HOST_DEVICE, Tracer, Tracer)
 
 private:
-	Transform				Transform;			/*! Transform of the volume */
-	BoundingBox				BoundingBox;		/*! Encompassing bounding box */
-	Vec3i					Resolution;			/*! Texture resolution */
-	Vec3f					Spacing;			/*! Voxel spacing */
-	Vec3f					InvSpacing;			/*! Inverse voxel spacing */
-	Vec3f					Size;				/*! Volume size */
-	Vec3f					InvSize;			/*! Inverse volume size */
-	cudaArray*				Array;				/*! Cuda array, used by the texture object */
-	cudaTextureObject_t		TextureObject;		/*! Cuda texture object */
-	Enums::AcceleratorType	AcceleratorType;	/*! Type of ray traversal accelerator */
-	Tracer					Tracer;				/*! Tracer */
+	Transform					Transform;			/*! Transform of the volume */
+	BoundingBox					BoundingBox;		/*! Encompassing bounding box */
+	Vec3i						Resolution;			/*! Texture resolution */
+	Vec3f						Spacing;			/*! Voxel spacing */
+	Vec3f						InvSpacing;			/*! Inverse voxel spacing */
+	Vec3f						Size;				/*! Volume size */
+	Vec3f						InvSize;			/*! Inverse volume size */
+	cudaArray*					Array;				/*! Cuda array, used by the texture object */
+	cudaTextureObject_t			TextureObject;		/*! Cuda texture object */
+	Enums::AcceleratorType		AcceleratorType;	/*! Type of ray traversal accelerator */
+	Tracer						Tracer;				/*! Tracer */
 };
 
 }

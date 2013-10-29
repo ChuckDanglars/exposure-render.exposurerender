@@ -99,7 +99,7 @@ public:
 		@param[in] Intensity Intensity at which to fetch the opacity
 		@return Opacity
 	*/
-	DEVICE float GetOpacity(const unsigned short& Intensity)
+	DEVICE float GetOpacity(const short& Intensity)
 	{
 		return this->Opacity1D.Evaluate(Intensity);
 	}
@@ -108,7 +108,7 @@ public:
 		@param[in] Intensity Intensity at which to fetch the diffuse color
 		@return Diffuse color
 	*/
-	DEVICE ColorXYZf GetDiffuse(const unsigned short& Intensity)
+	DEVICE ColorXYZf GetDiffuse(const short& Intensity)
 	{
 		return this->Diffuse1D.Evaluate(Intensity);
 	}
@@ -117,7 +117,7 @@ public:
 		@param[in] Intensity Intensity at which to fetch the specular color
 		@return Specular color
 	*/
-	DEVICE ColorXYZf GetSpecular(const unsigned short& Intensity)
+	DEVICE ColorXYZf GetSpecular(const short& Intensity)
 	{
 		return this->Specular1D.Evaluate(Intensity);
 	}
@@ -126,7 +126,7 @@ public:
 		@param[in] Intensity Intensity at which to fetch the glossiness
 		@return Glossiness
 	*/
-	DEVICE float GetGlossiness(const unsigned short& Intensity)
+	DEVICE float GetGlossiness(const short& Intensity)
 	{
 		return this->Glossiness1D.Evaluate(Intensity);
 	}
@@ -135,7 +135,7 @@ public:
 		@param[in] Intensity Intensity at which to fetch the index of reflection
 		@return Index of reflection
 	*/
-	DEVICE float GetIndexOfReflection(const unsigned short& Intensity)
+	DEVICE float GetIndexOfReflection(const short& Intensity)
 	{
 		return this->IndexOfReflection1D.Evaluate(Intensity);
 	}
@@ -144,7 +144,7 @@ public:
 		@param[in] Intensity Intensity at which to fetch the emission color
 		@return Emission color
 	*/
-	DEVICE ColorXYZf GetEmission(const unsigned short& Intensity)
+	DEVICE ColorXYZf GetEmission(const short& Intensity)
 	{
 		return this->Emission1D.Evaluate(Intensity);
 	}
