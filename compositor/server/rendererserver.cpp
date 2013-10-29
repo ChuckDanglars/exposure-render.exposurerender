@@ -1,5 +1,5 @@
 
-#include "server.h"
+#include "server\rendererserver.h"
 #include "clientsocket.h"
 #include "combine.cuh"
 
@@ -23,7 +23,7 @@ QServer::QServer(QObject* Parent /*= 0*/) :
 
 void QServer::Start()
 {
-	const int Port = this->Settings.value("network/port", 6000).toInt();
+	const int Port = this->Settings.value("network/rendererport", 6001).toInt();
 
 	qDebug() << "Starting Exposure Render server";
 
