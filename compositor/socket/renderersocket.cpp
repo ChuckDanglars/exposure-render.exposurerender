@@ -1,12 +1,12 @@
 
-#include "clientsocket.h"
-#include "server.h"
+#include "renderersocket.h"
+#include "server\server.h"
 
 #include <time.h>
 
 #include <QImage>
 
-QClientSocket::QClientSocket(int SocketDescriptor, QObject* Parent /*= 0*/) :
+QRendererSocket::QRendererSocket(int SocketDescriptor, QObject* Parent /*= 0*/) :
 	QBaseSocket(Parent),
 	Settings("compositor.ini", QSettings::IniFormat),
 	AvgDecodeSpeed(),
@@ -24,11 +24,11 @@ QClientSocket::QClientSocket(int SocketDescriptor, QObject* Parent /*= 0*/) :
 	this->Estimate.Resize(Vec2i(this->ImageSize[0], this->ImageSize[1]));
 }
 
-QClientSocket::~QClientSocket()
+QRendererSocket::~QRendererSocket()
 {
 }
 
-void QClientSocket::OnData(const QString& Action, QDataStream& DataStream)
+void QRendererSocket::OnData(const QString& Action, QDataStream& DataStream)
 {
 	if (Action == "IMAGE")
 	{
@@ -62,7 +62,7 @@ void QClientSocket::OnData(const QString& Action, QDataStream& DataStream)
 	}
 }
 
-void QClientSocket::SendCamera(float* Position, float* FocalPoint, float* ViewUp)
+void QRendererSocket::SendCamera(float* Position, float* FocalPoint, float* ViewUp)
 {
 	QByteArray ByteArray;
 	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);

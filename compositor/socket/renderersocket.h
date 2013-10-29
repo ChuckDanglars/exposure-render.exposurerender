@@ -11,13 +11,13 @@
 
 using namespace ExposureRender;
 
-class QClientSocket : public QBaseSocket
+class QRendererSocket : public QBaseSocket
 {
     Q_OBJECT
 
 public:
-    QClientSocket(int SocketDescriptor, QObject* Parent = 0);
-	virtual ~QClientSocket();
+    QRendererSocket(int SocketDescriptor, QObject* Parent = 0);
+	virtual ~QRendererSocket();
 
 	void OnData(const QString& Action, QDataStream& DataStream);
 
