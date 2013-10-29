@@ -16,12 +16,14 @@ SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=sm_30)
 SET(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE ON)
 SET(CUDA_VERBOSE_BUILD ON)
 
+FILE(GLOB SocketSources "socket/*.h" "socket/*.cpp")
+FILE(GLOB SocketSources "gui/*.h" "gui/*.cpp")
 FILE(GLOB CompositorSources "*.h" "*.cpp")
 FILE(GLOB CompositorHeaders "*.h")
 FILE(GLOB CompositorCudaSources "*.cuh" "*.cu")
 
 QT4_WRAP_CPP(CompositorHeadersMoc ${CompositorHeaders})
-CUDA_ADD_EXECUTABLE(Compositor ${CompositorSources} ${CompositorCudaSources} ${CompositorHeadersMoc})
+CUDA_ADD_EXECUTABLE(Compositor ${SocketSources} ${CompositorSources} ${CompositorCudaSources} ${CompositorHeadersMoc})
 TARGET_LINK_LIBRARIES(Compositor Utilities Opengl32)
 
 INSTALL_TARGETS(/bin Compositor)
