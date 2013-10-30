@@ -14,7 +14,7 @@ public:
 public:
 	virtual void OnReceiveData(const QString& Action, QDataStream& DataStream);
 	
-	void SendData(const QString& Action, QByteArray ByteArray);
+	void SendData(const QString& Action, QByteArray& Data);
 
 public slots:
 	void OnReadyRead();

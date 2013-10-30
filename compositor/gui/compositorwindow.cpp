@@ -1,6 +1,6 @@
 
 #include "compositorwindow.h"
-#include "renderoutputwidget.h"
+#include "utilities\gui\renderoutputwidget.h"
 #include "server\rendererserver.h"
 #include "server\guiserver.h"
 

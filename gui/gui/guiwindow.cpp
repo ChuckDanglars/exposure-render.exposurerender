@@ -57,43 +57,26 @@ void QGuiWindow::OnUploadVolume()
 	QString FileName = "C://workspaces//manix.raw";
 
 	QFile File(FileName);
-	File.open(QIODevice::ReadOnly);
+
+	if (File.open(QIODevice::ReadOnly))
+	{
+		QByteArray Voxels = File.readAll();
 	
-	QByteArray Voxels = File.readAll();
+		QByteArray ByteArray;
+		QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
+		DataStream.setVersion(QDataStream::Qt_4_0);
 
-	/*
-	QByteArray ByteArray;
-	QDataStream DataStream(&ByteArray, QIODevice::ReadWrite);
-	DataStream.setVersion(QDataStream::Qt_4_0);
+		QFileInfo FileInfo(File);
 
-	DataStream << QString("asdsadsdsadad");
-	//DataStream << Voxels;
-	*/
-
-	// qDebug() << "Sending" << Action << " of " << Data.count() << "bytes";
-
-	QByteArray ByteArray;
-
-	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
-	DataStream.setVersion(QDataStream::Qt_4_0);
-
-	DataStream << quint32(0);
-
-	DataStream << QString("VOLUME");
-	DataStream << FileName;
-
-	DataStream.device()->seek(0);
-		    
-	DataStream << (quint32)(ByteArray.size() - sizeof(quint32));
-
-    this->CompositorSocket->write(ByteArray);
-	this->CompositorSocket->flush();
-
-
-
-
+		DataStream << FileInfo.fileName();
+		DataStream << Voxels;
 	
-	// this->CompositorSocket->SendData("VOLUME", ByteArray);
+		this->CompositorSocket->SendData("VOLUME", ByteArray);
+	}
+	else
+	{
+		qDebug() << "Unable to send volume!";
+	}
 }
 
 void QGuiWindow::OnUploadBitmap()

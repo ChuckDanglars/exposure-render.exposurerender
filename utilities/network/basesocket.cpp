@@ -44,19 +44,27 @@ void QBaseSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 	qDebug() << "Not implemented";
 }
 
-void QBaseSocket::SendData(const QString& Action, QByteArray Data)
+void QBaseSocket::SendData(const QString& Action, QByteArray& Data)
 {
-	qDebug() << "Sending" << Action << " of " << Data.count() << "bytes";
+	qDebug() << "Sending" << Action;
 
 	QByteArray ByteArray;
 
 	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
 	DataStream.setVersion(QDataStream::Qt_4_0);
 
+	QByteArray ByteArray2;
+
+	QDataStream DataStream2(&ByteArray2, QIODevice::ReadWrite);
+	DataStream2.setVersion(QDataStream::Qt_4_0);
+
+	DataStream2 << QString("Hello world!");
+
 	DataStream << quint32(0);
 
 	DataStream << Action;
-	DataStream << Data;
+
+	ByteArray.append(Data);
 
 	DataStream.device()->seek(0);
 		    
