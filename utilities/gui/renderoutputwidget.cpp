@@ -27,6 +27,8 @@ QRenderOutputWidget::~QRenderOutputWidget()
 
 void QRenderOutputWidget::initializeGL()
 {
+	Image.Resize(Vec2i(256));
+
 	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 
 	glGenTextures(1, &this->TextureID);

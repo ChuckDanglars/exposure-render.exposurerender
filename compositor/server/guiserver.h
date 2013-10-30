@@ -13,6 +13,7 @@ public:
 	
 protected:
 	void OnNewConnection(const int& SocketDescriptor);
+	void OnStarted();
 
 private:
 	QSettings					Settings;

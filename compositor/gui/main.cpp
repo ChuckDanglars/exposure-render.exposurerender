@@ -25,10 +25,10 @@ int main(int argc, char **argv)
 	QRendererServer RendererServer;
 	QGuiServer GuiServer;
 
-	if (Settings.value("gui/enabled").toBool())
+	QCompositorWindow CompositorWindow(&RendererServer, &GuiServer);
+
+	if (Settings.value("gui/enabled", true).toBool())
 	{
-		QCompositorWindow CompositorWindow(&RendererServer, &GuiServer);
-	
 		CompositorWindow.show();
 		CompositorWindow.resize(640, 480);
 	}

@@ -19,3 +19,7 @@ void QGuiServer::OnNewConnection(const int& SocketDescriptor)
 	
 	this->Connections.append(GuiSocket);
 }
+
+void QGuiServer::OnStarted()
+{
+}
