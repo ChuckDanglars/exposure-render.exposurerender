@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QTcpSocket>
-#include <QDebug>
+#include <QDataStream>
 
 class QBaseSocket : public QTcpSocket
 {
@@ -15,6 +15,9 @@ public:
 	virtual void OnReceiveData(const QString& Action, QDataStream& DataStream);
 	
 	void SendData(const QString& Action, QByteArray& Data);
+
+protected:
+	void SaveResource(QDataStream& DataStream);
 
 public slots:
 	void OnReadyRead();

@@ -3,6 +3,7 @@
 #include "server\rendererserver.h"
 
 #include <QFile>
+#include <QDebug>
 
 QGuiSocket::QGuiSocket(int SocketDescriptor, QRendererServer* RendererServer, QObject* Parent /*= 0*/) :
 	QBaseSocket(Parent),
@@ -21,27 +22,12 @@ QGuiSocket::~QGuiSocket()
 
 void QGuiSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 {
-	if (Action == "VOLUME")
+	if (Action == "VOLUME" || Action == "BITMAP")
 	{
-		QByteArray ByteArray;
-		QString FileName;
+		this->SaveResource(DataStream);
 
-		DataStream >> FileName;
-		DataStream >> ByteArray;
+		
 
-		QFile File("resources//" + FileName);
-		File.open(QIODevice::WriteOnly);
-		File.writeBlock(ByteArray);
-		File.close();
-
-		qDebug() << "Received" << Action << FileName << "of" << ByteArray.count() << "bytes";
-
-		QByteArray ByteArrayOut;
-		QDataStream DataStreamOut(&ByteArrayOut, QIODevice::WriteOnly);
-
-		DataStreamOut << FileName;
-		DataStreamOut << ByteArray;
-
-		this->RendererServer->SendDataToAll("VOLUME", ByteArrayOut);
+		// this->RendererServer->SendDataToAll("VOLUME", ByteArrayOut);
 	}
 }

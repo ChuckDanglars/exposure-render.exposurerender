@@ -1,6 +1,8 @@
 
 #include "basesocket.h"
 
+#include <QFile>
+
 QBaseSocket::QBaseSocket(QObject* Parent /*= 0*/) :
 	QTcpSocket(Parent),
 	BlockSize(0)
@@ -53,13 +55,6 @@ void QBaseSocket::SendData(const QString& Action, QByteArray& Data)
 	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
 	DataStream.setVersion(QDataStream::Qt_4_0);
 
-	QByteArray ByteArray2;
-
-	QDataStream DataStream2(&ByteArray2, QIODevice::ReadWrite);
-	DataStream2.setVersion(QDataStream::Qt_4_0);
-
-	DataStream2 << QString("Hello world!");
-
 	DataStream << quint32(0);
 
 	DataStream << Action;
@@ -72,4 +67,27 @@ void QBaseSocket::SendData(const QString& Action, QByteArray& Data)
 
     this->write(ByteArray);
 	this->flush();
+}
+
+void QBaseSocket::SaveResource(QDataStream& DataStream)
+{
+	QByteArray ByteArray;
+	QString FileName;
+
+	DataStream >> FileName;
+	DataStream >> ByteArray;
+
+	QFile File("resources//" + FileName);
+	
+	if (File.open(QIODevice::WriteOnly))
+	{
+		File.writeBlock(ByteArray);
+		File.close();
+
+		qDebug() << "Saved" << FileName;
+	}
+	else
+	{
+		qDebug() << "Unable to save" << FileName;
+	}
 }
