@@ -2,9 +2,9 @@
 
 #include "renderer\buffer\buffers.h"
 #include "renderer\color\colorrgbuc.h"
-#include "utilities\hysteresis.h"
-#include "utilities\gpujpeg.h"
-#include "utilities\basesocket.h"
+#include "utilities\general\hysteresis.h"
+#include "utilities\gpujpeg\gpujpeg.h"
+#include "utilities\network\basesocket.h"
 
 #include <QDebug>
 #include <QSettings>
