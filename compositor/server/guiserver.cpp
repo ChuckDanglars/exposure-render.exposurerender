@@ -7,32 +7,14 @@
 #include <QtGui>
 
 QGuiServer::QGuiServer(QObject* Parent /*= 0*/) :
-	QTcpServer(Parent),
-	Settings("compositor.ini", QSettings::IniFormat),
-	Connections()
+	QBaseServer("Gui", Parent),
+	Settings("compositor.ini", QSettings::IniFormat)
 {
+	this->ListenPort = Settings.value("network/guiport", 6000).toInt();
 }
 
-void QGuiServer::Start()
+void QGuiServer::OnNewConnection(const int& SocketDescriptor)
 {
-	const int Port = this->Settings.value("network/guiport", 6000).toInt();
-
-	qDebug() << "Starting Exposure Render server";
-
-	if (!this->listen(QHostAddress::Any, Port))
-	{
-		qDebug() << "Could not start server";
-	}
-	else
-	{
-		qDebug() << "Gui server listening to any ip on port" << Port;
-	}
-}
-
-void QGuiServer::incomingConnection(int SocketDescriptor)
-{
-	qDebug() << SocketDescriptor << "connecting...";
-	
 	QGuiSocket* GuiSocket = new QGuiSocket(SocketDescriptor, this);
 	
 	this->Connections.append(GuiSocket);

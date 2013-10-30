@@ -1,39 +1,35 @@
 
-#include "server\guiserver.h"
-#include "socket\guisocket.h"
+#include "network\baseserver.h"
 
-#include <QDebug>
-
-#include <QtGui>
-
-QGuiServer::QGuiServer(QObject* Parent /*= 0*/) :
+QBaseServer::QBaseServer(const QString& Name, QObject* Parent /*= 0*/) :
 	QTcpServer(Parent),
-	Settings("compositor.ini", QSettings::IniFormat),
-	Connections()
+	Name(Name),
+	ListenPort(0)
 {
 }
 
-void QGuiServer::Start()
+void QBaseServer::Start()
 {
-	const int Port = this->Settings.value("network/guiport", 6000).toInt();
+	qDebug() << "Starting" << this->Name.toLower() << "server";
 
-	qDebug() << "Starting Exposure Render server";
-
-	if (!this->listen(QHostAddress::Any, Port))
+	if (!this->listen(QHostAddress::Any, this->ListenPort))
 	{
 		qDebug() << "Could not start server";
 	}
 	else
 	{
-		qDebug() << "Server listening to any ip on port" << Port;
+		qDebug() << "Server listening to any ip on port" << this->ListenPort;
 	}
+
+	this->OnStarted();
 }
 
-void QGuiServer::incomingConnection(int SocketDescriptor)
+void QBaseServer::OnNewConnection(const int& SocketDescriptor)
 {
-	qDebug() << SocketDescriptor << "connecting...";
-	
-	QGuiSocket* GuiSocket = new QGuiSocket(SocketDescriptor, this);
-	
-	this->Connections.append(GuiSocket);
+	qDebug() << "Not implemented";
+}
+
+void QBaseServer::OnStarted()
+{
+	qDebug() << "Not implemented";
 }

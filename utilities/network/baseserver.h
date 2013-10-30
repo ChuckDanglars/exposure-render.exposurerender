@@ -1,27 +1,32 @@
 
 #pragma once
 
+#include "basesocket.h"
+
 #include <QTcpServer>
-#include <QSettings>
 
-class QGuiSocket;
-
-class QGuiServer : public QTcpServer
+class QBaseServer : public QTcpServer
 {
 	Q_OBJECT
+
 public:
-	explicit QGuiServer(QObject* Parent = 0);
-	
+	QBaseServer(const QString& Name, QObject* Parent = 0);
+
 	void Start();
 
 protected:
-	void incomingConnection(int SocketDescriptor);
+	void incomingConnection(int SocketDescriptor)
+	{
+		qDebug() << SocketDescriptor << "connecting...";
+	
+		this->OnNewConnection(SocketDescriptor);
+	}
 
-signals:
+	virtual void OnNewConnection(const int& SocketDescriptor);
+	virtual void OnStarted();
 
-public slots:
-
-private:
-	QSettings					Settings;
-	QList<QGuiSocket*>			Connections;
+protected:
+	QString					Name;
+	int						ListenPort;
+	QList<QBaseSocket*>		Connections;
 };

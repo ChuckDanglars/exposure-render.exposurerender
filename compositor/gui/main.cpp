@@ -2,7 +2,6 @@
 #include "server\rendererserver.h"
 #include "server\guiserver.h"
 #include "gui\compositorwindow.h"
-#include "utilities\renderoutputwidget.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -11,9 +10,6 @@
 #include <tchar.h>
 
 #include <QtGui>
-
-#include "renderer\vector\vector.h"
-#include "renderer\color\color.h"
 
 int main(int argc, char **argv)
 {
