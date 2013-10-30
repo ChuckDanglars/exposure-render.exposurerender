@@ -55,7 +55,7 @@ SOURCE_GROUP("cuda" FILES ${CudaSources})
 
 SET(RendererSources main.cpp ${BufferSources} ${CudaBufferSources} ${HostBufferSources} ${ColorSources} ${GuiSources} ${CoreSources} ${FilteringSources} ${GeometrySources} ${LightSources} ${NetworkSources} ${ShadingSources} ${ShapesSources} ${TextureSources} ${TransferFunctionSources} ${TransportSources} ${VectorSources} ${CudaSources})
 
-SET(MocHeaders core/renderthread.h gui/rendererwindow.h network/clientsocket.h)
+SET(MocHeaders core/renderthread.h gui/rendererwindow.h network/compositorsocket.h)
 
 QT4_WRAP_CPP(RendererHeadersMoc ${MocHeaders})
 CUDA_ADD_EXECUTABLE(Renderer ${RendererSources} ${RendererHeadersMoc})

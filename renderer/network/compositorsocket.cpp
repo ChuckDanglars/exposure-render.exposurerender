@@ -1,5 +1,5 @@
 
-#include "clientsocket.h"
+#include "compositorsocket.h"
 #include "core\renderthread.h"
 
 #include <QImage>
@@ -7,7 +7,7 @@
 
 #include <time.h>
 
-QClientSocket::QClientSocket(QRenderer* Renderer, QObject* Parent /*= 0*/) :
+QCompositorSocket::QCompositorSocket(QRenderer* Renderer, QObject* Parent /*= 0*/) :
 	QBaseSocket(Parent),
 	Settings("renderer.ini", QSettings::IniFormat),
 	Renderer(Renderer),
@@ -27,7 +27,7 @@ QClientSocket::QClientSocket(QRenderer* Renderer, QObject* Parent /*= 0*/) :
 	this->RenderStatsTimer.start(1000.0f / this->Settings.value("network/sendrenderstatsfps ", 20).toInt());
 };
 
-void QClientSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
+void QCompositorSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 {
 	if (Action == "CAMERA")
 	{
@@ -69,7 +69,7 @@ void QClientSocket::OnReceiveData(const QString& Action, QDataStream& DataStream
 	}
 }
 
-void QClientSocket::OnSendImage()
+void QCompositorSocket::OnSendImage()
 {
 	QByteArray ByteArray;
 	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
@@ -97,7 +97,7 @@ void QClientSocket::OnSendImage()
 	this->flush();
 }
 
-void QClientSocket::OnSendRenderStats()
+void QCompositorSocket::OnSendRenderStats()
 {
 	QByteArray ByteArray;
 	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);

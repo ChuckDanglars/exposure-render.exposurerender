@@ -8,12 +8,12 @@
 
 class QRenderer;
 
-class QClientSocket : public QBaseSocket
+class QCompositorSocket : public QBaseSocket
 {
     Q_OBJECT
 
 public:
-	QClientSocket(QRenderer* Renderer, QObject* Parent = 0);
+	QCompositorSocket(QRenderer* Renderer, QObject* Parent = 0);
 
 	void OnReceiveData(const QString& Action, QDataStream& DataStream);
 

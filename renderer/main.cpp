@@ -1,6 +1,6 @@
 
 #include "core\renderthread.h"
-#include "network\clientsocket.h"
+#include "network\compositorsocket.h"
 #include "gui\rendererwindow.h"
 #include "geometry\lds.h"
 
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 
 	QRenderer Renderer(&Application);
 
-	QClientSocket ClientSocket(&Renderer, &Application);
+	QCompositorSocket CompositorSocket(&Renderer, &Application);
 	
 	const int Wait		= Settings.value("network/wait", "localhost").toInt();
 	QString HostName	= Settings.value("network/host", "localhost").toString();
@@ -34,9 +34,9 @@ int main(int argc, char **argv)
 
 	qDebug() << "Connecting to" << HostName << "on port" << Port;
 
-	ClientSocket.connectToHost(HostName, Port);
+	CompositorSocket.connectToHost(HostName, Port);
 	
-	if (!ClientSocket.waitForConnected(Wait))
+	if (!CompositorSocket.waitForConnected(Wait))
 	{
 		qDebug() << "Unable to connect to host";
 
@@ -44,13 +44,13 @@ int main(int argc, char **argv)
 
 		HostName = "localhost";
 
-		ClientSocket.connectToHost(HostName, Port);
+		CompositorSocket.connectToHost(HostName, Port);
 
-		if (!ClientSocket.waitForConnected(Wait))
+		if (!CompositorSocket.waitForConnected(Wait))
 			qDebug() << "Not connected to host";
 	}
 
-	if (ClientSocket.isOpen())
+	if (CompositorSocket.isOpen())
 		qDebug() << "Connected to" << HostName << "on port" << Port;
 
 	QRendererWindow RendererWindow(&Renderer);
