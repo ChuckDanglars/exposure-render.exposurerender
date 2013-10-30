@@ -12,12 +12,12 @@ public:
 	virtual ~QBaseSocket();
 
 public:
-	virtual void OnReceiveData(const QString& Action, QDataStream& DataStream);
+	virtual void OnReceiveData(const QString& Action, QByteArray& ByteArray);
 	
-	void SendData(const QString& Action, QByteArray& Data);
+	void SendData(const QString& Action, QByteArray& ByteArray);
 
 protected:
-	void SaveResource(QDataStream& DataStream);
+	void SaveResource(QByteArray& ByteArray);
 
 public slots:
 	void OnReadyRead();

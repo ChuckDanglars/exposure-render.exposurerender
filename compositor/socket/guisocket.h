@@ -18,8 +18,7 @@ public:
     QGuiSocket(int SocketDescriptor, QRendererServer* RendererServer, QObject* Parent = 0);
 	virtual ~QGuiSocket();
 
-	void OnReceiveData(const QString& Action, QDataStream& DataStream);
-	// void SendData(const QString& Action, QDataStream& DataStream);
+	void OnReceiveData(const QString& Action, QByteArray& ByteArray);
 
 signals:
 

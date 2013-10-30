@@ -20,14 +20,11 @@ QGuiSocket::~QGuiSocket()
 {
 }
 
-void QGuiSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
+void QGuiSocket::OnReceiveData(const QString& Action, QByteArray& ByteArray)
 {
 	if (Action == "VOLUME" || Action == "BITMAP")
 	{
-		this->SaveResource(DataStream);
-
-		
-
-		// this->RendererServer->SendDataToAll("VOLUME", ByteArrayOut);
+		this->SaveResource(ByteArray);
+		this->RendererServer->SendDataToAll("VOLUME", ByteArray);
 	}
 }

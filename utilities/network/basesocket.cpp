@@ -33,15 +33,31 @@ void QBaseSocket::OnReadyRead()
 
 		QString Action;
 
-		DataStream >> Action;
+		QByteArray ByteArray(this->BlockSize);
 
-		this->OnReceiveData(Action, DataStream);
+		DataStream.readRawData(ByteArray.data(), this->BlockSize);
+
+		QDataStream ActionDataStream(&ByteArray, QIODevice::ReadOnly);
+
+		ActionDataStream >> Action;
+
+		/*
+		const int ByteArraySize = this->BlockSize - ActionDataStream.device()->pos();
+
+		QByteArray ActionData(ByteArraySize);
+
+		ActionDataStream.readRawData(ActionData.data(), ByteArraySize);
+		*/
+
+		QByteArray ActionData = ActionDataStream.device()->readAll();
+
+		this->OnReceiveData(Action, ActionData);
 
 		this->BlockSize = 0;
 	}
 }
 
-void QBaseSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
+void QBaseSocket::OnReceiveData(const QString& Action, QByteArray& ByteArray)
 {
 	qDebug() << "Not implemented";
 }
@@ -69,19 +85,22 @@ void QBaseSocket::SendData(const QString& Action, QByteArray& Data)
 	this->flush();
 }
 
-void QBaseSocket::SaveResource(QDataStream& DataStream)
+void QBaseSocket::SaveResource(QByteArray& ByteArray)
 {
-	QByteArray ByteArray;
+	QDataStream DataStream(&ByteArray, QIODevice::ReadWrite);
+	DataStream.setVersion(QDataStream::Qt_4_0);
+
 	QString FileName;
 
 	DataStream >> FileName;
-	DataStream >> ByteArray;
+
+	QByteArray Data = DataStream.device()->readAll();
 
 	QFile File("resources//" + FileName);
 	
 	if (File.open(QIODevice::WriteOnly))
 	{
-		File.writeBlock(ByteArray);
+		File.writeBlock(Data);
 		File.close();
 
 		qDebug() << "Saved" << FileName;
