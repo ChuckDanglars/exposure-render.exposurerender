@@ -19,7 +19,7 @@ public:
     QClientSocket(int SocketDescriptor, QObject* Parent = 0);
 	virtual ~QClientSocket();
 
-	void OnData(const QString& Action, QDataStream& DataStream);
+	void OnReceiveData(const QString& Action, QDataStream& DataStream);
 
 public:
 	void SendCamera(float* Position, float* FocalPoint, float* ViewUp);

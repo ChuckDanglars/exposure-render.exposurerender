@@ -26,7 +26,7 @@ SOURCE_GROUP("gui" FILES ${GuiSources})
 SOURCE_GROUP("server" FILES ${ServerSources})
 SOURCE_GROUP("socket" FILES ${SocketSources})
 
-QT4_WRAP_CPP(CompositorHeadersMoc gui/compositorwindow.h server/server.h socket/guisocket.h socket/renderersocket.h)
+QT4_WRAP_CPP(CompositorHeadersMoc gui/compositorwindow.h server/rendererserver.h server/guiserver.h socket/guisocket.h socket/renderersocket.h)
 CUDA_ADD_EXECUTABLE(Compositor ${CudaSources} ${GuiSources} ${ServerSources} ${SocketSources} ${CompositorHeadersMoc})
 TARGET_LINK_LIBRARIES(Compositor Utilities Opengl32)
 

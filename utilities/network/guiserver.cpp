@@ -25,7 +25,7 @@ void QGuiServer::Start()
 	}
 	else
 	{
-		qDebug() << "Gui server listening to any ip on port" << Port;
+		qDebug() << "Server listening to any ip on port" << Port;
 	}
 }
 

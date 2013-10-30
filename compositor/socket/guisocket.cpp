@@ -15,7 +15,7 @@ QGuiSocket::~QGuiSocket()
 {
 }
 
-void QGuiSocket::OnData(const QString& Action, QDataStream& DataStream)
+void QGuiSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 {
 	
 }

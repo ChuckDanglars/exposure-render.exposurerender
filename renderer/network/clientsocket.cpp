@@ -27,7 +27,7 @@ QClientSocket::QClientSocket(QRenderer* Renderer, QObject* Parent /*= 0*/) :
 	this->RenderStatsTimer.start(1000.0f / this->Settings.value("network/sendrenderstatsfps ", 20).toInt());
 };
 
-void QClientSocket::OnData(const QString& Action, QDataStream& DataStream)
+void QClientSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 {
 	if (Action == "CAMERA")
 	{

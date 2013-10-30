@@ -19,7 +19,7 @@ public:
     QRendererSocket(int SocketDescriptor, QObject* Parent = 0);
 	virtual ~QRendererSocket();
 
-	void OnData(const QString& Action, QDataStream& DataStream);
+	void OnReceiveData(const QString& Action, QDataStream& DataStream);
 
 signals:
 	void UpdateFps(const float&);

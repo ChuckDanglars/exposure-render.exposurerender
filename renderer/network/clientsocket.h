@@ -15,7 +15,7 @@ class QClientSocket : public QBaseSocket
 public:
 	QClientSocket(QRenderer* Renderer, QObject* Parent = 0);
 
-	void OnData(const QString& Action, QDataStream& DataStream);
+	void OnReceiveData(const QString& Action, QDataStream& DataStream);
 
 public slots:
 	void OnSendImage();

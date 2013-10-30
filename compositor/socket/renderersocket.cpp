@@ -1,6 +1,5 @@
 
 #include "renderersocket.h"
-#include "server\server.h"
 
 #include <time.h>
 
@@ -28,7 +27,7 @@ QRendererSocket::~QRendererSocket()
 {
 }
 
-void QRendererSocket::OnData(const QString& Action, QDataStream& DataStream)
+void QRendererSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 {
 	if (Action == "IMAGE")
 	{

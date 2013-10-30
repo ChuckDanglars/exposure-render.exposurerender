@@ -11,38 +11,30 @@
 #include "renderer\buffer\host\hostbuffer2d.h"
 #include "renderer\color\color.h"
 
-class QClientSocket;
+class QRendererSocket;
 
 using namespace ExposureRender;
 
-class QServer : public QTcpServer
+class QRendererServer : public QTcpServer
 {
 	Q_OBJECT
 public:
-	explicit QServer(QObject* Parent = 0);
+	explicit QRendererServer(QObject* Parent = 0);
 	
 	void Start();
 
 protected:
 	void incomingConnection(int SocketDescriptor);
 
-signals:
-	void newThreadedSocket(QClientSocket*);
-	void UpdateEstimateIntegration(const float&);
-	void CameraUpdate(float*, float*, float*);
-
 public slots:
 	void OnCombineEstimates();
-	void OnCameraUpdate(float* Position, float* FocalPoint, float* ViewUp);
 
 private:
-	QSettings						Settings;
-	QTimer							Timer;
-	QList<QClientSocket*>			Connections;
-	QHysteresis						AvgCombineTime;
-	HostBuffer2D<ColorRGBuc>		Estimate;
-	int								ImageSize[2];
+	QSettings									Settings;
+	QTimer										Timer;
+	QList<QRendererSocket*>						Connections;
+	QHysteresis									AvgCombineTime;
+	ExposureRender::HostBuffer2D<ColorRGBuc>	Estimate;
 
 	friend class QCompositorWindow;
-	friend class QClientSocket;
 };

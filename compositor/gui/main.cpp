@@ -1,6 +1,7 @@
 
-#include "server.h"
-#include "compositorwindow.h"
+#include "server\rendererserver.h"
+#include "server\guiserver.h"
+#include "gui\compositorwindow.h"
 #include "utilities\renderoutputwidget.h"
 
 #include <windows.h>
@@ -18,21 +19,26 @@ int main(int argc, char **argv)
 {
 	qDebug() << "Starting up compositor";
 
+	QSettings Settings("compositor.ini", QSettings::IniFormat);
+
 	QApplication Application(argc, argv);
 	
 	Application.setApplicationName("Exposure Render Compositor");
 	Application.setOrganizationName("Delft University of Technology, department of Computer Graphics and Visualization");
 
-	QServer Server;
+	QRendererServer RendererServer;
+	QGuiServer GuiServer;
 
-	QCompositorWindow CompositorWindow(&Server);
+	if (Settings.value("gui/enabled").toBool())
+	{
+		QCompositorWindow CompositorWindow(&RendererServer, &GuiServer);
 	
-    CompositorWindow.show();
-	CompositorWindow.resize(640, 480);
-	
-	Server.Start();
+		CompositorWindow.show();
+		CompositorWindow.resize(640, 480);
+	}
 
-	QObject::connect(CompositorWindow.GetRenderOutputWidget(), SIGNAL(CameraUpdate(float*,float*,float*)), &Server, SLOT(OnCameraUpdate(float*,float*,float*)));
+	RendererServer.Start();
+	GuiServer.Start();
 
     return Application.exec();
 }

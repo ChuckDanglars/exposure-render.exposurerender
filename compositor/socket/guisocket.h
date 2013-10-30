@@ -6,7 +6,6 @@
 #include "utilities\gpujpeg.h"
 #include "utilities\basesocket.h"
 
-#include <QDebug>
 #include <QSettings>
 
 using namespace ExposureRender;
@@ -19,7 +18,8 @@ public:
     QGuiSocket(int SocketDescriptor, QObject* Parent = 0);
 	virtual ~QGuiSocket();
 
-	void OnData(const QString& Action, QDataStream& DataStream);
+	void OnReceiveData(const QString& Action, QDataStream& DataStream);
+	// void SendData(const QString& Action, QDataStream& DataStream);
 
 signals:
 

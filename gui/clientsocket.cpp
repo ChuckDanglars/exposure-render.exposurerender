@@ -27,7 +27,7 @@ QClientSocket::~QClientSocket()
 {
 }
 
-void QClientSocket::OnData(const QString& Action, QDataStream& DataStream)
+void QClientSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 {
 	if (Action == "IMAGE")
 	{

@@ -33,13 +33,33 @@ void QBaseSocket::OnReadyRead()
 
 		DataStream >> Action;
 
-		this->OnData(Action, DataStream);
+		this->OnReceiveData(Action, DataStream);
 
 		this->BlockSize = 0;
 	}
 }
 
-void QBaseSocket::OnData(const QString& Action, QDataStream& DataStream)
+void QBaseSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 {
 	qDebug() << "Not implemented";
+}
+
+void QBaseSocket::SendData(const QString& Action, QByteArray& Data)
+{
+	QByteArray ByteArray;
+
+	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
+	DataStream.setVersion(QDataStream::Qt_4_0);
+
+	DataStream << quint32(0);
+
+	DataStream << Action;
+	DataStream << Data;
+
+	DataStream.device()->seek(0);
+		    
+	DataStream << (quint32)(ByteArray.size() - sizeof(quint32));
+
+    this->write(ByteArray);
+	this->flush();
 }
