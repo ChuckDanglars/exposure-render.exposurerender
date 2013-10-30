@@ -22,7 +22,7 @@ FILE(GLOB NetworkSources "network/*.h" "network/*.cpp")
 SOURCE_GROUP("gui" FILES ${GuiSources})
 SOURCE_GROUP("network" FILES ${NetworkSources})
 
-QT4_WRAP_CPP(GuiHeadersMoc gui/guiwindow.h network/clientsocket.h)
+QT4_WRAP_CPP(GuiHeadersMoc gui/guiwindow.h network/compositorsocket.h)
 CUDA_ADD_EXECUTABLE(Gui ${GuiSources} ${NetworkSources} ${GuiHeadersMoc})
 TARGET_LINK_LIBRARIES(Gui Utilities Opengl32)
 

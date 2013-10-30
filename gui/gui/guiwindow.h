@@ -7,20 +7,19 @@
 #include <QTreeWidgetItem>
 #include <QtNetwork>
 
-class QClientSocket;
+class QCompositorSocket;
 class QInteractionWidget;
 class QRenderOutputWidget;
+class QPushButton;
 
 class QGuiWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-	QGuiWindow(QClientSocket* ClientSocket, QWidget* Parent = 0, Qt::WindowFlags WindowFlags = 0);
+	QGuiWindow(QCompositorSocket* CompositorSocket, QWidget* Parent = 0, Qt::WindowFlags WindowFlags = 0);
 	virtual ~QGuiWindow();
 
-	void CreateStatusBar();
-	
 	QRenderOutputWidget* GetRenderOutputWidget()
 	{
 		return this->RenderOutputWidget;
@@ -28,12 +27,16 @@ public:
 
 public slots:
 	void OnTimer();
+	void OnUploadVolume();
+	void OnUploadBitmap();
 
 private:
-	QClientSocket*				ClientSocket;
+	QCompositorSocket*			CompositorSocket;
 	QSettings					Settings;
 	QWidget*					CentralWidget;
 	QVBoxLayout*				MainLayout;
 	QRenderOutputWidget*		RenderOutputWidget;
 	QTimer						Timer;
+	QPushButton*				UploadVolume;
+	QPushButton*				UploadBitmap;
 };

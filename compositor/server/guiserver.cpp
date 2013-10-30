@@ -10,7 +10,7 @@ QGuiServer::QGuiServer(QRendererServer* RendererServer, QObject* Parent /*= 0*/)
 	Settings("compositor.ini", QSettings::IniFormat),
 	RendererServer(RendererServer)
 {
-	this->ListenPort = Settings.value("network/guiport", 6000).toInt();
+	this->ListenPort = Settings.value("network/guiport", 6001).toInt();
 }
 
 void QGuiServer::OnNewConnection(const int& SocketDescriptor)

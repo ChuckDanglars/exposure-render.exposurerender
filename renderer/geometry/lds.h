@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "utilities\define.h"
+#include "utilities\general\define.h"
 
 namespace ExposureRender
 {

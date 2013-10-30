@@ -4,7 +4,7 @@
 #include <QSettings>
 #include <QTimer>
 
-#include "hysteresis.h"
+#include "utilities\general\hysteresis.h"
 #include "buffer\buffers.h"
 #include "color\color.h"
 #include "core\renderer.h"

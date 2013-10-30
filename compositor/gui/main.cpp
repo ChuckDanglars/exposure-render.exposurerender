@@ -13,7 +13,7 @@
 
 int main(int argc, char **argv)
 {
-	qDebug() << "Starting up compositor";
+	qDebug() << "Starting up Exposure Render compositor";
 
 	QSettings Settings("compositor.ini", QSettings::IniFormat);
 

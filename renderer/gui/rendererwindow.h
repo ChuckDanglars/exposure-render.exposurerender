@@ -6,7 +6,7 @@
 #include <QVBoxLayout>
 #include <QTimer>
 
-#include "renderoutputwidget.h"
+#include "utilities\gui\renderoutputwidget.h"
 
 class QRenderer;
 

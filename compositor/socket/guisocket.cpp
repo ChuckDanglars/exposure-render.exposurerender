@@ -21,20 +21,27 @@ QGuiSocket::~QGuiSocket()
 
 void QGuiSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 {
-	qDebug() << __FUNCTION__;
-
 	if (Action == "VOLUME" || Action == "BITMAP")
 	{
 		QByteArray ByteArray;
 		QString FileName;
 
-		DataStream >> FileName;
-		DataStream >> ByteArray;
+		// DataStream >> FileName;
+		//DataStream >> ByteArray;
 
-		this->RendererServer->SendDataToAll(Action, ByteArray);
+		int test;
+		DataStream >> FileName;
+
+		qDebug() << FileName;
+
+		//this->RendererServer->SendDataToAll(Action, ByteArray);
 
 		QFile File(FileName);
 		File.open(QIODevice::WriteOnly);
 		File.writeBlock(ByteArray);
+		File.close();
+
+		qDebug() << FileName;
+		qDebug() << "Received" << Action << FileName << "of" << ByteArray.count() << "bytes";
 	}
 }

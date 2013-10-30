@@ -15,9 +15,10 @@ INCLUDE_DIRECTORIES(
 	${CUDA_SDK_ROOT_DIR}/common/inc
 	${CUDA_TOOLKIT_INCLUDE}
 	compositor
-	utilities
 	gpujpeg
-	renderer)
+	gui
+	renderer
+	utilities)
 
 ADD_SUBDIRECTORY(compositor)
 ADD_SUBDIRECTORY(gpujpeg)

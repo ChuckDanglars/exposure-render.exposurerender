@@ -44,8 +44,10 @@ void QBaseSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 	qDebug() << "Not implemented";
 }
 
-void QBaseSocket::SendData(const QString& Action, QByteArray& Data)
+void QBaseSocket::SendData(const QString& Action, QByteArray Data)
 {
+	qDebug() << "Sending" << Action << " of " << Data.count() << "bytes";
+
 	QByteArray ByteArray;
 
 	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);

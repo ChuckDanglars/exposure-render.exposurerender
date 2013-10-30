@@ -9,7 +9,7 @@ QRendererServer::QRendererServer(QObject* Parent /*= 0*/) :
 	Timer(),
 	Estimate()
 {
-	this->ListenPort = Settings.value("network/rendererport", 6001).toInt();
+	this->ListenPort = Settings.value("network/rendererport", 6000).toInt();
 
 //	connect(&this->Timer, SIGNAL(timeout()), this, SLOT(OnCombineEstimates()));
 }
