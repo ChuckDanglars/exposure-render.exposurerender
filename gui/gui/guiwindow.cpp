@@ -1,7 +1,7 @@
 
 #include "guiwindow.h"
-#include "renderoutputwidget.h"
-#include "clientsocket.h"
+#include "utilities\gui\renderoutputwidget.h"
+#include "network\clientsocket.h"
 
 #include <QtGui>
 

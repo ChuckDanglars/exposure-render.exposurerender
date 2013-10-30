@@ -5,11 +5,13 @@
 
 #include <QSettings>
 
+class QRendererServer;
+
 class QGuiServer : public QBaseServer
 {
 	Q_OBJECT
 public:
-	explicit QGuiServer(QObject* Parent = 0);
+	explicit QGuiServer(QRendererServer* RendererServer, QObject* Parent = 0);
 	
 protected:
 	void OnNewConnection(const int& SocketDescriptor);
@@ -17,4 +19,5 @@ protected:
 
 private:
 	QSettings					Settings;
+	QRendererServer*			RendererServer;
 };

@@ -2,9 +2,9 @@
 #include <QTimer>
 #include <QSettings>
 
-#include "basesocket.h"
-#include "hysteresis.h"
-#include "gpujpeg.h"
+#include "utilities\network\basesocket.h"
+#include "utilities\general\hysteresis.h"
+#include "utilities\gpujpeg\gpujpeg.h"
 
 class QRenderer;
 

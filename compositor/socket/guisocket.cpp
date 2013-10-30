@@ -1,9 +1,13 @@
 
 #include "guisocket.h"
+#include "server\rendererserver.h"
 
-QGuiSocket::QGuiSocket(int SocketDescriptor, QObject* Parent /*= 0*/) :
+#include <QFile>
+
+QGuiSocket::QGuiSocket(int SocketDescriptor, QRendererServer* RendererServer, QObject* Parent /*= 0*/) :
 	QBaseSocket(Parent),
-	Settings("compositor.ini", QSettings::IniFormat)
+	Settings("compositor.ini", QSettings::IniFormat),
+	RendererServer(RendererServer)
 {
 	if (!this->setSocketDescriptor(SocketDescriptor))
 		return;
@@ -17,5 +21,20 @@ QGuiSocket::~QGuiSocket()
 
 void QGuiSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
 {
-	
+	qDebug() << __FUNCTION__;
+
+	if (Action == "VOLUME" || Action == "BITMAP")
+	{
+		QByteArray ByteArray;
+		QString FileName;
+
+		DataStream >> FileName;
+		DataStream >> ByteArray;
+
+		this->RendererServer->SendDataToAll(Action, ByteArray);
+
+		QFile File(FileName);
+		File.open(QIODevice::WriteOnly);
+		File.writeBlock(ByteArray);
+	}
 }

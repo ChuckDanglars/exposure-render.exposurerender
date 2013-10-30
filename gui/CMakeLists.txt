@@ -16,12 +16,14 @@ SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=sm_30)
 SET(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE ON)
 SET(CUDA_VERBOSE_BUILD ON)
 
-FILE(GLOB GuiSources "*.h" "*.cpp")
-FILE(GLOB GuiHeaders "*.h")
-FILE(GLOB GuiCudaSources "*.cuh" "*.cu")
+FILE(GLOB GuiSources "gui/*.h" "gui/*.cpp")
+FILE(GLOB NetworkSources "network/*.h" "network/*.cpp")
 
-QT4_WRAP_CPP(GuiHeadersMoc ${GuiHeaders})
-CUDA_ADD_EXECUTABLE(Gui ${GuiSources} ${GuiCudaSources} ${GuiHeadersMoc})
+SOURCE_GROUP("gui" FILES ${GuiSources})
+SOURCE_GROUP("network" FILES ${NetworkSources})
+
+QT4_WRAP_CPP(GuiHeadersMoc gui/guiwindow.h network/clientsocket.h)
+CUDA_ADD_EXECUTABLE(Gui ${GuiSources} ${NetworkSources} ${GuiHeadersMoc})
 TARGET_LINK_LIBRARIES(Gui Utilities Opengl32)
 
 INSTALL_TARGETS(/bin Gui)

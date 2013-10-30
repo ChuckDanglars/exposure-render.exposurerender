@@ -1,6 +1,6 @@
 
 #include "guiwindow.h"
-#include "utilities\renderoutputwidget.h"
+#include "utilities\gui\renderoutputwidget.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 	Application.setOrganizationName("Delft University of Technology, department of Computer Graphics and Visualization");
 
 	
-	
+	/*
 	QGuiWindow CompositorWindow(&Server);
 	
     CompositorWindow.show();
@@ -29,6 +29,7 @@ int main(int argc, char **argv)
 	Server.Start();
 
 	QObject::connect(CompositorWindow.GetRenderOutputWidget(), SIGNAL(CameraUpdate(float*,float*,float*)), &Server, SLOT(OnCameraUpdate(float*,float*,float*)));
+	*/
 
     return Application.exec();
 }

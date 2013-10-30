@@ -14,6 +14,8 @@ public:
 
 	void Start();
 
+	void SendDataToAll(const QString& Action, QByteArray& Data);
+
 protected:
 	void incomingConnection(int SocketDescriptor)
 	{

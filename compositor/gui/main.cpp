@@ -23,11 +23,15 @@ int main(int argc, char **argv)
 	Application.setOrganizationName("Delft University of Technology, department of Computer Graphics and Visualization");
 
 	QRendererServer RendererServer;
-	QGuiServer GuiServer;
+	QGuiServer GuiServer(&RendererServer);
 
 	QCompositorWindow CompositorWindow(&RendererServer, &GuiServer);
 
-	if (Settings.value("gui/enabled", true).toBool())
+	const bool& GuiEnabled = Settings.value("gui/enabled", true).toBool();
+
+	qDebug() << "Gui is" << (GuiEnabled ? "enabled" : "disabled");
+
+	if (GuiEnabled)
 	{
 		CompositorWindow.show();
 		CompositorWindow.resize(640, 480);

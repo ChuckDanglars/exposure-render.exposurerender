@@ -8,12 +8,14 @@
 
 using namespace ExposureRender;
 
+class QRendererServer;
+
 class QGuiSocket : public QBaseSocket
 {
     Q_OBJECT
 
 public:
-    QGuiSocket(int SocketDescriptor, QObject* Parent = 0);
+    QGuiSocket(int SocketDescriptor, QRendererServer* RendererServer, QObject* Parent = 0);
 	virtual ~QGuiSocket();
 
 	void OnReceiveData(const QString& Action, QDataStream& DataStream);
@@ -22,7 +24,8 @@ public:
 signals:
 
 private:
-	QSettings						Settings;
+	QSettings			Settings;
+	QRendererServer*	RendererServer;
 
 friend class QServer;
 };
