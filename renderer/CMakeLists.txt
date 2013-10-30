@@ -31,6 +31,7 @@ FILE(GLOB_RECURSE ShapesSources "shapes/*.h" "shapes/*.cpp")
 FILE(GLOB_RECURSE TextureSources "texture/*.h" "texture/*.cpp")
 FILE(GLOB_RECURSE TransferFunctionSources "transferfunction/*.h" "transferfunction/*.cpp")
 FILE(GLOB_RECURSE TransportSources "transport/*.h" "transport/*.cpp")
+FILE(GLOB_RECURSE VectorSources "vector/*.h" "vector/*.cpp")
 FILE(GLOB_RECURSE CudaSources "*.cuh" "*.cu")
 
 SOURCE_GROUP("buffer" FILES ${BufferSources})
@@ -49,9 +50,10 @@ SOURCE_GROUP("shapes" FILES ${ShapesSources})
 SOURCE_GROUP("texture" FILES ${TextureSources})
 SOURCE_GROUP("transferfunction" FILES ${TransferFunctionSources})
 SOURCE_GROUP("transport" FILES ${TransportSources})
+SOURCE_GROUP("vector" FILES ${VectorSources})
 SOURCE_GROUP("cuda" FILES ${CudaSources})
 
-SET(RendererSources main.cpp ${BufferSources} ${CudaBufferSources} ${HostBufferSources} ${ColorSources} ${GuiSources} ${CoreSources} ${FilteringSources} ${GeometrySources} ${LightSources} ${NetworkSources} ${ShadingSources} ${ShapesSources} ${TextureSources} ${TransferFunctionSources} ${TransportSources} ${CudaSources})
+SET(RendererSources main.cpp ${BufferSources} ${CudaBufferSources} ${HostBufferSources} ${ColorSources} ${GuiSources} ${CoreSources} ${FilteringSources} ${GeometrySources} ${LightSources} ${NetworkSources} ${ShadingSources} ${ShapesSources} ${TextureSources} ${TransferFunctionSources} ${TransportSources} ${VectorSources} ${CudaSources})
 
 SET(MocHeaders core/renderthread.h gui/rendererwindow.h network/clientsocket.h)
 
