@@ -80,6 +80,8 @@ void QCompositorSocket::OnReceiveData(const QString& Action, QByteArray& ByteArr
 
 void QCompositorSocket::OnSendImage()
 {
+	return;
+
 	QByteArray ByteArray;
 	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
 	DataStream.setVersion(QDataStream::Qt_4_0);
@@ -108,6 +110,8 @@ void QCompositorSocket::OnSendImage()
 
 void QCompositorSocket::OnSendRenderStats()
 {
+	return;
+
 	QByteArray ByteArray;
 	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
 	DataStream.setVersion(QDataStream::Qt_4_0);

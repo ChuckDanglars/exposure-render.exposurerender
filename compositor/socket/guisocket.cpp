@@ -13,7 +13,7 @@ QGuiSocket::QGuiSocket(int SocketDescriptor, QRendererServer* RendererServer, QO
 	if (!this->setSocketDescriptor(SocketDescriptor))
 		return;
 
-	qDebug() << SocketDescriptor << "client connected";
+	qDebug() << SocketDescriptor << "gui connected";
 }
 
 QGuiSocket::~QGuiSocket()

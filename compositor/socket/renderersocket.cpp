@@ -15,7 +15,7 @@ QRendererSocket::QRendererSocket(int SocketDescriptor, QObject* Parent /*= 0*/) 
 	if (!this->setSocketDescriptor(SocketDescriptor))
 		return;
 
-	qDebug() << SocketDescriptor << "client connected";
+	qDebug() << SocketDescriptor << "renderer connected";
 
 	this->ImageSize[0]	= this->Settings.value("rendering/imagewidth", 1024).toUInt();
 	this->ImageSize[1]	= this->Settings.value("rendering/imageheight", 768).toUInt();

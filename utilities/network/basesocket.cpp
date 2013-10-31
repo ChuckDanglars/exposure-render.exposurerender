@@ -41,20 +41,7 @@ void QBaseSocket::OnReadyRead()
 
 		ActionDataStream >> Action;
 
-		qDebug() << "Block size" << this->BlockSize;
-
-		/*
-		const int ByteArraySize = this->BlockSize - ActionDataStream.device()->pos();
-
-		QByteArray ActionData(ByteArraySize);
-
-		ActionDataStream.readRawData(ActionData.data(), ByteArraySize);
-		*/
-
 		QByteArray ActionData = ActionDataStream.device()->readAll();
-
-
-		// qDebug() << "Block size" << this->BlockSize;
 
 		this->OnReceiveData(Action, ActionData);
 

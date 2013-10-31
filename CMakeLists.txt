@@ -29,6 +29,8 @@ ADD_SUBDIRECTORY(utilities)
 ### INSTALLER ###
 MESSAGE(STATUS "Creating installer project")
 
+INSTALL_FILES(/ FILES ${CMAKE_CURRENT_SOURCE_DIR}/networktest.bat)
+
 ### Configure NSIS ###
 SET(CPACK_GENERATOR NSIS)
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Exposure Render")

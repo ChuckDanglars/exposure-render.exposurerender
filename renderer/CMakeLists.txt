@@ -69,6 +69,6 @@ INSTALL_FILES(/renderer FILES ${CudaDlls})
 SET(QtDlls ${QT_BINARY_DIR}/QtCore4.dll ${QT_BINARY_DIR}/QtGui4.dll ${QT_BINARY_DIR}/QtXml4.dll ${QT_BINARY_DIR}/QtSql4.dll ${QT_BINARY_DIR}/QtNetwork4.dll ${QT_BINARY_DIR}/QtOpenGl4.dll)
 INSTALL_FILES(/renderer FILES ${QtDlls})
 
-INSTALL_FILES(/renderer "${CMAKE_CURRENT_SOURCE_DIR}/renderer.ini")
+INSTALL_FILES(/renderer FILES ${CMAKE_CURRENT_SOURCE_DIR}/renderer.ini)
 
 INCLUDE(InstallRequiredSystemLibraries)
