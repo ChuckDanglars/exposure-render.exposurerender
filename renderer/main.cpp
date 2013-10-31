@@ -60,10 +60,17 @@ int main(int argc, char **argv)
 	if (CompositorSocket.isOpen())
 		qDebug() << "Connected to" << HostName << "on port" << Port;
 
+	const bool& GuiEnabled = Settings.value("gui/enabled", true).toBool();
+
+	qDebug() << "Gui is" << (GuiEnabled ? "enabled" : "disabled");
+
 	QRendererWindow RendererWindow(&Renderer);
-	
-    RendererWindow.show();
-	RendererWindow.resize(640, 480);
+
+	if (GuiEnabled)
+	{
+		RendererWindow.show();
+		RendererWindow.resize(640, 480);
+	}
 
 	return Application.exec();
 }
