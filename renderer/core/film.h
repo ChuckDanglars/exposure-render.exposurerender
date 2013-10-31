@@ -42,7 +42,11 @@ public:
 		RandomSeeds2(),
 		HostRandomSeeds1(),
 		HostRandomSeeds2(),
-		NoEstimates(1)
+		NoEstimates(1),
+		Exposure(1.0f),
+		InvExposure(1.0f),
+		Gamma(2.2f),
+		InvGamma(1.0f / 2.2f)
 	{
 		this->Resize(Resolution);
 
@@ -220,8 +224,41 @@ public:
 		this->NoEstimates++;
 	}
 
+	/*! Updates the internals of the film */
+	HOST void Update(const float& FOV)
+	{
+		this->InvExposure	= this->Exposure == 0.0f ? 0.0f : 1.0f / this->Exposure;
+		this->InvGamma		= this->Gamma == 0.0f ? 0.0f : 1.0f / this->Gamma;
+
+		const float AspectRatio = (float)this->Resolution[1] / (float)this->Resolution[0];
+
+		float Scale = tanf((0.5f * FOV / RAD_F));
+
+		if (AspectRatio > 1.0f)
+		{
+			this->Screen[0][0] = -Scale;
+			this->Screen[0][1] = Scale;
+			this->Screen[1][0] = -Scale * AspectRatio;
+			this->Screen[1][1] = Scale * AspectRatio;
+		}
+		else
+		{
+			this->Screen[0][0] = -Scale / AspectRatio;
+			this->Screen[0][1] = Scale / AspectRatio;
+			this->Screen[1][0] = -Scale;
+			this->Screen[1][1] = Scale;
+		}
+
+		this->InvScreen[0] = (this->Screen[0][1] - this->Screen[0][0]) / (float)this->Resolution[0];
+		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->Resolution[1];
+	}
+
 	GET_SET_MACRO(HOST_DEVICE, Block, Vec3i)
 	GET_SET_MACRO(HOST_DEVICE, Grid, Vec3i)
+	GET_SET_TS_MACRO(HOST_DEVICE, Exposure, float)
+	GET_MACRO(HOST_DEVICE, InvExposure, float)
+	GET_SET_TS_MACRO(HOST_DEVICE, Gamma, float)
+	GET_MACRO(HOST_DEVICE, InvGamma, float)
 
 protected:
 	Vec3i							Block;								/*! Cuda thread block size */
@@ -239,6 +276,14 @@ protected:
 	HostRandomSeedBuffer2D			HostRandomSeeds2;					/*! Second host random seed buffer */
 	float							GaussianFilterWeights[3];			/*! Gaussian filtering weights */
 	int								NoEstimates;						/*! Number of estimates rendererd so far */
+	float							Exposure;							/*! Film exposure */
+	float							InvExposure;						/*! Reciprocal of the exposure */
+	float							Gamma;								/*! Monitor gamma */
+	float							InvGamma;							/*! Reciprocal of the monitor gamma */
+	float							Screen[2][2];						/*! Pre-computed values for sampling the film plane efficiently */
+	float							InvScreen[2];						/*! Pre-computed values for sampling the film plane efficiently */
+
+friend class Camera;
 };
 
 }

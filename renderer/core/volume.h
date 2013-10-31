@@ -33,7 +33,7 @@ public:
 	/*! Default constructor */
 	HOST Volume() :
 		Transform(),
-		BoundingBox(),
+		BoundingBox(Vec3f(0.0f), Vec3f(1.0f)),
 		Resolution(0),
 		Spacing(1.0f),
 		InvSpacing(1.0f),

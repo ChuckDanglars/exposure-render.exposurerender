@@ -2,7 +2,7 @@
 #include "estimate.cuh"
 #include "core\cudawrapper.h"
 #include "core\renderer.h"
-#include "core\intersect.h"
+#include "core\intersect.cuh"
 
 namespace ExposureRender
 {

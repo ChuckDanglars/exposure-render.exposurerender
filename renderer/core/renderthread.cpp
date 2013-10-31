@@ -31,8 +31,6 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 	this->Renderer.Volume.GetTracer().GetOpacity1D().AddNode(0.0f, 1.0f);
 	this->Renderer.Volume.GetTracer().GetOpacity1D().AddNode(10, 1.0f);
 	this->Renderer.Volume.GetTracer().GetOpacity1D().AddNode(60000.0f, 0.0f);
-
-	this->Renderer.Camera.SetPos(Vec3f(0, -1000, 0));
 }
 
 void QRenderer::Start()

@@ -40,16 +40,10 @@ public:
 		ApertureSize(0.0f),
 		NoApertureBlades(6),
 		ApertureAngle(0.0f),
-		ClipNear(0.0f),
-		ClipFar(FLT_MAX),
-		Exposure(1.0f),
-		Gamma(2.2f),
 		FOV(35.0f),
 		N(0.0f),
 		U(0.0f),
-		V(0.0f),
-		InvExposure(1.0f),
-		InvGamma(1.0f / 2.2f)
+		V(0.0f)
 	{
 	}
 	
@@ -65,13 +59,13 @@ public:
 		R.ImageUV[0] = UV[0] + RNG.Get1();
 		R.ImageUV[1] = UV[1] + RNG.Get1();
 
-		ScreenPoint[0] = this->Screen[0][0] + (this->InvScreen[0] * R.ImageUV[0]);
-		ScreenPoint[1] = this->Screen[1][0] + (this->InvScreen[1] * R.ImageUV[1]);
+		ScreenPoint[0] = this->Film.Screen[0][0] + (this->Film.InvScreen[0] * R.ImageUV[0]);
+		ScreenPoint[1] = this->Film.Screen[1][0] + (this->Film.InvScreen[1] * R.ImageUV[1]);
 
 		R.O		= this->Pos;
 		R.D		= Normalize(this->N + (ScreenPoint[0] * this->U) - (ScreenPoint[1] * this->V));
-		R.MinT	= this->ClipNear;
-		R.MaxT	= this->ClipFar;
+		R.MinT	= -1000.0f;
+		R.MaxT	= 1000.0f;
 		
 		if (this->ApertureSize != 0.0f)
 		{
@@ -125,15 +119,15 @@ public:
 
 		const Vec2f CamUV(Dot(FilmP, this->U), -Dot(FilmP, this->V));
 
-		if (CamUV[0] < this->Screen[0][0] || CamUV[0] > this->Screen[0][1])
+		if (CamUV[0] < this->Film.Screen[0][0] || CamUV[0] > this->Film.Screen[0][1])
 			return false;
 
-		if (CamUV[1] < this->Screen[1][0] || CamUV[1] > this->Screen[1][1])
+		if (CamUV[1] < this->Film.Screen[1][0] || CamUV[1] > this->Film.Screen[1][1])
 			return false;
 
-		const Vec2f ScreenSize(this->Screen[0][1] - this->Screen[0][0], this->Screen[1][1] - this->Screen[1][0]);
+		const Vec2f ScreenSize(this->Film.Screen[0][1] - this->Film.Screen[0][0], this->Film.Screen[1][1] - this->Film.Screen[1][0]);
 
-		Vec2f Offset = CamUV - Vec2f(this->Screen[0][0], this->Screen[1][0]);
+		Vec2f Offset = CamUV - Vec2f(this->Film.Screen[0][0], this->Film.Screen[1][0]);
 		
 		Offset /= ScreenSize;
 		
@@ -153,22 +147,16 @@ public:
 	GET_SET_TS_MACRO(HOST_DEVICE, ApertureSize, float)
 	GET_SET_TS_MACRO(HOST_DEVICE, NoApertureBlades, int)
 	GET_SET_TS_MACRO(HOST_DEVICE, ApertureAngle, float)
-	GET_SET_TS_MACRO(HOST_DEVICE, ClipNear, float)
-	GET_SET_TS_MACRO(HOST_DEVICE, ClipFar, float)
-	GET_SET_TS_MACRO(HOST_DEVICE, Exposure, float)
-	GET_SET_TS_MACRO(HOST_DEVICE, Gamma, float)
 	GET_SET_TS_MACRO(HOST_DEVICE, FOV, float)
 	GET_SET_TS_MACRO(HOST_DEVICE, N, Vec3f)
 	GET_SET_TS_MACRO(HOST_DEVICE, U, Vec3f)
 	GET_SET_TS_MACRO(HOST_DEVICE, V, Vec3f)
-	GET_SET_TS_MACRO(HOST_DEVICE, InvExposure, float)
-	GET_SET_TS_MACRO(HOST_DEVICE, InvGamma, float)
+
 
 	/*! Updates internal members */
 	HOST void Update()
 	{
-		this->InvExposure	= this->Exposure == 0.0f ? 0.0f : 1.0f / this->Exposure;
-		this->InvGamma		= this->Gamma == 0.0f ? 0.0f : 1.0f / this->Gamma;
+		this->Film.Update(this->FOV);
 
 		this->N = Normalize(this->Target - this->Pos);
 		this->U = Normalize(Cross(this->N, this->Up));
@@ -176,30 +164,6 @@ public:
 
 		if (this->FocalDistance == -1.0f)
 			this->FocalDistance = Length(this->Target, this->Pos);
-
-		float Scale = 0.0f;
-
-		Scale = tanf((0.5f * this->FOV / RAD_F));
-
-		const float AspectRatio = (float)this->Film.GetResolution()[1] / (float)this->Film.GetResolution()[0];
-
-		if (AspectRatio > 1.0f)
-		{
-			this->Screen[0][0] = -Scale;
-			this->Screen[0][1] = Scale;
-			this->Screen[1][0] = -Scale * AspectRatio;
-			this->Screen[1][1] = Scale * AspectRatio;
-		}
-		else
-		{
-			this->Screen[0][0] = -Scale / AspectRatio;
-			this->Screen[0][1] = Scale / AspectRatio;
-			this->Screen[1][0] = -Scale;
-			this->Screen[1][1] = Scale;
-		}
-
-		this->InvScreen[0] = (this->Screen[0][1] - this->Screen[0][0]) / (float)this->Film.GetResolution()[0];
-		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->Film.GetResolution()[1];
 	}
 
 	/*! Returns the film
@@ -222,18 +186,10 @@ protected:
 	float					ApertureSize;			/*! Size of the aperture */
 	int						NoApertureBlades;		/*! Number of aperture blades, in case of a polygonal aperture */
 	float					ApertureAngle;			/*! Offset angle of the aperture blades */
-	float					ClipNear;				/*! Near clipping distance */
-	float					ClipFar;				/*! Far clipping distance */
-	float					Exposure;				/*! Film exposure */
-	float					Gamma;					/*! Monitor gamma */
 	float					FOV;					/*! Field of view */
 	Vec3f					N;						/*! Camera normal vector */
 	Vec3f					U;						/*! Camera U vector (to the left) */
 	Vec3f					V;						/*! Camera V vector (up) */
-	float					Screen[2][2];			/*! Pre-computed values for sampling the film plane efficiently */
-	float					InvScreen[2];			/*! Pre-computed values for sampling the film plane efficiently */
-	float					InvExposure;			/*! Reciprocal of the exposure */
-	float					InvGamma;				/*! Reciprocal of the monitor gamma */
 };
 
 }
