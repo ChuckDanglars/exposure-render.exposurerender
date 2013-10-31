@@ -10,4 +10,4 @@ SET(CUDA_VERBOSE_BUILD ON)
 FILE(GLOB GpuJpegSources "*.h" "*.cpp" "*.cuh" "*.cu")
 CUDA_ADD_LIBRARY(GpuJpeg ${GpuJpegSources})
 
-INSTALL_TARGETS(/bin GpuJpeg)
+#INSTALL_TARGETS(/bin GpuJpeg)

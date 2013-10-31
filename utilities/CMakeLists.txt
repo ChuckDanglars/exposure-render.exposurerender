@@ -24,4 +24,4 @@ QT4_WRAP_CPP(UtilitiesHeadersMoc general/hysteresis.h gpujpeg/gpujpeg.h gui/rend
 ADD_LIBRARY(Utilities ${GeneralSources} ${GpuJpegSources} ${GuiSources} ${NetworkSources} ${UtilitiesHeadersMoc})
 TARGET_LINK_LIBRARIES(Utilities GpuJpeg ${QT_LIBRARIES})
 
-INSTALL_TARGETS(/bin Utilities)
+#INSTALL_TARGETS(/bin Utilities)

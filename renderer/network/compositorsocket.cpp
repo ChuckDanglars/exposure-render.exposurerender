@@ -27,8 +27,16 @@ QCompositorSocket::QCompositorSocket(QRenderer* Renderer, QObject* Parent /*= 0*
 	this->RenderStatsTimer.start(1000.0f / this->Settings.value("network/sendrenderstatsfps ", 20).toInt());
 };
 
-void QCompositorSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
+void QCompositorSocket::OnReceiveData(const QString& Action, QByteArray& ByteArray)
 {
+	if (Action == "VOLUME" || Action == "BITMAP")
+	{
+		qDebug() << "Received" << Action.toLower();
+
+		this->SaveResource(ByteArray);
+	}
+
+	/*
 	if (Action == "CAMERA")
 	{
 		float Position[3], FocalPoint[3], ViewUp[3];
@@ -67,6 +75,7 @@ void QCompositorSocket::OnReceiveData(const QString& Action, QDataStream& DataSt
 
 		this->Renderer->Start();
 	}
+	*/
 }
 
 void QCompositorSocket::OnSendImage()

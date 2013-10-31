@@ -26,4 +26,11 @@ QT4_WRAP_CPP(GuiHeadersMoc gui/guiwindow.h network/compositorsocket.h)
 CUDA_ADD_EXECUTABLE(Gui ${GuiSources} ${NetworkSources} ${GuiHeadersMoc})
 TARGET_LINK_LIBRARIES(Gui Utilities Opengl32)
 
-INSTALL_TARGETS(/bin Gui)
+INSTALL_TARGETS(/gui Gui)
+
+SET(QtDlls ${QT_BINARY_DIR}/QtCore4.dll ${QT_BINARY_DIR}/QtGui4.dll ${QT_BINARY_DIR}/QtXml4.dll ${QT_BINARY_DIR}/QtSql4.dll ${QT_BINARY_DIR}/QtNetwork4.dll ${QT_BINARY_DIR}/QtOpenGl4.dll)
+INSTALL_FILES(/gui FILES ${QtDlls})
+
+INSTALL_FILES(/gui "${CMAKE_CURRENT_SOURCE_DIR}/gui.ini")
+
+INCLUDE(InstallRequiredSystemLibraries)

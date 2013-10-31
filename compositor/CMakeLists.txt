@@ -30,4 +30,14 @@ QT4_WRAP_CPP(CompositorHeadersMoc gui/compositorwindow.h server/rendererserver.h
 CUDA_ADD_EXECUTABLE(Compositor ${CudaSources} ${GuiSources} ${ServerSources} ${SocketSources} ${CompositorHeadersMoc})
 TARGET_LINK_LIBRARIES(Compositor Utilities Opengl32)
 
-INSTALL_TARGETS(/bin Compositor)
+INSTALL_TARGETS(/compositor Compositor)
+
+SET(CudaDlls ${CUDA_TOOLKIT_ROOT_DIR}/bin/cudart32_55.dll)
+INSTALL_FILES(/compositor FILES ${CudaDlls})
+
+SET(QtDlls ${QT_BINARY_DIR}/QtCore4.dll ${QT_BINARY_DIR}/QtGui4.dll ${QT_BINARY_DIR}/QtXml4.dll ${QT_BINARY_DIR}/QtSql4.dll ${QT_BINARY_DIR}/QtNetwork4.dll ${QT_BINARY_DIR}/QtOpenGl4.dll)
+INSTALL_FILES(/compositor FILES ${QtDlls})
+
+INSTALL_FILES(/compositor FILES ${CMAKE_CURRENT_SOURCE_DIR}/compositor.ini)
+
+INCLUDE(InstallRequiredSystemLibraries)

@@ -61,4 +61,14 @@ QT4_WRAP_CPP(RendererHeadersMoc ${MocHeaders})
 CUDA_ADD_EXECUTABLE(Renderer ${RendererSources} ${RendererHeadersMoc})
 TARGET_LINK_LIBRARIES(Renderer Utilities Opengl32)
 
-INSTALL_TARGETS(/bin Renderer)
+INSTALL_TARGETS(/renderer Renderer)
+
+SET(CudaDlls ${CUDA_TOOLKIT_ROOT_DIR}/bin/cudart32_55.dll)
+INSTALL_FILES(/renderer FILES ${CudaDlls})
+
+SET(QtDlls ${QT_BINARY_DIR}/QtCore4.dll ${QT_BINARY_DIR}/QtGui4.dll ${QT_BINARY_DIR}/QtXml4.dll ${QT_BINARY_DIR}/QtSql4.dll ${QT_BINARY_DIR}/QtNetwork4.dll ${QT_BINARY_DIR}/QtOpenGl4.dll)
+INSTALL_FILES(/renderer FILES ${QtDlls})
+
+INSTALL_FILES(/renderer "${CMAKE_CURRENT_SOURCE_DIR}/renderer.ini")
+
+INCLUDE(InstallRequiredSystemLibraries)
