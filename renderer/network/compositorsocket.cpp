@@ -80,12 +80,6 @@ void QCompositorSocket::OnReceiveData(const QString& Action, QByteArray& ByteArr
 
 void QCompositorSocket::OnSendImage()
 {
-	return;
-
-	QByteArray ByteArray;
-	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
-	DataStream.setVersion(QDataStream::Qt_4_0);
-
 	QByteArray ImageBytes;
 	
 	this->GpuJpegEncoder.Encode((unsigned char*)this->Renderer->Renderer.Camera.GetFilm().GetHostRunningEstimate().GetData());
@@ -94,36 +88,19 @@ void QCompositorSocket::OnSendImage()
 	unsigned char* CompressedImage = this->GpuJpegEncoder.GetCompressedImage(CompressedImageSize);
 
 	ImageBytes.setRawData((char*)CompressedImage, CompressedImageSize);
-	
-	DataStream << (quint32)0;
-	DataStream << QString("IMAGE");
-	DataStream << this->AvgEncodeSpeed.GetAverageValue();
+
+	QByteArray Data;
+
+	QDataStream DataStream(&Data, QIODevice::WriteOnly);
+	DataStream.setVersion(QDataStream::Qt_4_0);
+
+	DataStream << this->Renderer->Renderer.Camera.GetFilm().GetWidth();
+	DataStream << this->Renderer->Renderer.Camera.GetFilm().GetHeight();
 	DataStream << ImageBytes;
 
-	DataStream.device()->seek(0);
-		    
-	DataStream << (quint32)(ByteArray.size() - sizeof(quint32));
-	
-	this->write(ByteArray);
-	this->flush();
+	this->SendData("ESTIMATE", Data);
 }
 
 void QCompositorSocket::OnSendRenderStats()
 {
-	return;
-
-	QByteArray ByteArray;
-	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
-	DataStream.setVersion(QDataStream::Qt_4_0);
-
-	DataStream << (quint32)0;
-	DataStream << QString("RENDER_STATS");
-	DataStream << this->Renderer->AvgFps.GetAverageValue();
-
-	DataStream.device()->seek(0);
-		    
-	DataStream << (quint32)(ByteArray.size() - sizeof(quint32));
-	
-	this->write(ByteArray);
-	this->flush();
 }

@@ -34,6 +34,4 @@ static inline HOST_DEVICE ColorXYZf RGBfToXYZf(ColorRGBf& RGB)
 
 #define NO_PIXELS 4
 
-
-
 }

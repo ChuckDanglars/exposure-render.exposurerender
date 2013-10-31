@@ -11,31 +11,23 @@
 
 using namespace ExposureRender;
 
+class QGuiServer;
+
 class QRendererSocket : public QBaseSocket
 {
     Q_OBJECT
 
 public:
-    QRendererSocket(int SocketDescriptor, QObject* Parent = 0);
+    QRendererSocket(int SocketDescriptor, QGuiServer* GuiServer, QObject* Parent = 0);
 	virtual ~QRendererSocket();
 
-	void OnReceiveData(const QString& Action, QDataStream& DataStream);
-
-signals:
-	void UpdateFps(const float&);
-	void UpdateJpgNoBytes(const int&);
-	void UpdateJpgEncodeTime(const float&);
-	void UpdateJpgDecodeTime(const float&);
-
-public:
-	void SendCamera(float* Position, float* FocalPoint, float* ViewUp);
+	void OnReceiveData(const QString& Action, QByteArray& Data);
 
 private:
 	QSettings						Settings;
-	QHysteresis						AvgDecodeSpeed;
+	QGuiServer*						GuiServer;
 	QGpuJpegDecoder					GpuJpegDecoder;
 	HostBuffer2D<ColorRGBuc>		Estimate;
-	int								ImageSize[2];
 
 friend class QServer;
 friend class QConnectionItem;

@@ -11,15 +11,22 @@
 
 using namespace ExposureRender;
 
+class QGuiServer;
+
 class QRendererServer : public QBaseServer
 {
 	Q_OBJECT
 public:
 	explicit QRendererServer(QObject* Parent = 0);
 	
+	QGuiServer*					GuiServer;
+
 protected:
 	void OnNewConnection(const int& SocketDescriptor);
 	void OnStarted();
+
+public slots:
+	void OnCombineEstimates();
 
 private:
 	QSettings					Settings;

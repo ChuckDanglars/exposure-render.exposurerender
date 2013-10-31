@@ -32,6 +32,8 @@ int main(int argc, char **argv)
 	QRendererServer RendererServer;
 	QGuiServer GuiServer(&RendererServer);
 
+	RendererServer.GuiServer = &GuiServer;
+
 	QCompositorWindow CompositorWindow(&RendererServer, &GuiServer);
 
 	const bool& GuiEnabled = Settings.value("gui/enabled", true).toBool();

@@ -1,14 +1,15 @@
 
 #include "renderersocket.h"
+#include "server\guiserver.h"
 
 #include <time.h>
 
 #include <QImage>
 
-QRendererSocket::QRendererSocket(int SocketDescriptor, QObject* Parent /*= 0*/) :
+QRendererSocket::QRendererSocket(int SocketDescriptor, QGuiServer* GuiServer, QObject* Parent /*= 0*/) :
 	QBaseSocket(Parent),
 	Settings("compositor.ini", QSettings::IniFormat),
-	AvgDecodeSpeed(),
+	GuiServer(GuiServer),
 	GpuJpegDecoder(),
 	Estimate()
 {
@@ -16,41 +17,38 @@ QRendererSocket::QRendererSocket(int SocketDescriptor, QObject* Parent /*= 0*/) 
 		return;
 
 	qDebug() << SocketDescriptor << "renderer connected";
-
-	this->ImageSize[0]	= this->Settings.value("rendering/imagewidth", 1024).toUInt();
-	this->ImageSize[1]	= this->Settings.value("rendering/imageheight", 768).toUInt();
-
-	this->Estimate.Resize(Vec2i(this->ImageSize[0], this->ImageSize[1]));
 }
 
 QRendererSocket::~QRendererSocket()
 {
 }
 
-void QRendererSocket::OnReceiveData(const QString& Action, QDataStream& DataStream)
+void QRendererSocket::OnReceiveData(const QString& Action, QByteArray& Data)
 {
-	if (Action == "IMAGE")
+	qDebug() << Action.lower();
+
+	if (Action == "ESTIMATE")
 	{
-		QByteArray ImageBytes;
+		QDataStream DataStream(&Data, QIODevice::ReadOnly);
+		DataStream.setVersion(QDataStream::Qt_4_0);
 
-		float JpgEncodeTime = 0.0f;
-
-		DataStream >> JpgEncodeTime;
-		DataStream >> ImageBytes;
-		
 		int Width = 0, Height = 0, NoBytes = 0;
 
-		GpuJpegDecoder.Decode((unsigned char*)ImageBytes.data(), ImageBytes.count(), Width, Height, NoBytes);
+		QByteArray CompressedImageBytes;
+
+		DataStream >> Width;
+		DataStream >> Height;
+		DataStream >> CompressedImageBytes;
+
+		GpuJpegDecoder.Decode((unsigned char*)CompressedImageBytes.data(), CompressedImageBytes.count(), Width, Height, NoBytes);
 		
 		unsigned char* ImageData = GpuJpegDecoder.GetImage(NoBytes);
 
 		this->Estimate.Resize(Vec2i(Width, Height));
-		memcpy(this->Estimate.GetData(), ImageData, NoBytes);
-
-		emit UpdateJpgEncodeTime(JpgEncodeTime);
-		emit UpdateJpgNoBytes(ImageBytes.count());
+		memcpy(this->Estimate.GetData(), ImageData, NoBytes);	
 	}
 
+	/*
 	if (Action == "RENDER_STATS")
 	{
 		float Fps = 0.0f;
@@ -59,8 +57,10 @@ void QRendererSocket::OnReceiveData(const QString& Action, QDataStream& DataStre
 
 		emit UpdateFps(Fps);
 	}
+	*/
 }
 
+/*
 void QRendererSocket::SendCamera(float* Position, float* FocalPoint, float* ViewUp)
 {
 	QByteArray ByteArray;
@@ -90,3 +90,4 @@ void QRendererSocket::SendCamera(float* Position, float* FocalPoint, float* View
     this->write(ByteArray);
 	this->flush();
 }
+*/
