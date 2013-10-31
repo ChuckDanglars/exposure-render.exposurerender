@@ -22,6 +22,13 @@ int main(int argc, char **argv)
 	Application.setApplicationName("Exposure Render Compositor");
 	Application.setOrganizationName("Delft University of Technology, department of Computer Graphics and Visualization");
 
+	if (!QDir("resources").exists())
+	{
+		qDebug() << "Resource directory does not exist, creating it";
+		
+		QDir().mkdir("resources");
+	}
+
 	QRendererServer RendererServer;
 	QGuiServer GuiServer(&RendererServer);
 
