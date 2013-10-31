@@ -60,7 +60,13 @@ void QGuiWindow::OnUploadVolume()
 
 	if (File.open(QIODevice::ReadOnly))
 	{
-		QByteArray Voxels = File.readAll();
+		char* Temp = (char*)malloc(File.size());
+
+		memset(Temp, 0, File.size());
+
+		File.read(Temp, File.size());
+
+		QByteArray Voxels(Temp, File.size());
 	
 		QByteArray ByteArray;
 		QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);

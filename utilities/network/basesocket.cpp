@@ -87,15 +87,18 @@ void QBaseSocket::SaveResource(QByteArray& ByteArray)
 
 	DataStream >> FileName;
 
-	QByteArray Data = DataStream.device()->readAll();
+	// QByteArray Data = DataStream.device()->readAll();
+	QByteArray Data;
 
-	qDebug() << "Saving resource" << FileName;
+	DataStream >> Data;
+
+	qDebug() << "Saving resource" << FileName << Data.count() << "bytes";
 
 	QFile File(QApplication::applicationDirPath() + "//resources//" + FileName);
 	
 	if (File.open(QIODevice::WriteOnly))
 	{
-		File.writeBlock(Data);
+		File.write(Data);
 		File.close();
 
 		qDebug() << "Saved" << File.fileName();
