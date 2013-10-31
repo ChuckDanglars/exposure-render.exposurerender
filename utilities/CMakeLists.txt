@@ -20,7 +20,7 @@ SOURCE_GROUP("gpujpeg" FILES ${GpuJpegSources})
 SOURCE_GROUP("gui" FILES ${GuiSources})
 SOURCE_GROUP("network" FILES ${NetworkSources})
 
-QT4_WRAP_CPP(UtilitiesHeadersMoc general/hysteresis.h gpujpeg/gpujpeg.h gui/renderoutputwidget.h network/basesocket.h network/baseserver.h)
+QT4_WRAP_CPP(UtilitiesHeadersMoc general/hysteresis.h general/estimate.h gpujpeg/gpujpeg.h gui/renderoutputwidget.h network/basesocket.h network/baseserver.h)
 ADD_LIBRARY(Utilities ${GeneralSources} ${GpuJpegSources} ${GuiSources} ${NetworkSources} ${UtilitiesHeadersMoc})
 TARGET_LINK_LIBRARIES(Utilities GpuJpeg ${QT_LIBRARIES})
 

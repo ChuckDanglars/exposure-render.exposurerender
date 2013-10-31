@@ -1,13 +1,9 @@
 #pragma once
 
 #include "utilities\network\basesocket.h"
+#include "utilities\general\estimate.h"
 
 #include <QSettings>
-
-#include "buffer\buffers.h"
-#include "color\color.h"
-
-using namespace ExposureRender;
 
 class QCompositorSocket : public QBaseSocket
 {
@@ -21,8 +17,8 @@ protected:
 	void OnReceiveData(const QString& Action, QByteArray& Data);
 
 private:
-	QSettings					Settings;
-	HostBuffer2D<ColorRGBuc>	Estimate;
+	QSettings		Settings;
+	QEstimate		Estimate;
 
 friend class QGuiWindow;
 };

@@ -14,19 +14,10 @@ QCompositorSocket::~QCompositorSocket()
 
 void QCompositorSocket::OnReceiveData(const QString& Action, QByteArray& Data)
 {
+	// qDebug() << Action.lower();
+
 	if (Action == "ESTIMATE")
 	{
-		QDataStream DataStream(&Data, QIODevice::ReadOnly);
-		DataStream.setVersion(QDataStream::Qt_4_0);
-
-		int Width = 0, Height = 0;
-
-		QByteArray ImageBytes;
-
-		DataStream >> Width;
-		DataStream >> Height;
-		DataStream >> ImageBytes;
-
-		this->Estimate.SetData(ImageBytes.data(), Width, Height);
+		this->Estimate.FromByteArray(Data);
 	}
 }

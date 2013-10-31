@@ -24,6 +24,8 @@ private:
 	bool							Initialized;
 	unsigned char*					CompressedImage;
 	int								CompressedSize;
+	int								Width;
+	int								Height;
 };
 
 class QGpuJpegDecoder : public QObject

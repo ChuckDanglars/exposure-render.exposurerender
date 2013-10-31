@@ -8,7 +8,9 @@ QGpuJpegEncoder::QGpuJpegEncoder(QObject* Parent /*= 0*/) :
 	Encoder(0),
 	Initialized(false),
 	CompressedImage(0),
-	CompressedSize(0)
+	CompressedSize(0),
+	Width(0),
+	Height(0)
 {
 }
 
@@ -23,6 +25,15 @@ QGpuJpegEncoder::~QGpuJpegEncoder()
 
 void QGpuJpegEncoder::Initialize(const unsigned int& Width, const unsigned int& Height, const unsigned int& NoComponentsPerPixel)
 {
+	if (Width == 0 || Height == 0)
+		return;
+
+	if (Width == this->Width && Height == this->Height)
+		return;
+
+	this->Width		= Width;
+	this->Height	= Height;
+
 	qDebug() << "Initializing gpu jpeg encoder";
 
 	if (gpujpeg_init_device(0, 0))

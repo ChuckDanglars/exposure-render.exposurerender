@@ -1,10 +1,10 @@
 
+#include "renderoutputwidget.h"
+
 #include <QtGui>
 #include <QtOpenGL>
 
 #include <math.h>
-
-#include "renderoutputwidget.h"
 
 using namespace ExposureRender;
 

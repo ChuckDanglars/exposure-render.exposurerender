@@ -1,15 +1,10 @@
-
 #pragma once
 
 #include "utilities\network\baseserver.h"
+#include "utilities\general\estimate.h"
 
 #include <QSettings>
 #include <QTimer>
-
-#include "renderer\buffer\host\hostbuffer2d.h"
-#include "renderer\color\color.h"
-
-using namespace ExposureRender;
 
 class QGuiServer;
 
@@ -29,9 +24,9 @@ public slots:
 	void OnCombineEstimates();
 
 private:
-	QSettings					Settings;
-	QTimer						Timer;
-	HostBuffer2D<ColorRGBuc>	Estimate;
+	QSettings		Settings;
+	QTimer			Timer;
+	QEstimate		Estimate;
 
 	friend class QCompositorWindow;
 };

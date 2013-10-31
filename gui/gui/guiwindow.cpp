@@ -49,7 +49,7 @@ QGuiWindow::~QGuiWindow()
 
 void QGuiWindow::OnTimer()
 {
-	this->RenderOutputWidget->SetImage(this->CompositorSocket->Estimate);
+	this->RenderOutputWidget->SetImage(this->CompositorSocket->Estimate.GetBuffer());
 }
 
 void QGuiWindow::OnUploadVolume()

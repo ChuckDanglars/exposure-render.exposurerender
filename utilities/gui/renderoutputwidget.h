@@ -41,9 +41,9 @@
 #ifndef QRenderOutputWidget_H
 #define QRenderOutputWidget_H
 
-#include "vector\vector.h"
-#include "buffer\host\hostbuffer2d.h"
+#include "buffer\buffers.h"
 #include "color\color.h"
+#include "vector\vector.h"
 
 #include <QGLWidget>
 
@@ -77,15 +77,15 @@ protected:
 	void ComputeQuad();
 
 private:
-	HostBuffer2D<ColorRGBuc>		Image;
-	float							AspectRatio;
-	QPoint							LastPos;
-	GLuint							TextureID;
-	Vec3f							Position;
-	Vec3f							FocalPoint;
-	Vec3f							ViewUp;
-	float							Quad[2][2];
-	float							Margin;
+	HostBuffer2D<ColorRGBuc>	Image;
+	float						AspectRatio;
+	QPoint						LastPos;
+	GLuint						TextureID;
+	Vec3f						Position;
+	Vec3f						FocalPoint;
+	Vec3f						ViewUp;
+	float						Quad[2][2];
+	float						Margin;
 };
 
 #endif

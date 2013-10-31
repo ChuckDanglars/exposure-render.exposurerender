@@ -1,15 +1,10 @@
 #pragma once
 
-#include "renderer\buffer\buffers.h"
-#include "renderer\color\colorrgbuc.h"
-#include "utilities\general\hysteresis.h"
-#include "utilities\gpujpeg\gpujpeg.h"
 #include "utilities\network\basesocket.h"
+#include "utilities\general\estimate.h"
 
 #include <QDebug>
 #include <QSettings>
-
-using namespace ExposureRender;
 
 class QGuiServer;
 
@@ -24,12 +19,9 @@ public:
 	void OnReceiveData(const QString& Action, QByteArray& Data);
 
 private:
-	QSettings						Settings;
-	QGuiServer*						GuiServer;
-	QGpuJpegDecoder					GpuJpegDecoder;
-	HostBuffer2D<ColorRGBuc>		Estimate;
+	QSettings		Settings;
+	QGuiServer*		GuiServer;
+	QEstimate		Estimate;
 
-friend class QServer;
-friend class QConnectionItem;
-friend class QMainDialog;
+friend class QRendererServer;
 };

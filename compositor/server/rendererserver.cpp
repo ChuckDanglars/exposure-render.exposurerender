@@ -14,8 +14,6 @@ QRendererServer::QRendererServer(QObject* Parent /*= 0*/) :
 	this->ListenPort = Settings.value("network/rendererport", 6000).toInt();
 
 	connect(&this->Timer, SIGNAL(timeout()), this, SLOT(OnCombineEstimates()));
-
-	this->Estimate.Resize(Vec2i(100, 100)):
 }
 
 void QRendererServer::OnNewConnection(const int& SocketDescriptor)
@@ -33,18 +31,14 @@ void QRendererServer::OnStarted()
 
 void QRendererServer::OnCombineEstimates()
 {
-	QByteArray ImageBytes;
+	if (this->Connections.size() == 0)
+		return;
 
-	ImageBytes.setRawData((char*)this->Estimate.GetData(), this->Estimate.GetNoBytes());
+	this->Estimate.GetBuffer() = ((QRendererSocket*)this->Connections[0])->Estimate.GetBuffer();
 
 	QByteArray Data;
 
-	QDataStream DataStream(&Data, QIODevice::WriteOnly);
-	DataStream.setVersion(QDataStream::Qt_4_0);
-
-	DataStream << this->Estimate.Width();
-	DataStream << this->Estimate.Height();
-	DataStream << ImageBytes;
+	this->Estimate.ToByteArray(Data);
 
 	this->GuiServer->SendDataToAll("ESTIMATE", Data);
 }

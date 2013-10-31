@@ -4,7 +4,7 @@
 
 #include "utilities\network\basesocket.h"
 #include "utilities\general\hysteresis.h"
-#include "utilities\gpujpeg\gpujpeg.h"
+#include "utilities\general\estimate.h"
 
 class QRenderer;
 
@@ -26,6 +26,5 @@ public:
 	QRenderer*			Renderer;
 	QTimer				ImageTimer;
 	QTimer				RenderStatsTimer;
-	QHysteresis			AvgEncodeSpeed;
-	QGpuJpegEncoder		GpuJpegEncoder;
+	QEstimate			Estimate;
 };
