@@ -84,12 +84,9 @@ void QBaseSocket::SaveResource(QByteArray& ByteArray)
 	DataStream.setVersion(QDataStream::Qt_4_0);
 
 	QString FileName;
-
-	DataStream >> FileName;
-
-	// QByteArray Data = DataStream.device()->readAll();
 	QByteArray Data;
 
+	DataStream >> FileName;
 	DataStream >> Data;
 
 	qDebug() << "Saving resource" << FileName << Data.count() << "bytes";
