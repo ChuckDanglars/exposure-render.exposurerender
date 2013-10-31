@@ -28,7 +28,7 @@ void QRendererSocket::OnReceiveData(const QString& Action, QByteArray& Data)
 
 	if (Action == "ESTIMATE")
 	{
-		this->Estimate.FromByteArray(Data);
-		this->GuiServer->SendDataToAll(Action, Data);
+		if (this->Estimate.FromByteArray(Data))
+			this->GuiServer->SendDataToAll(Action, Data);
 	}
 }

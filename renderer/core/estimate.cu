@@ -2,6 +2,7 @@
 #include "estimate.cuh"
 #include "core\cudawrapper.h"
 #include "core\renderer.h"
+#include "core\intersect.h"
 
 namespace ExposureRender
 {
@@ -24,7 +25,7 @@ KERNEL void KrnlEstimate(Renderer* Renderer)
 
 	ScatterEvent SE;
 
-	if (Renderer->Volume.Intersect(R, Random, SE))
+	if (IntersectVolume(Renderer->Volume, R, Random, SE))
 		IterationEstimateHDR.Set(X, Y, ColorXYZAf(1.0f, 1.0f, 1.0f, 0.0f));
 	else
 		IterationEstimateHDR.Set(X, Y, ColorXYZAf(0.0f, 0.0f, 0.0f, 0.0f));

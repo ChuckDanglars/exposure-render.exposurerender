@@ -24,19 +24,46 @@ QCompositorSocket::QCompositorSocket(QRenderer* Renderer, QObject* Parent /*= 0*
 	this->RenderStatsTimer.start(1000.0f / this->Settings.value("network/sendrenderstatsfps ", 20).toInt());
 };
 
-void QCompositorSocket::OnReceiveData(const QString& Action, QByteArray& ByteArray)
+void QCompositorSocket::OnReceiveData(const QString& Action, QByteArray& Data)
 {
 	if (Action == "VOLUME" || Action == "BITMAP")
 	{
 		qDebug() << "Received" << Action.toLower();
 
-		this->SaveResource(ByteArray);
+		this->SaveResource(Data);
 	}
 
-	/*
+	if (Action == "VOLUME")
+	{
+		Volume& Volume = this->Renderer->Renderer.Volume;
+
+		QDataStream DataStream(&Data, QIODevice::ReadOnly);
+		DataStream.setVersion(QDataStream::Qt_4_0);
+
+		QString FileName;
+		Vec3i Resolution;
+		Vec3f Spacing;
+
+		DataStream >> FileName;
+
+		DataStream >> Resolution[0];
+		DataStream >> Resolution[1];
+		DataStream >> Resolution[2];
+
+		DataStream >> Spacing[0];
+		DataStream >> Spacing[1];
+		DataStream >> Spacing[2];
+
+		this->Renderer->Renderer.Volume.Create(Resolution, Spacing, (short*)Data.data());
+	}
+
+	
 	if (Action == "CAMERA")
 	{
 		float Position[3], FocalPoint[3], ViewUp[3];
+
+		QDataStream DataStream(&Data, QIODevice::ReadOnly);
+		DataStream.setVersion(QDataStream::Qt_4_0);
 
 		DataStream >> Position[0];
 		DataStream >> Position[1];
@@ -56,7 +83,7 @@ void QCompositorSocket::OnReceiveData(const QString& Action, QByteArray& ByteArr
 		
 		this->Renderer->Renderer.Camera.GetFilm().Restart();
 	}
-
+	/*
 	if (Action == "IMAGE_SIZE")
 	{
 		unsigned int ImageSize[2] = { 0 };
@@ -81,9 +108,8 @@ void QCompositorSocket::OnSendImage()
 
 	QByteArray CompressedImage;
 
-	this->Estimate.ToByteArray(CompressedImage);
-
-	this->SendData("ESTIMATE", CompressedImage);
+	if (this->Estimate.ToByteArray(CompressedImage))
+		this->SendData("ESTIMATE", CompressedImage);
 }
 
 void QCompositorSocket::OnSendRenderStats()

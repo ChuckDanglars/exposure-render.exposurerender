@@ -46,7 +46,7 @@ void QGpuJpegEncoder::Initialize(const unsigned int& Width, const unsigned int& 
 	
 	gpujpeg_set_default_parameters(&Params);
 
-	Params.quality				= 95;
+	Params.quality				= 40;
 	Params.restart_interval		= 16; 
 	Params.interleaved			= 1;
 

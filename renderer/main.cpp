@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
 	QCompositorSocket CompositorSocket(&Renderer, &Application);
 	
-	const int Wait		= Settings.value("network/wait", "localhost").toInt();
+	const int Wait		= Settings.value("network/wait", 2000).toInt();
 	QString HostName	= Settings.value("network/host", "localhost").toString();
 	const quint16 Port	= Settings.value("network/port", 6000).toInt();
 

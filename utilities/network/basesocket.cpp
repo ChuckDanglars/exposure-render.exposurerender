@@ -57,7 +57,7 @@ void QBaseSocket::OnReceiveData(const QString& Action, QByteArray& ByteArray)
 
 void QBaseSocket::SendData(const QString& Action, QByteArray& Data)
 {
-	qDebug() << "Sending" << Action.lower();
+	// qDebug() << "Sending" << Action.lower();
 
 	QByteArray ByteArray;
 

@@ -29,6 +29,7 @@ public slots:
 	void OnTimer();
 	void OnUploadVolume();
 	void OnUploadBitmap();
+	void OnCameraUpdate(float* Position, float* FocalPoint, float* ViewUp);
 
 private:
 	QCompositorSocket*			CompositorSocket;

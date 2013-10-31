@@ -25,17 +25,6 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 	this->Renderer.Camera.GetFilm().SetBlock(Block);
 	this->Renderer.Camera.GetFilm().SetGrid(Vec3i((int)ceilf(this->Renderer.Camera.GetFilm().GetWidth() / Block[0]), (int)ceilf(this->Renderer.Camera.GetFilm().GetHeight() / Block[1]), 1));
 
-	QFile File("C://workspaces//manix.raw");
-	File.open(QIODevice::ReadOnly);
-
-	QByteArray Voxels = File.readAll();
-
-	qDebug() << Voxels.count() << "bytes";
-
-	Matrix44 M;
-
-	this->Renderer.Volume.Create(Vec3i(256, 230, 256), Vec3f(1.0f), (short*)Voxels.data(), M);
-	
 	this->Renderer.Volume.GetTracer().SetStepFactorPrimary(Settings.value("traversal/stepfactorprimary", 3.0).toFloat());
 	this->Renderer.Volume.GetTracer().SetStepFactorOcclusion(Settings.value("traversal/stepfactorocclusion", 6.0).toFloat());
 	
@@ -43,9 +32,7 @@ QRenderer::QRenderer(QObject* Parent /*= 0*/) :
 	this->Renderer.Volume.GetTracer().GetOpacity1D().AddNode(10, 1.0f);
 	this->Renderer.Volume.GetTracer().GetOpacity1D().AddNode(60000.0f, 0.0f);
 
-	
-
-	// this->Renderer.Camera.SetPos(Vec3f(0, -100, 0));
+	this->Renderer.Camera.SetPos(Vec3f(0, -1000, 0));
 }
 
 void QRenderer::Start()
@@ -56,7 +43,7 @@ void QRenderer::Start()
 void QRenderer::OnRender()
 {
 	this->Renderer.Camera.SetApertureSize(0.0f);
-	this->Renderer.Camera.SetFocalDistance(10.0f);
+	this->Renderer.Camera.SetFocalDistance(0.5f);
 
 	this->Renderer.Camera.Update();
 	

@@ -34,12 +34,31 @@ void QRendererServer::OnCombineEstimates()
 	if (this->Connections.size() == 0)
 		return;
 
-	this->Estimate.GetBuffer() = ((QRendererSocket*)this->Connections[0])->Estimate.GetBuffer();
+	unsigned char* Estimates[20];
+	int NoEstimates = 0;
 
+	for (int c = 0; c < this->Connections.size(); c++)
+	{
+		if (this->Connections[c]->state() == QAbstractSocket::ConnectedState)
+		{
+			QRendererSocket* RendererSocket = (QRendererSocket*)this->Connections[c];
+
+			if (!RendererSocket->Estimate.GetBuffer().IsEmpty())
+			{
+				Estimates[NoEstimates] = (unsigned char*)(RendererSocket->Estimate.GetBuffer().GetData());
+				NoEstimates++;
+			}
+		}
+	}
+	
+	this->Estimate.GetBuffer().Resize(Vec2i(640, 480));
+
+	if (NoEstimates > 0)
+		ExposureRender::Combine(this->Estimate.GetBuffer().Width(), this->Estimate.GetBuffer().Height(), Estimates, NoEstimates, (unsigned char*)this->Estimate.GetBuffer().GetData());
+	
 	QByteArray Data;
 
-	this->Estimate.ToByteArray(Data);
-
-	this->GuiServer->SendDataToAll("ESTIMATE", Data);
+	if (this->Estimate.ToByteArray(Data))
+		this->GuiServer->SendDataToAll("ESTIMATE", Data);
 }
 

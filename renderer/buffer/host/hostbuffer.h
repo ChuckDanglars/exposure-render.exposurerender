@@ -174,6 +174,14 @@ public:
 	{
 		return this->Resolution.CumulativeProduct();
 	}
+
+	/*! Returns if the buffer is empty or not
+		@return Empty
+	*/
+	HOST_DEVICE bool IsEmpty() const
+	{
+		return this->Data == 0;
+	}
 	
 protected:
 	Enums::FilterMode			FilterMode;						/*! Type of filtering  */

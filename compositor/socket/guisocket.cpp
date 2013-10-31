@@ -24,9 +24,14 @@ void QGuiSocket::OnReceiveData(const QString& Action, QByteArray& ByteArray)
 {
 	if (Action == "VOLUME" || Action == "BITMAP")
 	{
-		qDebug() << "Received" << Action.toLower();
+		// qDebug() << "Received" << Action.toLower();
 
 		this->SaveResource(ByteArray);
+		this->RendererServer->SendDataToAll(Action, ByteArray);
+	}
+
+	if (Action == "CAMERA")
+	{
 		this->RendererServer->SendDataToAll(Action, ByteArray);
 	}
 }

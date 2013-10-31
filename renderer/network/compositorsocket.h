@@ -15,7 +15,7 @@ class QCompositorSocket : public QBaseSocket
 public:
 	QCompositorSocket(QRenderer* Renderer, QObject* Parent = 0);
 
-	void OnReceiveData(const QString& Action, QByteArray& ByteArray);
+	void OnReceiveData(const QString& Action, QByteArray& Data);
 
 public slots:
 	void OnSendImage();

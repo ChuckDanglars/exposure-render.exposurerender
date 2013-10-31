@@ -41,6 +41,8 @@ QGuiWindow::QGuiWindow(QCompositorSocket* CompositorSocket, QWidget* Parent /*= 
 
 	connect(this->UploadVolume, SIGNAL(clicked()), this, SLOT(OnUploadVolume()));
 	connect(this->UploadBitmap, SIGNAL(clicked()), this, SLOT(OnUploadBitmap()));
+
+	connect(this->RenderOutputWidget, SIGNAL(CameraUpdate(float*, float*, float*)), this, SLOT(OnCameraUpdate(float*, float*, float*)));
 }
 
 QGuiWindow::~QGuiWindow()
@@ -75,6 +77,15 @@ void QGuiWindow::OnUploadVolume()
 		QFileInfo FileInfo(File);
 
 		DataStream << FileInfo.fileName();
+		
+		DataStream << 256;
+		DataStream << 230;
+		DataStream << 256;
+
+		DataStream << 1.0f;
+		DataStream << 1.0f;
+		DataStream << 1.0f;
+		
 		DataStream << Voxels;
 	
 		this->CompositorSocket->SendData("VOLUME", ByteArray);
@@ -110,4 +121,25 @@ void QGuiWindow::OnUploadBitmap()
 	{
 		qDebug() << "Unable to send bitmap!";
 	}
+}
+
+void QGuiWindow::OnCameraUpdate(float* Position, float* FocalPoint, float* ViewUp)
+{
+	QByteArray Data;
+	QDataStream DataStream(&Data, QIODevice::WriteOnly);
+	DataStream.setVersion(QDataStream::Qt_4_0);
+
+	DataStream << Position[0];
+	DataStream << Position[1];
+	DataStream << Position[2];
+
+	DataStream << FocalPoint[0];
+	DataStream << FocalPoint[1];
+	DataStream << FocalPoint[2];
+
+	DataStream << ViewUp[0];
+	DataStream << ViewUp[1];
+	DataStream << ViewUp[2];
+
+	this->CompositorSocket->SendData("CAMERA", Data);
 }

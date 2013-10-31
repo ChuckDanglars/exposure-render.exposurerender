@@ -26,7 +26,7 @@ void QBaseServer::Start()
 
 void QBaseServer::SendDataToAll(const QString& Action, QByteArray& Data)
 {
-	qDebug() << this->Name << "send" << Action.lower() << "to all";
+	// qDebug() << this->Name << "send" << Action.lower() << "to all";
 
 	for (int s = 0; s < this->Connections.size(); s++)
 		this->Connections[s]->SendData(Action, Data);

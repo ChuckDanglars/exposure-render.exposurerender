@@ -12,12 +12,12 @@ QEstimate::QEstimate(QObject* Parent /*= 0*/) :
 {
 }
 
-void QEstimate::Encode(QByteArray& Data)
+bool QEstimate::Encode(QByteArray& Data)
 {
 	if (this->Buffer.GetResolution().CumulativeProduct() == 0)
 	{
 		qDebug() << "Unable to encode 0 pixels";
-		return;
+		return false;
 	}
 
 	this->GpuJpegEncoder.Initialize(this->Buffer.Width(), this->Buffer.Height(), 3);
@@ -27,10 +27,18 @@ void QEstimate::Encode(QByteArray& Data)
 	unsigned char* CompressedImage = this->GpuJpegEncoder.GetCompressedImage(CompressedImageSize);
 
 	Data.setRawData((char*)CompressedImage, CompressedImageSize);
+
+	return true;
 }
 
-void QEstimate::Decode(QByteArray& Data)
+bool QEstimate::Decode(QByteArray& Data)
 {
+	if (Data.count() == 0)
+	{
+		qDebug() << "Unable to decode, buffer is empty";
+		return false;
+	}
+
 	QDataStream DataStream(&Data, QIODevice::ReadOnly);
 	DataStream.setVersion(QDataStream::Qt_4_0);
 
@@ -47,14 +55,17 @@ void QEstimate::Decode(QByteArray& Data)
 	unsigned char* ImageData = GpuJpegDecoder.GetImage(NoBytes);
 
 	this->Buffer.Resize(Vec2i(Width, Height));
-	memcpy(this->Buffer.GetData(), ImageData, NoBytes);	
+	memcpy(this->Buffer.GetData(), ImageData, NoBytes);
+
+	return true;
 }
 
-void QEstimate::ToByteArray(QByteArray& Data)
+bool QEstimate::ToByteArray(QByteArray& Data)
 {
 	QByteArray EncodedImage;
 
-	this->Encode(EncodedImage);
+	if (!this->Encode(EncodedImage))
+		return false;
 
 	QDataStream DataStream(&Data, QIODevice::WriteOnly);
 	DataStream.setVersion(QDataStream::Qt_4_0);
@@ -62,9 +73,11 @@ void QEstimate::ToByteArray(QByteArray& Data)
 	DataStream << this->Buffer.Width();
 	DataStream << this->Buffer.Height();
 	DataStream << EncodedImage;
+
+	return true;
 }
 
-void QEstimate::FromByteArray(QByteArray& Data)
+bool QEstimate::FromByteArray(QByteArray& Data)
 {
-	this->Decode(Data);
+	return this->Decode(Data);
 }

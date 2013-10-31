@@ -46,9 +46,9 @@ public:
 	{
 		this->Resize(Resolution);
 
-		this->GaussianFilterWeights[0]	= 0.24197072451914536f;
-		this->GaussianFilterWeights[1]	= 0.39894228040143270f;
-		this->GaussianFilterWeights[2]	= 0.24197072451914536f;
+		this->GaussianFilterWeights[0]	= 1.0f * 0.24197072451914536f;
+		this->GaussianFilterWeights[1]	= 2.0f * 0.39894228040143270f;
+		this->GaussianFilterWeights[2]	= 1.0f * 0.24197072451914536f;
 	}
 
 	/*! Resize the film
