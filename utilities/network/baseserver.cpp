@@ -10,7 +10,7 @@ QBaseServer::QBaseServer(const QString& Name, QObject* Parent /*= 0*/) :
 
 void QBaseServer::Start()
 {
-	qDebug() << "Starting" << this->Name.toLower() << "server";
+	qDebug() << "Starting" << this->Name.toLower() << "server" << this->ListenPort;
 
 	if (!this->listen(QHostAddress::Any, this->ListenPort))
 	{
@@ -26,24 +26,10 @@ void QBaseServer::Start()
 
 void QBaseServer::SendDataToAll(const QString& Action, QByteArray& Data)
 {
-	QByteArray ByteArray;
-	QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
-	DataStream.setVersion(QDataStream::Qt_4_0);
-
-	DataStream << quint32(0);
-
-	DataStream << Action;
-	DataStream << Data;
-
-	DataStream.device()->seek(0);
-		    
-	DataStream << (quint32)(ByteArray.size() - sizeof(quint32));
+	qDebug() << this->Name << "send" << Action.lower() << "to all";
 
 	for (int s = 0; s < this->Connections.size(); s++)
-	{
-		this->Connections[s]->write(ByteArray);
-		this->Connections[s]->flush();
-	}
+		this->Connections[s]->SendData(Action, Data);
 }
 
 void QBaseServer::OnNewConnection(const int& SocketDescriptor)

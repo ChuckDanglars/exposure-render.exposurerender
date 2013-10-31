@@ -2,6 +2,7 @@
 #include "basesocket.h"
 
 #include <QFile>
+#include <QApplication>
 
 QBaseSocket::QBaseSocket(QObject* Parent /*= 0*/) :
 	QTcpSocket(Parent),
@@ -88,17 +89,19 @@ void QBaseSocket::SaveResource(QByteArray& ByteArray)
 
 	QByteArray Data = DataStream.device()->readAll();
 
-	QFile File("resources//" + FileName);
+	qDebug() << "Saving resource" << FileName;
+
+	QFile File(QApplication::applicationDirPath() + "//resources//" + FileName);
 	
 	if (File.open(QIODevice::WriteOnly))
 	{
 		File.writeBlock(Data);
 		File.close();
 
-		qDebug() << "Saved" << FileName;
+		qDebug() << "Saved" << File.fileName();
 	}
 	else
 	{
-		qDebug() << "Unable to save" << FileName;
+		qDebug() << "Unable to save" << File.fileName();
 	}
 }
