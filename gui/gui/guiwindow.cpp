@@ -81,4 +81,27 @@ void QGuiWindow::OnUploadVolume()
 
 void QGuiWindow::OnUploadBitmap()
 {
+	QString FileName = "C://workspaces//download.jpg";
+
+	QFile File(FileName);
+
+	if (File.open(QIODevice::ReadOnly))
+	{
+		QByteArray Voxels = File.readAll();
+	
+		QByteArray ByteArray;
+		QDataStream DataStream(&ByteArray, QIODevice::WriteOnly);
+		DataStream.setVersion(QDataStream::Qt_4_0);
+
+		QFileInfo FileInfo(File);
+
+		DataStream << FileInfo.fileName();
+		DataStream << Voxels;
+	
+		this->CompositorSocket->SendData("BITMAP", ByteArray);
+	}
+	else
+	{
+		qDebug() << "Unable to send bitmap!";
+	}
 }

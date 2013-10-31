@@ -1,5 +1,12 @@
-set scriptpath=%~dp0
+set wd = %CD%
 
-start %scriptpath%/compositor/compositor.exe
-start %scriptpath%/renderer/renderer.exe
-start %scriptpath%/gui/gui.exe
+cd compositor
+start compositor.exe
+
+cd %wd%
+cd renderer
+start renderer.exe
+
+cd %wd%
+cd gui
+start gui.exe
