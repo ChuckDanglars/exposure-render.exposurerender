@@ -5,8 +5,7 @@
 #include <QFileInfo>
 
 QCameraSocketData::QCameraSocketData(QObject* Parent /*= 0*/) :
-	QSocketData(Parent),
-	Camera()
+	QSocketData(Parent)
 {
 }
 
@@ -23,7 +22,7 @@ void QCameraSocketData::Receive(QByteArray& Data)
 
 	QByteArray Voxels;
 
-	DataStream.writeBytes((char*)&this->Camera, sizeof(this->Camera));
+	//DataStream.writeBytes((char*)&this->Camera, sizeof(this->Camera));
 
 	/*
 	DataStream >> this->FileName;

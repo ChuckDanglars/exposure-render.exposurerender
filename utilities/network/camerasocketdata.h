@@ -1,11 +1,8 @@
 #pragma once
 
 #include "socketdata.h"
-#include "api\camera.h"
 
 #include <QString>
-
-using namespace ExposureRender;
 
 class QCameraSocketData : public QSocketData
 {
@@ -19,5 +16,4 @@ public:
 	virtual void Send(QBaseSocket* Socket, QByteArray& Data);
 
 private:
-	Camera		Camera;
 };
