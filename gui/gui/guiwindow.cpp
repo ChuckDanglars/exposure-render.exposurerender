@@ -56,6 +56,7 @@ void QGuiWindow::OnTimer()
 
 void QGuiWindow::OnUploadVolume()
 {
+	/*
 	QString FileName = "C://workspaces//manix.raw";
 
 	QFile File(FileName);
@@ -94,6 +95,7 @@ void QGuiWindow::OnUploadVolume()
 	{
 		qDebug() << "Unable to send volume!";
 	}
+	*/
 }
 
 void QGuiWindow::OnUploadBitmap()

@@ -1,5 +1,6 @@
 
 #include "socketdata.h"
+#include "basesocket.h"
 
 #include <QDebug>
 
@@ -17,7 +18,8 @@ void QSocketData::Receive(QByteArray& Data)
 	qDebug() << "Not implemented";
 }
 
-void QSocketData::Send(QByteArray& Data)
+void QSocketData::Send(QBaseSocket* Socket, QByteArray& Data)
 {
-	qDebug() << "Not implemented";
+	Socket->write(Data);
+	Socket->flush();
 }

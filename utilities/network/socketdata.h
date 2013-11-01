@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QTcpSocket>
-#include <QDataStream>
+#include "basesocket.h"
+
+class QBaseSocket;
 
 class QSocketData : public QObject
 {
@@ -12,7 +13,5 @@ public:
 	virtual ~QSocketData();
 
 	virtual void Receive(QByteArray& Data);
-	virtual void Send(QByteArray& Data);
-
-private:
+	virtual void Send(QBaseSocket* Socket, QByteArray& Data);
 };
