@@ -3,22 +3,17 @@
 
 #include "attribute\attribute.h"
 
-namespace Attributes
-{
-
-class EXPOSURE_RENDER_DLL QFloat : public QAttribute
+class EXPOSURE_RENDER_DLL QFloatAttribute : public QAttribute
 {
     Q_OBJECT
 
 public:
-    QFloat(const QString& Name, const QString& Description, const float& Value, const float& DefaultValue, QObject* Parent /*= 0*/);
-    virtual ~QFloat();
+    QFloatAttribute(const QString& Name, const QString& Description, const float& Value = 0.0f, const float& DefaultValue = 0.0f, QObject* Parent = 0);
+    virtual ~QFloatAttribute();
 
 private:
 	float	Value;
 	float	DefaultValue;
 };
-
-}
 
 #endif

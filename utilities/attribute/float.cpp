@@ -1,18 +1,15 @@
 
 #include "float.h"
+#include "binder\float.h"
 
-namespace Attributes
-{
-
-QFloat::QFloat(const QString& Name, const QString& Description, const float& Value, const float& DefaultValue, QObject* Parent /*= 0*/) :
+QFloatAttribute::QFloatAttribute(const QString& Name, const QString& Description, const float& Value /*= 0.0f*/, const float& DefaultValue /*= 0.0f*/, QObject* Parent /*= 0*/) :
 	QAttribute(Name, Description, Parent),
 	Value(Value),
 	DefaultValue(DefaultValue)
 {
+	this->Binder = (QBinder*)(new QFloatBinder(this));
 }
 
-QFloat::~QFloat()
+QFloatAttribute::~QFloatAttribute()
 {
-}
-
 }

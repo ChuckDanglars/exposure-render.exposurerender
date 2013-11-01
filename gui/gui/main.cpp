@@ -20,6 +20,7 @@ int main(int argc, char **argv)
 	
 	Application.setApplicationName("Exposure Render - GUI");
 	Application.setOrganizationName("Delft University of Technology, department of Computer Graphics and Visualization");
+	Application.setStyle("cleanlooks");
 
 	QCompositorSocket CompositorSocket(&Application);
 	

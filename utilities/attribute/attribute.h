@@ -5,8 +5,7 @@
 
 #include <QtGui>
 
-namespace Attributes
-{
+class QBinder;
 
 class EXPOSURE_RENDER_DLL QAttribute : public QObject
 {
@@ -16,11 +15,18 @@ public:
     QAttribute(const QString& Name, const QString& Description, QObject* Parent = 0);
     virtual ~QAttribute();
 
-private:
-	QString		Name;
-	QString		Description;
-};
+	QBinder* GetBinder();
+	QWidget* GetWidget();
 
-}
+	GET_REF_SET_MACRO(HOST, Name, QString);
+	GET_REF_SET_MACRO(HOST, Description, QString);
+
+protected:
+	QBinder*		Binder;
+
+private:
+	QString			Name;
+	QString			Description;
+};
 
 #endif

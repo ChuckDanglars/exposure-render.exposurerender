@@ -21,6 +21,7 @@ int main(int argc, char **argv)
 
 	Application.setApplicationName("Exposure Render Compositor");
 	Application.setOrganizationName("Delft University of Technology, department of Computer Graphics and Visualization");
+	Application.setStyle("cleanlooks");
 
 	if (!QDir(QApplication::applicationDirPath() + "//resources").exists())
 	{

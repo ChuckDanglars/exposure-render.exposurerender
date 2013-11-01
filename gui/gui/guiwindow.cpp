@@ -2,6 +2,7 @@
 #include "guiwindow.h"
 #include "utilities\gui\renderoutputwidget.h"
 #include "network\compositorsocket.h"
+#include "gui\camerawidget.h"
 
 #include <QtGui>
 
@@ -27,7 +28,9 @@ QGuiWindow::QGuiWindow(QCompositorSocket* CompositorSocket, QWidget* Parent /*= 
 
 	this->RenderOutputWidget = new QRenderOutputWidget();
 
-	MainLayout->addWidget(this->RenderOutputWidget, 5);
+	this->MainLayout->addWidget(this->RenderOutputWidget, 5);
+
+	this->MainLayout->addWidget(new QCameraWidget());
 
 	QObject::connect(&this->Timer, SIGNAL(timeout()), this, SLOT(OnTimer()));
 
