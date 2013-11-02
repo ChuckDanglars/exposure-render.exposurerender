@@ -13,3 +13,10 @@ QFloatAttribute::QFloatAttribute(const QString& Name, const QString& Description
 QFloatAttribute::~QFloatAttribute()
 {
 }
+
+void QFloatAttribute::Initialize()
+{
+	emit this->MinimumChanged(this->GetMinimum());
+	emit this->MaximumChanged(this->GetMaximum());
+	emit this->ValueChanged(this->GetValue());
+}
