@@ -12,9 +12,14 @@ public:
     QCameraWidget(QWidget *parent = 0);
     virtual ~QCameraWidget();
 
-protected:
-	QCamera		Camera;
+public slots:
+	void OnExport();
+	void OnImport();
 
+protected:
+	QCamera			Camera;
+	QPushButton*	Export;
+	QPushButton*	Import;
 private:
 };
 

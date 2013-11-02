@@ -1,7 +1,7 @@
 
 #include "float.h"
 
-QDataStream& operator<<(QDataStream& Out, const QFloatAttribute& FloatAttribute)
+QDataStream& operator << (QDataStream& Out, const QFloatAttribute& FloatAttribute)
 {
 	Out << FloatAttribute.GetMinimum();
 	Out << FloatAttribute.GetMaximum();
@@ -10,7 +10,7 @@ QDataStream& operator<<(QDataStream& Out, const QFloatAttribute& FloatAttribute)
     return Out;
 }
 
-QDataStream& operator>>(QDataStream& In, QFloatAttribute& FloatAttribute)
+QDataStream& operator >> (QDataStream& In, QFloatAttribute& FloatAttribute)
 {
 	float Minimum = 0.0f, Maximum = 100.0f, Value = 0.0f;
 
