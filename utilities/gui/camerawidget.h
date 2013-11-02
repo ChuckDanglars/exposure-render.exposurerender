@@ -2,6 +2,7 @@
 #define QCameraWidget_H
 
 #include "editwidget.h"
+#include "api\camera.h"
 
 class EXPOSURE_RENDER_DLL QCameraWidget : public QEditWidget
 {
@@ -11,14 +12,10 @@ public:
     QCameraWidget(QWidget *parent = 0);
     virtual ~QCameraWidget();
 
+protected:
+	QCamera		Camera;
+
 private:
-	QFloatAttribute			ApertureSize;
-	QFloatAttribute			FieldOfView;
-	QFloatAttribute			FocalDistance;
-	QIntegerAttribute		FilmWidth;
-	QIntegerAttribute		FilmHeight;
-	QFloatAttribute			Exposure;
-	QFloatAttribute			Gamma;
 };
 
 #endif

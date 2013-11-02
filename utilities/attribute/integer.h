@@ -14,7 +14,7 @@ public:
 	Q_PROPERTY(int Value READ GetValue WRITE SetValue RESET ResetValue NOTIFY ValueChanged)
 	Q_PROPERTY(int DefaultValue READ GetDefaultValue WRITE SetDefaultValue)
 	Q_PROPERTY(int Minimum READ GetMinimum WRITE SetMinimum NOTIFY MinimumChanged)
-	Q_PROPERTY(int Maximum READ GetMaximum WRITE Setmaximum NOTIFY MaximumChanged)
+	Q_PROPERTY(int Maximum READ GetMaximum WRITE SetMaximum NOTIFY MaximumChanged)
 
 	void SetValue(const int& Value)							{ this->Value = min(max(this->Minimum, Value), this->Maximum); emit ValueChanged(Value);		}
 	int GetValue() const									{ return this->Value;																			}
@@ -23,7 +23,7 @@ public:
 	int GetDefaultValue() const								{ return this->DefaultValue;																	}
 	void SetMinimum(const int& Minimum)						{ this->Minimum = min(Minimum, this->Maximum); emit MinimumChanged(Minimum);					}
 	int GetMinimum() const									{ return this->Minimum;																			}
-	void Setmaximum(const int& maximum)						{ this->Maximum = max(Maximum, this->Minimum); emit MaximumChanged(Maximum);					}
+	void SetMaximum(const int& Maximum)						{ this->Maximum = max(Maximum, this->Minimum); emit MaximumChanged(Maximum);					}
 	int GetMaximum() const									{ return this->Maximum;																			}
 	void ToMinimum()										{ this->SetValue(this->GetMinimum());															}
 	void ToMaximum()										{ this->SetValue(this->GetMaximum());															}
@@ -43,5 +43,8 @@ private:
 	int		Minimum;
 	int		Maximum;
 };
+
+QDataStream& operator << (QDataStream& Out, const QIntegerAttribute& IntegerAttribute);
+QDataStream& operator >> (QDataStream& In, QIntegerAttribute& IntegerAttribute);
 
 #endif
