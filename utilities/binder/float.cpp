@@ -1,7 +1,7 @@
 
 #include "float.h"
 
-QFloatBinder::QFloatBinder(QAttribute* Attribute, QObject* Parent /*= 0*/) :
+QFloatBinder::QFloatBinder(QAttribute* Attribute, QWidget* Parent /*= 0*/) :
 	QBinder(Attribute, Parent),
 	ToMinimum(0),
 	Decrement(0),

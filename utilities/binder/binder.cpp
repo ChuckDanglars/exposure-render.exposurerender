@@ -3,20 +3,17 @@
 
 #include <QWidget>
 
-QBinder::QBinder(QAttribute* Attribute, QObject* Parent /*= 0*/) :
-	QObject(Parent),
+QBinder::QBinder(QAttribute* Attribute, QWidget* Parent /*= 0*/) :
+	QWidget(Parent),
 	Attribute(Attribute),
-	Widget(0),
 	Layout(0),
 	Label(0)
 {
-	this->Widget = new QWidget();
-
 	this->Layout = new QHBoxLayout();
 
 	this->Layout->setContentsMargins(0, 0, 0, 0);
 
-	this->Widget->setLayout(this->Layout);
+	this->setLayout(this->Layout);
 
 	this->Label = new QLabel(this->Attribute->GetName());
 

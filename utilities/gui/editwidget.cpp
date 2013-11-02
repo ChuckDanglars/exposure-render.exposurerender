@@ -2,8 +2,7 @@
 #include "editwidget.h"
 
 QEditWidget::QEditWidget(QWidget* Parent) :
-	QWidget(Parent),
-	Attributes()
+	QWidget(Parent)
 {
 	this->Layout = new QVBoxLayout();
 
@@ -14,17 +13,4 @@ QEditWidget::QEditWidget(QWidget* Parent) :
 
 QEditWidget::~QEditWidget()
 {
-}
-
-void QEditWidget::Build()
-{
-	foreach (QAttribute* Attribute, this->Attributes)
-	{
-		this->Layout->addWidget(Attribute->GetWidget());
-	}
-}
-
-void QEditWidget::AddAttribute(QAttribute* Attribute)
-{
-	this->Attributes.append(Attribute);
 }

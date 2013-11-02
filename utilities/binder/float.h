@@ -8,7 +8,7 @@ class EXPOSURE_RENDER_DLL QFloatBinder : public QBinder
     Q_OBJECT
 
 public:
-    QFloatBinder(QAttribute* Attribute, QObject* Parent = 0);
+    QFloatBinder(QAttribute* Attribute, QWidget* Parent = 0);
     virtual ~QFloatBinder();
 
 private:

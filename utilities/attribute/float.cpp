@@ -7,7 +7,6 @@ QFloatAttribute::QFloatAttribute(const QString& Name, const QString& Description
 	Value(Value),
 	DefaultValue(DefaultValue)
 {
-	this->Binder = (QBinder*)(new QFloatBinder(this));
 }
 
 QFloatAttribute::~QFloatAttribute()

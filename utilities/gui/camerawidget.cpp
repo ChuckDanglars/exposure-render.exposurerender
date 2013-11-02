@@ -7,11 +7,11 @@ QCameraWidget::QCameraWidget(QWidget* Parent) :
 	FieldOfView("FOV", "Field of view"),
 	FocalDistance("Focal distance", "Focal distance")
 {
-	this->AddAttribute(&this->ApertureSize);
-	this->AddAttribute(&this->FieldOfView);
-	this->AddAttribute(&this->FocalDistance);
+	this->layout()->addWidget(new QFloatBinder(&this->ApertureSize, this));
+	//this->AddAttribute(&this->FieldOfView);
+	//this->AddAttribute(&this->FocalDistance);
 
-	this->Build();
+	//this->Build();
 }
 
 QCameraWidget::~QCameraWidget()
