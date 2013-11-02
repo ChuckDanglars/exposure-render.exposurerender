@@ -39,6 +39,7 @@ QFloatBinder::QFloatBinder(QAttribute* Attribute, QWidget* Parent /*= 0*/) :
 	this->Decrement->setFixedSize(20, 20);
 	this->Slide->setFixedHeight(20);
 	this->Edit->setFixedHeight(20);
+	this->Edit->setFixedWidth(75);
 	this->Increment->setFixedSize(20, 20);
 	this->ToMaximum->setFixedSize(20, 20);
 	this->Reset->setFixedSize(20, 20);

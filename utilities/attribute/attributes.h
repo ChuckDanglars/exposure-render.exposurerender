@@ -2,5 +2,6 @@
 #define QAttributes_H
 
 #include "float.h"
+#include "integer.h"
 
 #endif

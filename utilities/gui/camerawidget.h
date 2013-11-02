@@ -12,9 +12,13 @@ public:
     virtual ~QCameraWidget();
 
 private:
-	QFloatAttribute		ApertureSize;
-	QFloatAttribute		FieldOfView;
-	QFloatAttribute		FocalDistance;
+	QFloatAttribute			ApertureSize;
+	QFloatAttribute			FieldOfView;
+	QFloatAttribute			FocalDistance;
+	QIntegerAttribute		FilmWidth;
+	QIntegerAttribute		FilmHeight;
+	QFloatAttribute			Exposure;
+	QFloatAttribute			Gamma;
 };
 
 #endif

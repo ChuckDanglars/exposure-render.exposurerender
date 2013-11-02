@@ -17,7 +17,7 @@ QBinder::QBinder(QAttribute* Attribute, QWidget* Parent /*= 0*/) :
 
 	this->Label = new QLabel(this->Attribute->GetName());
 
-	this->Label->setFixedWidth(150);
+	this->Label->setFixedWidth(100);
 	this->Label->setToolTip(this->Attribute->GetDescription());
 
 	this->Layout->addWidget(this->Label);

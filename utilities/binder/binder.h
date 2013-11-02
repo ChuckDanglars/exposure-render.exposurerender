@@ -14,10 +14,10 @@ public:
     virtual ~QBinder();
 
 protected:
+	QAttribute*		Attribute;
 	QHBoxLayout*	Layout;
 
 private:
-	QAttribute*		Attribute;
 	QLabel*			Label;
 };
 

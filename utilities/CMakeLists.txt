@@ -16,6 +16,7 @@ FILE(GLOB GuiSources "gui/*.h" "gui/*.cpp")
 FILE(GLOB NetworkSources "network/*.h" "network/*.cpp")
 FILE(GLOB AttributeSources "attribute/*.h" "attribute/*.cpp")
 FILE(GLOB BinderSources "binder/*.h" "binder/*.cpp")
+FILE(GLOB_RECURSE MocHeaders "*.h")
 
 SOURCE_GROUP("general" FILES ${GeneralSources})
 SOURCE_GROUP("gpujpeg" FILES ${GpuJpegSources})
@@ -24,7 +25,7 @@ SOURCE_GROUP("network" FILES ${NetworkSources})
 SOURCE_GROUP("attribute" FILES ${AttributeSources})
 SOURCE_GROUP("binder" FILES ${BinderSources})
 
-QT4_WRAP_CPP(UtilitiesHeadersMoc attribute/attribute.h attribute/float.h binder/binder.h binder/float.h gui/camerawidget.h gui/editwidget.h general/hysteresis.h general/estimate.h gpujpeg/gpujpeg.h gui/renderoutputwidget.h network/basesocket.h network/baseserver.h)
+QT4_WRAP_CPP(UtilitiesHeadersMoc ${MocHeaders})
 ADD_LIBRARY(Utilities ${GeneralSources} ${GpuJpegSources} ${GuiSources} ${NetworkSources} ${AttributeSources} ${BinderSources} ${UtilitiesHeadersMoc})
 TARGET_LINK_LIBRARIES(Utilities GpuJpeg ${QT_LIBRARIES})
 
