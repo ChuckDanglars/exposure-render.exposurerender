@@ -39,15 +39,13 @@ QOptionBinder::QOptionBinder(QAttribute* Attribute, QWidget* Parent /*= 0*/) :
 	this->Reset->setFixedWidth(75);
 	
 	connect(this->Attribute, SIGNAL(ValueChanged(int)), this, SLOT(OnValueChanged(int)));
-	/*
-	connect(this->Slide, SIGNAL(valueChanged(int)), this, SLOT(OnSliderValueChanged(int)));
-	connect(this->Edit, SIGNAL(valueChanged(int)), this, SLOT(OnEditValueChanged(int)));
+	connect(this->ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnComboBoxIndexValueChanged(int)));
+	
+	connect(this->First, SIGNAL(clicked()), this, SLOT(OnFirst()));
+	connect(this->Previous, SIGNAL(clicked()), this, SLOT(OnPrevious()));
+	connect(this->Next, SIGNAL(clicked()), this, SLOT(OnNext()));
+	connect(this->Last, SIGNAL(clicked()), this, SLOT(OnLast()));
 	connect(this->Reset, SIGNAL(clicked()), this, SLOT(OnResetValue()));
-	connect(this->ToMinimum, SIGNAL(clicked()), this, SLOT(OnToMinimum()));
-	connect(this->Decrement, SIGNAL(clicked()), this, SLOT(OnDecrement()));
-	connect(this->Increment, SIGNAL(clicked()), this, SLOT(OnIncrement()));
-	connect(this->ToMaximum, SIGNAL(clicked()), this, SLOT(OnToMaximum()));
-	*/
 
 	this->GetAttribute()->Initialize();
 }
@@ -63,62 +61,37 @@ QOptionAttribute* QOptionBinder::GetAttribute()
 
 void QOptionBinder::OnValueChanged(int Value)
 {
-	/*
-	this->Slide->blockSignals(true);
-	this->Slide->setValue(Value);
-	this->Slide->blockSignals(false);
-
-	this->Edit->blockSignals(true);
-	this->Edit->setValue(Value);
-	this->Edit->blockSignals(false);
-	*/
+	this->ComboBox->blockSignals(true);
+	this->ComboBox->setCurrentIndex(Value);
+	this->ComboBox->blockSignals(false);
 }
 
-/*
-void QOptionBinder::OnMinimumChanged(int Value)
-{
-	this->Slide->setMinimum(this->GetAttribute()->GetMinimum());
-	this->Edit->setMinimum(this->GetAttribute()->GetMinimum());
-}
-
-void QOptionBinder::OnMaximumChanged(int Value)
-{
-	this->Slide->setMaximum(this->GetAttribute()->GetMaximum());
-	this->Edit->setMaximum(this->GetAttribute()->GetMaximum());
-}
-
-void QOptionBinder::OnSliderValueChanged(int Value)
+void QOptionBinder::OnComboBoxIndexValueChanged(int Value)
 {
 	this->GetAttribute()->SetValue(Value);
 }
 
-void QOptionBinder::OnEditValueChanged(int Value)
+void QOptionBinder::OnFirst()
 {
-	this->GetAttribute()->SetValue(Value);
+	this->GetAttribute()->ToMinimum();
+}
+
+void QOptionBinder::OnPrevious()
+{
+	this->GetAttribute()->Decrement();
+}
+
+void QOptionBinder::OnNext()
+{
+	this->GetAttribute()->Increment();
+}
+
+void QOptionBinder::OnLast()
+{
+	this->GetAttribute()->ToMaximum();
 }
 
 void QOptionBinder::OnResetValue()
 {
 	this->GetAttribute()->ResetValue();
 }
-
-void QOptionBinder::OnToMinimum()
-{
-	this->GetAttribute()->ToMinimum();
-}
-
-void QOptionBinder::OnDecrement()
-{
-	this->GetAttribute()->Decrement();
-}
-
-void QOptionBinder::OnIncrement()
-{
-	this->GetAttribute()->Increment();
-}
-
-void QOptionBinder::OnToMaximum()
-{
-	this->GetAttribute()->ToMaximum();
-}
-*/

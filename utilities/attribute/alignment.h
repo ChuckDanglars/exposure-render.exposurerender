@@ -8,7 +8,7 @@ class EXPOSURE_RENDER_DLL QAlignmentAttribute : public QAttribute
     Q_OBJECT
 
 public:
-    QAlignmentAttribute(const QString& Name, const QString& Description, QObject* Parent = 0);
+    QAlignmentAttribute(QObject* Parent = 0);
     virtual ~QAlignmentAttribute();
 
 	/*

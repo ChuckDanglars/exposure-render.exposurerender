@@ -17,11 +17,11 @@ public:
 
 public slots:
 	void OnValueChanged(int Value);
-	void OnComboBoxValueChanged(int Value);
-	void OnToFirst();
+	void OnComboBoxIndexValueChanged(int Value);
+	void OnFirst();
 	void OnPrevious();
 	void OnNext();
-	void OnToLast();
+	void OnLast();
 	void OnResetValue();
 
 private:
