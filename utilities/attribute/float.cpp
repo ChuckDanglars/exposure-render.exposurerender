@@ -3,24 +3,18 @@
 
 QDataStream& operator << (QDataStream& Out, const QFloatAttribute& FloatAttribute)
 {
-	Out << FloatAttribute.GetMinimum();
-	Out << FloatAttribute.GetMaximum();
-	Out << FloatAttribute.GetValue();
+	Out << FloatAttribute.Minimum;
+	Out << FloatAttribute.Maximum;
+	Out << FloatAttribute.Value;
 
     return Out;
 }
 
 QDataStream& operator >> (QDataStream& In, QFloatAttribute& FloatAttribute)
 {
-	float Minimum = 0.0f, Maximum = 100.0f, Value = 0.0f;
-
-	In >> Minimum;
-	In >> Maximum;
-	In >> Value;
-
-	FloatAttribute.SetMinimum(Minimum);
-	FloatAttribute.SetMaximum(Maximum);
-	FloatAttribute.SetValue(Value);
+	In >> FloatAttribute.Minimum;
+	In >> FloatAttribute.Maximum;
+	In >> FloatAttribute.Value;
 
     return In;
 }

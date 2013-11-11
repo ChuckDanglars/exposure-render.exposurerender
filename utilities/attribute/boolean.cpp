@@ -3,18 +3,14 @@
 
 QDataStream& operator << (QDataStream& Out, const QBooleanAttribute& BooleanAttribute)
 {
-	Out << BooleanAttribute.GetValue();
+	Out << BooleanAttribute.Value;
 
     return Out;
 }
 
 QDataStream& operator >> (QDataStream& In, QBooleanAttribute& BooleanAttribute)
 {
-	bool Value = false;
-
-	In >> Value;
-
-	BooleanAttribute.SetValue(Value);
+	In >> BooleanAttribute.Value;
 
     return In;
 }

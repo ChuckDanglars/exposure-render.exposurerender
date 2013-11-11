@@ -21,8 +21,11 @@ public:
 signals:
 	void StringsChanged(QStringList);
 
-private:
+protected:
 	QStringList		Strings;
+
+	friend QDataStream& operator << (QDataStream& Out, const QOptionAttribute& OptionAttribute);
+	friend QDataStream& operator >> (QDataStream& In, QOptionAttribute& OptionAttribute);
 };
 
 QDataStream& operator << (QDataStream& Out, const QOptionAttribute& OptionAttribute);

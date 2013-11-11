@@ -25,9 +25,12 @@ public:
 signals:
 	void ValueChanged(bool);
 
-private:
+protected:
 	bool		Value;
 	bool		DefaultValue;
+
+	friend QDataStream& operator << (QDataStream& Out, const QBooleanAttribute& BooleanAttribute);
+	friend QDataStream& operator >> (QDataStream& In, QBooleanAttribute& BooleanAttribute);
 };
 
 QDataStream& operator << (QDataStream& Out, const QBooleanAttribute& BooleanAttribute);

@@ -37,14 +37,14 @@ signals:
     void MinimumChanged(float);
 	void MaximumChanged(float);
 
-private:
+protected:
 	float	Value;
 	float	DefaultValue;
 	float	Minimum;
 	float	Maximum;
-};
 
-QDataStream& operator << (QDataStream& Out, const QFloatAttribute& FloatAttribute);
-QDataStream& operator >> (QDataStream& In, QFloatAttribute& FloatAttribute);
+	friend QDataStream& operator << (QDataStream& Out, const QFloatAttribute& FloatAttribute);
+	friend QDataStream& operator >> (QDataStream& In, QFloatAttribute& FloatAttribute);
+};
 
 #endif

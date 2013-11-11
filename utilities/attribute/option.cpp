@@ -3,18 +3,14 @@
 
 QDataStream& operator << (QDataStream& Out, const QOptionAttribute& OptionAttribute)
 {
-	Out << OptionAttribute.GetStrings();
+	Out << OptionAttribute.Strings;
 
     return Out;
 }
 
 QDataStream& operator >> (QDataStream& In, QOptionAttribute& OptionAttribute)
 {
-	QStringList Strings;
-
-	In >> Strings;
-
-	OptionAttribute.SetStrings(Strings);
+	In >> OptionAttribute.Strings;
 
     return In;
 }

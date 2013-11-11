@@ -1,17 +1,19 @@
-#ifndef QIntegerAttribute_H
-#define QIntegerAttribute_H
+#ifndef QAlignmentAttribute_H
+#define QAlignmentAttribute_H
 
-#include "attribute\attribute.h"
+#include "attribute\option.h"
 
-class EXPOSURE_RENDER_DLL QIntegerAttribute : public QAttribute
+class EXPOSURE_RENDER_DLL QAlignmentAttribute : public QAttribute
 {
     Q_OBJECT
 
 public:
-    QIntegerAttribute(const QString& Name, const QString& Description, const int& Value = 0, const int& DefaultValue = 0, const int& Minimum = 0, const int& Maximum = 100, QObject* Parent = 0);
-    virtual ~QIntegerAttribute();
+    QAlignmentAttribute(const QString& Name, const QString& Description, QObject* Parent = 0);
+    virtual ~QAlignmentAttribute();
 
-	Q_PROPERTY(int Value READ GetValue WRITE SetValue RESET ResetValue NOTIFY ValueChanged)
+	/*
+	Q_PROPERTY(QOptionAttribute Type READ GetType WRITE SetType NOTIFY ValueChanged)
+		
 	Q_PROPERTY(int DefaultValue READ GetDefaultValue WRITE SetDefaultValue)
 	Q_PROPERTY(int Minimum READ GetMinimum WRITE SetMinimum NOTIFY MinimumChanged)
 	Q_PROPERTY(int Maximum READ GetMaximum WRITE SetMaximum NOTIFY MaximumChanged)
@@ -29,25 +31,31 @@ public:
 	void ToMaximum()										{ this->SetValue(this->GetMaximum());															}
 	void Decrement()										{ this->SetValue(this->GetValue() - 1);															}
 	void Increment()										{ this->SetValue(this->GetValue() + 1);															}
+	*/
 
 	void Initialize();
 	
 signals:
+	/*
 	void ValueChanged(int);
     void MinimumChanged(int);
 	void MaximumChanged(int);
+	*/
 
 protected:
+	/*
 	int		Value;
 	int		DefaultValue;
 	int		Minimum;
 	int		Maximum;
+	*/
+	QOptionAttribute	Type;
 
-	friend QDataStream& operator << (QDataStream& Out, const QIntegerAttribute& IntegerAttribute);
-	friend QDataStream& operator >> (QDataStream& In, QIntegerAttribute& IntegerAttribute);
+	friend QDataStream& operator << (QDataStream& Out, const QAlignmentAttribute& AlignmentAttribute);
+	friend QDataStream& operator >> (QDataStream& In, QAlignmentAttribute& AlignmentAttribute);
 };
 
-QDataStream& operator << (QDataStream& Out, const QIntegerAttribute& IntegerAttribute);
-QDataStream& operator >> (QDataStream& In, QIntegerAttribute& IntegerAttribute);
+QDataStream& operator << (QDataStream& Out, const QAlignmentAttribute& AlignmentAttribute);
+QDataStream& operator >> (QDataStream& In, QAlignmentAttribute& AlignmentAttribute);
 
 #endif
