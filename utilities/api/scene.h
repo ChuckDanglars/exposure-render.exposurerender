@@ -13,11 +13,9 @@ public:
 
 	QCamera				Camera;
 	QList<QString>		Props;
-	QList<QString>		Lights;
-	QList<QString>		Bitmaps;
 };
 
-QDataStream &operator<<(QDataStream& Out, const QScene& Scene);
-QDataStream &operator>>(QDataStream& In, QScene& Scene);
+QDataStream &operator << (QDataStream& Out, const QScene& Scene);
+QDataStream &operator >> (QDataStream& In, QScene& Scene);
 
 #endif

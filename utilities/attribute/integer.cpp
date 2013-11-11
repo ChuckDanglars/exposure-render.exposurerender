@@ -1,7 +1,7 @@
 
 #include "integer.h"
 
-QDataStream& operator<<(QDataStream& Out, const QIntegerAttribute& IntegerAttribute)
+QDataStream& operator << (QDataStream& Out, const QIntegerAttribute& IntegerAttribute)
 {
 	Out << IntegerAttribute.GetMinimum();
 	Out << IntegerAttribute.GetMaximum();
@@ -10,7 +10,7 @@ QDataStream& operator<<(QDataStream& Out, const QIntegerAttribute& IntegerAttrib
     return Out;
 }
 
-QDataStream& operator>>(QDataStream& In, QIntegerAttribute& IntegerAttribute)
+QDataStream& operator >> (QDataStream& In, QIntegerAttribute& IntegerAttribute)
 {
 	int Minimum = 0.0f, Maximum = 100.0f, Value = 0.0f;
 

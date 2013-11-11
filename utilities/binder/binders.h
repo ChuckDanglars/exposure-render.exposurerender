@@ -3,5 +3,7 @@
 
 #include "float.h"
 #include "integer.h"
+#include "boolean.h"
+#include "option.h"
 
 #endif

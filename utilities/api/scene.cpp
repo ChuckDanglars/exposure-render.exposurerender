@@ -4,8 +4,7 @@
 QDataStream& operator << (QDataStream& Out, const QScene& Scene)
 {
 	Out << Scene.Camera;
-	Out << Scene.Volumes;
-	Out << Scene.Lights;
+	Out << Scene.Props;
 
     return Out;
 }
@@ -13,8 +12,7 @@ QDataStream& operator << (QDataStream& Out, const QScene& Scene)
 QDataStream& operator >> (QDataStream& In, QScene& Scene)
 {
     In >> Scene.Camera;
-	In >> Scene.Volumes;
-	In >> Scene.Lights;
+	In >> Scene.Props;
 
     return In;
 }

@@ -6,7 +6,7 @@ QBooleanBinder::QBooleanBinder(QAttribute* Attribute, QWidget* Parent /*= 0*/) :
 	QBinder(Attribute, Parent),
 	CheckBox(0)
 {
-	this->CheckBox		= new QCheckBox(this->GetAttribute()->GetName());
+	this->CheckBox = new QCheckBox(this->GetAttribute()->GetName());
 
 	this->Layout->addWidget(this->CheckBox, 0, Qt::AlignTop);
 
