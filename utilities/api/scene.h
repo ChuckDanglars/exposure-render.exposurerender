@@ -12,8 +12,9 @@ public:
     virtual ~QScene();
 
 	QCamera				Camera;
-	QList<QString>		Volumes;
+	QList<QString>		Props;
 	QList<QString>		Lights;
+	QList<QString>		Bitmaps;
 };
 
 QDataStream &operator<<(QDataStream& Out, const QScene& Scene);
